@@ -149,6 +149,14 @@
 			>
 		</File>
 		<File
+			RelativePath="..\..\Src\GameCommon\NetWork\GYEpoll.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\Src\GameCommon\NetWork\GYEpoll.h"
+			>
+		</File>
+		<File
 			RelativePath="..\..\Src\GameCommon\NetWork\GYEvent.h"
 			>
 		</File>

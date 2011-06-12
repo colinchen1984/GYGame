@@ -1,4 +1,4 @@
-/////////////////////////////////////////////
+锘?////////////////////////////////////////////
 // create time: 2011/6/12 14:33
 // author:	colin chen
 // file name:	GYEvent
@@ -24,17 +24,17 @@ class GYStreamSocket;
 
 struct GYNetEvent
 {
-	GYVOID*						m_data;			//指向的数据块
-	GYBOOL						m_accept;		//是否绑定了监听端口
-	GYBOOL						m_busy;			//是否正在工作
-	GYNetEventType				m_eventType;	//事件类型
+	GYVOID*						m_data;			//鎸囧悜鐨勬暟鎹潡
+	GYBOOL						m_accept;		//鏄惁缁戝畾浜嗙洃鍚鍙?
+	GYBOOL						m_busy;			//鏄惁姝ｅ湪宸ヤ綔
+	GYNetEventType				m_eventType;	//浜嬩欢绫诲瀷
 	GYStreamSocket*				m_fd;			//fd
-	GYEventHandler				m_eventHandler;	//事件handler
+	GYEventHandler				m_eventHandler;	//浜嬩欢handler
 	
-	GYNetEvent*					m_prevEvent;	//链表中的上一个
-	GYNetEvent*					m_nexEvent;		//链表中的下一个
+	GYNetEvent*					m_prevEvent;	//閾捐〃涓殑涓婁竴涓?
+	GYNetEvent*					m_nexEvent;		//閾捐〃涓殑涓嬩竴涓?
 
-	GYINT32						m_reactorIndex;	//reactor event*数组内的index
+	GYINT32						m_reactorIndex;	//reactor event*鏁扮粍鍐呯殑index
 
 };
 
