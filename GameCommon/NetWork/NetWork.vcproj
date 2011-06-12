@@ -145,6 +145,14 @@
 	</References>
 	<Files>
 		<File
+			RelativePath="..\..\Src\GameCommon\NetWork\GYBufferStreamSock.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\Src\GameCommon\NetWork\GYEvent.h"
+			>
+		</File>
+		<File
 			RelativePath="..\..\Src\GameCommon\NetWork\GYNetAddress.cpp"
 			>
 		</File>
@@ -158,6 +166,30 @@
 		</File>
 		<File
 			RelativePath="..\..\Src\GameCommon\NetWork\GYNetWorkCommonDefine.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\Src\GameCommon\NetWork\GYReactor.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\Src\GameCommon\NetWork\GYReactor.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\Src\GameCommon\NetWork\GYSocket.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\Src\GameCommon\NetWork\GYSocket.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\Src\GameCommon\NetWork\GYWin32Select.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\Src\GameCommon\NetWork\GYWin32Select.h"
 			>
 		</File>
 	</Files>

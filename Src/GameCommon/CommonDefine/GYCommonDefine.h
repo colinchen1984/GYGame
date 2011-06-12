@@ -30,13 +30,16 @@
 	typedef void					GYVOID;
 	typedef char					GYBOOL;
 #endif
-	#define GYGUID GYINT64
-	#define INVALID_VALUE -1
+	#define GYGUID					GYINT64
+	#define INVALID_VALUE			-1
+	#define GYMemcpy				memcpy
+	#define GYMemset				memset
+	#define GYZeroMem(x, y)			GYMemset(x, 0, y)
+	#define GYStrncpy				strncpy
+	#define GYNew					new
+	#define GYDelete				delete
+
 	const GYBOOL GYTRUE = 1;
 	const GYBOOL GYFALSE = 0;
-	#define GYMemcpy memcpy
-	#define GYMemset memset
-	#define GYZeroMem(x, y) GYMemset(x, 0, y)
-	#define GYStrncpy strncpy
 	const GYINT32 GYNULL = 0;
 #endif

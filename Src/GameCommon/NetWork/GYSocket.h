@@ -8,173 +8,112 @@
 #define __GYSOCKET_H__
 
 //include file
-#include <stdio.h>
+#include "GYNetWorkCommonDefine.h"
 
 //using declare
 
 //foward declare
+class GYNetAddress;
 
-class GYSock
+class GYSocket
 {
 protected:
-	SOCKET socket_fd;
+	GYSOCKET m_fd;
 protected:
-	GYSock()
+	GYSocket()
 	{ CleanUp();}
 
-	GYSock(SOCKET fd)
-	{ socket_fd = fd; };
+	GYSocket(GYSOCKET fd)
+	{ m_fd = fd; };
 
-	~GYSock()
+	~GYSocket()
 	{};
 
-	GYSock(const GYSock& socket)
-	{ socket_fd = socket.socket_fd; };
+	GYSocket(const GYSocket& socket)
+	{ m_fd = socket.m_fd; };
 
 	 GYVOID
-	operator=(const GYSock& socket)
-	{ socket_fd = socket.socket_fd; };
+	operator=(const GYSocket& socket)
+	{ m_fd = socket.m_fd; };
 
 public:
-	SOCKET
-	Open(GYINT32 family, GYINT32 type, GYINT32 protocol);
+	GYSOCKET Open(GYINT32 family, GYINT32 type, GYINT32 protocol);
 
-	GYINT32
-	Close();
+	GYINT32 Close();
 
-	GYINT32
-	Bind(const GYNetAddress& addr);
+	GYINT32 Bind(const GYNetAddress& addr);
 
-    SOCKET
-	GetFd()
-	{ return socket_fd; };
+    GYSOCKET GetFd()
+	{ 
+		return m_fd; 
+	};
 
-    GYVOID
-	SetFd(SOCKET fd)
-	{ socket_fd = fd; };
+    GYVOID SetFd(GYSOCKET fd)
+	{ 
+		m_fd = fd; 
+	};
 
-	GYINT32
-	SetBlock(bool block);
+	GYINT32 SetBlock(GYBOOL block);
 
-	GYVOID
-	CleanUp()
-	{socket_fd = INVALID_SOCKET;}
+	GYVOID CleanUp()
+	{
+		m_fd = INVALID_SOCKET;
+	}
 };
 
-class GYListenSock : public GYSock
+class GYListenSocket : public GYSocket
 {
 public:
-	GYListenSock()
+	GYListenSocket()
 	{};
 
-	~GYListenSock()
+	~GYListenSocket()
 	{};
 
-	GYListenSock(const GYListenSock& socket)
-		: GYSock(socket)
+	GYListenSocket(const GYListenSocket& socket)
+		: GYSocket(socket)
 	{};
 
-	 GYVOID
-	operator=(const GYListenSock& socket)
-	{ GYSock::operator=(socket); };
+	GYVOID operator=(const GYListenSocket& socket)
+	{ 
+		GYSocket::operator=(socket); 
+	};
 
-	GYINT32
-	Open(GYNetAddress& addr);
+	GYINT32 Open(GYNetAddress& addr);
 
-	SOCKET
-	Accept(GYNetAddress*  client_addr = NULL);
-
-	SOCKET
-	Accept(GYSock& s, GYNetAddress* client_addr = NULL);
-
-    SOCKET
-	Accept(GYNetAddress& client_addr)
-	{ return Accept(&client_addr); }
+	GYINT32 Accept(GYSocket& s, GYNetAddress& clientAddress);
 
 };
 
-class GYDgramSock : public GYSock
-{
-	bool connected;
-public:
-	GYDgramSock() :connected(false)
-	{};
-
-	~GYDgramSock()
-	{};
-
-	GYDgramSock(const GYDgramSock& socket)
-		: GYSock(socket), connected(socket.connected)
-	{};
-
-	 GYVOID
-	operator=(const GYDgramSock& socket)
-	{ GYSock::operator=(socket);};
-
-	GYINT32
-	Open();
-
-	GYINT32
-	Connect(GYNetAddress* addr);
-
-	GYINT32
-	Connect(GYNetAddress& addr)
-	{ return Connect(&addr); };
-
-	GYINT32
-	Send(const BYTE* buff, GYINT32 len);
-
-	GYINT32
-	Recv(BYTE* buff, GYINT32 len);
-
-	GYINT32
-	Sendto(const BYTE* buff, GYINT32 len, GYNetAddress& addr);
-
-	GYINT32
-	Recvfrom(BYTE* buff, GYINT32 len, GYNetAddress& addr);
-
-};
-
-class GYStreamSock : public GYSock
+class GYStreamSocket : public GYSocket
 {
 public:
-	GYStreamSock()
+	GYStreamSocket()
 	{};
 
-	~GYStreamSock()
+	~GYStreamSocket()
 	{};
 
-	GYStreamSock(const GYStreamSock& socket)
-		: GYSock(socket)
+	GYStreamSocket(const GYStreamSocket& socket)
+		: GYSocket(socket)
 	{};
 
-	GYVOID
-	operator=(const GYStreamSock& socket)
-	{ GYSock::operator=(socket); };
+	GYVOID operator=(const GYStreamSocket& socket)
+	{ 
+		GYSocket::operator=(socket); 
+	};
 
-	GYINT32
-	Open();
+	GYINT32 Open();
 
-	GYINT32
-	Connect(const GYNetAddress* addr);
+	GYINT32 Connect(const  GYNetAddress& addr);
 
-	GYINT32
-	Connect(const GYNetAddress& addr)
-	{ return Connect(&addr); };
+	GYINT32 Send(const GYCHAR* buff, GYINT32 len);
 
-	GYINT32
-	Send(const BYTE* buff, GYINT32 len);
+	GYINT32 Recv(GYCHAR* buff, GYINT32 len);
 
-	GYINT32
-	Recv(BYTE* buff, GYINT32 len);
+	GYINT32 GetPeerName(GYNetAddress& addr);
 
-	GYINT32
-	GetPeerName(GYNetAddress& addr);
-
-	GYINT32
-	GetSockName(GYNetAddress& addr);
+	GYINT32 GetSockName(GYNetAddress& addr);
 
 };
-
-
 #endif

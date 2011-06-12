@@ -39,10 +39,7 @@ GYVOID GYNetAddress::operator=(const GYNetAddress& addr)
 GYBOOL GYNetAddress::operator==(const GYNetAddress& addr)const 
 {
 	GYBOOL result = GYFALSE;
-	if (addr.m_port == m_port)
-	{
-		result = m_sockAddr.sin_addr.s_addr == addr.m_sockAddr.sin_addr.s_addr ? GYTRUE : GYFALSE;
-	}
+	result = m_sockAddr.sin_addr.s_addr == addr.m_sockAddr.sin_addr.s_addr ? GYTRUE : GYFALSE;
 	return result;
 }
 
@@ -74,7 +71,7 @@ GYINT32 GYNetAddress::SetAddr(GYINT32 addr, GYBOOL is_net_order)
 	GYINT32 err = 0;
 	m_sockAddr.sin_addr.s_addr = GYTRUE == is_net_order ? addr :htonl(addr);
 	GYCHAR address[MaxAddrStringLengh] = {0};
-	if(0 != GetAddr(address, sizeof(address)))
+	if(0 != GetAddressString(address, sizeof(address)))
 	{
 		err = -1;
 		GYMemset(&m_sockAddr, 0, sizeof(m_sockAddr));
@@ -89,7 +86,7 @@ GYINT32 GYNetAddress::SetAddr(GYINT32 addr, GYBOOL is_net_order)
 	return err;
 }
 
-GYINT32 GYNetAddress::GetAddr(char* address, GYINT32 len)
+GYINT32 GYNetAddress::GetAddressString(char* address, GYINT32 len)
 {
 	GYINT32 result = INVALID_VALUE;
 	do 
@@ -98,7 +95,7 @@ GYINT32 GYNetAddress::GetAddr(char* address, GYINT32 len)
 		GYUINT32 bufferLength = len;
 		if(0 != WSAAddressToStringA(reinterpret_cast<SOCKADDR*>(&m_sockAddr), sizeof(m_sockAddr), GYNULL, address, &bufferLength))
 		{
-			GYINT32 err  = WSAGetLastError();
+			GYINT32 err  = GetLastNetWorkError();
 			break;
 		}
 #endif // WIN32
@@ -112,4 +109,9 @@ GYINT32 GYNetAddress::GetAddr(char* address, GYINT32 len)
 		result = 0;
 	} while (GYFALSE);
 	return result;
+}
+
+const sockaddr* GYNetAddress::GetAddress() const
+{
+	return reinterpret_cast<const sockaddr*>(&m_sockAddr);
 }

@@ -25,7 +25,23 @@ extern GYINT32 InitNetWork()
 	return result;
 }
 
-extern GYINT32 ReleaseNetWork()
+GYINT32 ReleaseNetWork()
 {
 	return 0;
+}
+
+GYINT32 GYIsValidSocket( GYSOCKET fd )
+{
+	return INVALID_SOCKET == fd ? GYFALSE : GYTRUE;
+}
+
+GYINT32 GetLastNetWorkError()
+{
+#ifdef WIN32
+	return WSAGetLastError();
+#endif
+
+#ifdef LINUX64
+	return errno;
+#endif
 }

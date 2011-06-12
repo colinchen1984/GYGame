@@ -6,6 +6,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameCommon", "GameCommon\GameCommon.vcproj", "{748DBA7F-BCA6-40E0-B987-692FA66F9188}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "test\test.vcproj", "{A1EDF7F1-EF41-4C00-80D2-93A809D9D90A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D63B124B-4428-4033-990F-81F6A30D9DB9} = {D63B124B-4428-4033-990F-81F6A30D9DB9}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

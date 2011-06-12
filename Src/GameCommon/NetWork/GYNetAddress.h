@@ -8,15 +8,7 @@
 #define __GYNETADDRESS_H__
 
 #include "GYCommonDefine.h"
-
-#ifdef LINUX64
-#include <netdb.h>
-//#include <netinet/in.h>
-#endif
-
-#ifdef WIN32
-#include <winsock2.h>
-#endif
+#include "GYNetWorkCommonDefine.h"
 
 class GYNetAddress
 {
@@ -45,9 +37,12 @@ public:
 
     GYINT32 SetAddr(GYINT32 addr, GYBOOL is_net_order = GYFALSE);
 
-	GYINT32 GetAddr(GYCHAR* addr, GYINT32 len);
+	GYINT32 GetAddressString(GYCHAR* addr, GYINT32 len);
 
-	GYINT32 GetAddrLen()const { return sizeof(sockaddr_in); };
+	GYINT32 GetAddressLength()const { return sizeof(sockaddr_in); };
+
+	const sockaddr* GetAddress() const;
+	
 // 
 // 	GYINT32
 // 	SetAddrByName(const char* name)
