@@ -1,4 +1,4 @@
-﻿#include "test.h"
+#include "test.h"
 #include <stdio.h>
 GYINT32 test()
 {

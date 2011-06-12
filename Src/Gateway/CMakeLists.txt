@@ -1,4 +1,4 @@
-﻿PROJECT(Gataway)
+PROJECT(Gataway)
 #ADD_SUBDIRECTORY(./ ./Test)
 INCLUDE_DIRECTORIES(../GameCommon/CommonDefine)
 INCLUDE_DIRECTORIES(./Test)
