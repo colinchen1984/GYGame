@@ -1,4 +1,4 @@
-/////////////////////////////////////////////
+ï»¿/////////////////////////////////////////////
 // create time: 2011/6/12 16:19
 // author:	colin chen
 // file name:	GYWin32Select
@@ -78,7 +78,7 @@ GYINT32 GYWin32SelectReactor::_RunOnce()
 		const GYNetEvent** const eventSet = m_reactor->GetEventSet();
 		if (eventCount <= 0)
 		{
-			//TODO: º¯Êı²ÎÊıÖĞÌí¼ÓÊ±¼ä£¬È»ºóµ÷ÓÃselectÀ´sleep
+			//TODO: å‡½æ•°å‚æ•°ä¸­æ·»åŠ æ—¶é—´ï¼Œç„¶åè°ƒç”¨selectæ¥sleep
 			result = 0;
 			break;
 		}

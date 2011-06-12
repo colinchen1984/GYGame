@@ -1,4 +1,4 @@
-/////////////////////////////////////////////
+ï»¿/////////////////////////////////////////////
 // create time: 2011/6/12 14:33
 // author:	colin chen
 // file name:	GYEvent
@@ -24,17 +24,17 @@ class GYStreamSocket;
 
 struct GYNetEvent
 {
-	GYVOID*						m_data;			//Ö¸ÏòµÄÊı¾İ¿é
-	GYBOOL						m_accept;		//ÊÇ·ñ°ó¶¨ÁË¼àÌı¶Ë¿Ú
-	GYBOOL						m_busy;			//ÊÇ·ñÕıÔÚ¹¤×÷
-	GYNetEventType				m_eventType;	//ÊÂ¼şÀàĞÍ
+	GYVOID*						m_data;			//æŒ‡å‘çš„æ•°æ®å—
+	GYBOOL						m_accept;		//æ˜¯å¦ç»‘å®šäº†ç›‘å¬ç«¯å£
+	GYBOOL						m_busy;			//æ˜¯å¦æ­£åœ¨å·¥ä½œ
+	GYNetEventType				m_eventType;	//äº‹ä»¶ç±»å‹
 	GYStreamSocket*				m_fd;			//fd
-	GYEventHandler				m_eventHandler;	//ÊÂ¼şhandler
+	GYEventHandler				m_eventHandler;	//äº‹ä»¶handler
 	
-	GYNetEvent*					m_prevEvent;	//Á´±íÖĞµÄÉÏÒ»¸ö
-	GYNetEvent*					m_nexEvent;		//Á´±íÖĞµÄÏÂÒ»¸ö
+	GYNetEvent*					m_prevEvent;	//é“¾è¡¨ä¸­çš„ä¸Šä¸€ä¸ª
+	GYNetEvent*					m_nexEvent;		//é“¾è¡¨ä¸­çš„ä¸‹ä¸€ä¸ª
 
-	GYINT32						m_reactorIndex;	//reactor event*Êı×éÄÚµÄindex
+	GYINT32						m_reactorIndex;	//reactor event*æ•°ç»„å†…çš„index
 
 };
 
