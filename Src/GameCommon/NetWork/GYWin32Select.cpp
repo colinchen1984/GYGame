@@ -55,13 +55,15 @@ GYINT32 GYWin32SelectReactor::_Release()
 
 GYINT32 GYWin32SelectReactor::_AddEvent(GYNetEvent& event)
 {
-	FD_SET(event.m_fd->GetFd(), &m_masterfdSet[event.m_eventType]);
+	FD_SET(event.m_fd->GetFD(), &m_masterfdSet[event.m_eventType]);
+	m_isUpdated = GYTRUE;
 	return 0;
 }
 
 GYINT32 GYWin32SelectReactor::_DeleteEvent( GYNetEvent& event )
 {
-	FD_CLR(event.m_fd->GetFd(), &m_masterfdSet[event.m_eventType]);
+	FD_CLR(event.m_fd->GetFD(), &m_masterfdSet[event.m_eventType]);
+	m_isUpdated = GYTRUE;
 	return 0;
 }
 
@@ -70,10 +72,15 @@ GYINT32 GYWin32SelectReactor::_RunOnce()
 	GYINT32 result = INVALID_VALUE;
 	do 
 	{
-		for (GYINT32 i = 0; i < GYNetEventTypeCount; ++i)
+		if (GYTRUE == m_isUpdated)
 		{
-			m_workingfdSet[i] = m_masterfdSet[i];
+			for (GYINT32 i = 0; i < GYNetEventTypeCount; ++i)
+			{
+				m_workingfdSet[i] = m_masterfdSet[i];
+			}
+			m_isUpdated= GYFALSE;
 		}
+		
 		GYINT32 eventCount = m_reactor->GetCurrentEventCount();
 		const GYNetEvent** const eventSet = m_reactor->GetEventSet();
 		if (eventCount <= 0)
@@ -93,7 +100,7 @@ GYINT32 GYWin32SelectReactor::_RunOnce()
 			for (GYINT32 i = 0; i < eventCount; ++i)
 			{
 				const GYNetEvent& event = *eventSet[i];
-				if(FD_ISSET(event.m_fd->GetFd(), &m_workingfdSet[event.m_eventType]))
+				if(FD_ISSET(event.m_fd->GetFD(), &m_workingfdSet[event.m_eventType]))
 				{
 					m_reactor->PostEvent(*const_cast<GYNetEvent*>(&event));
 				}

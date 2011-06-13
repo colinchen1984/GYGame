@@ -18,6 +18,7 @@ class GYWin32SelectReactor
 	fd_set		m_workingfdSet[GYNetEventTypeCount];
 	fd_set		m_masterfdSet[GYNetEventTypeCount];
 	GYReactor*	m_reactor;
+	GYBOOL		m_isUpdated;
 private:
 	GYWin32SelectReactor();
 	~GYWin32SelectReactor();

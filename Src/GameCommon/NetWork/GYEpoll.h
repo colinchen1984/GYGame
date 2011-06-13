@@ -17,7 +17,6 @@ class GYEpollReactor
 	friend class GYReactor;
 	GYReactor*					m_reactor;
 	GYINT32						m_nFdForEpoll;
-	epoll_event*				m_EvForOpt;
 	epoll_event*				m_pEvForWait;
 private:
 	GYEpollReactor();

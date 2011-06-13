@@ -169,6 +169,10 @@
 			RelativePath="..\..\Src\GameCommon\CommonDefine\GYCommonDefine.h"
 			>
 		</File>
+		<File
+			RelativePath="..\..\Src\GameCommon\CommonDefine\GYCycleBuffer.h"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

@@ -6,6 +6,7 @@
 ////////////////////////////////////////////
 #include "GYReactor.h"
 #include "GYEvent.h"
+#include "GYSocket.h"
 
 GYReactor::GYReactor()
 {
@@ -86,6 +87,7 @@ GYINT32 GYReactor::AddEvent(GYNetEvent& event)
 		event.m_reactorIndex = m_currentEventCount++;
 		m_event[event.m_reactorIndex] = &event;
 		event.m_busy = GYTRUE;
+		event.m_fd->SetRegisted(GYTRUE);
 		result = 0;
 	}while(GYFALSE);
 	return result;
@@ -121,6 +123,7 @@ GYINT32 GYReactor::DeleteEvent(GYNetEvent& event)
 			m_event[event.m_reactorIndex]->m_reactorIndex = event.m_reactorIndex;
 		}
 		m_event[m_currentEventCount] = GYNULL;
+		event.m_fd->SetRegisted(GYFALSE);
 		result = 0;
 	}while(GYFALSE);
 	return result;

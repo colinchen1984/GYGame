@@ -17,6 +17,8 @@ class GYNetAddress;
 
 class GYSocket
 {
+private:
+	GYBOOL m_isRegisterToReactor;
 protected:
 	GYSOCKET m_fd;
 protected:
@@ -43,7 +45,7 @@ public:
 
 	GYINT32 Bind(const GYNetAddress& addr);
 
-    GYSOCKET GetFd()
+    GYSOCKET GetFD()
 	{ 
 		return m_fd; 
 	};
@@ -55,9 +57,20 @@ public:
 
 	GYINT32 SetBlock(GYBOOL block);
 
+	GYBOOL IsRegisted()
+	{
+		return m_isRegisterToReactor;
+	}
+
+	GYVOID SetRegisted(GYBOOL r)
+	{
+		m_isRegisterToReactor = r;
+	}
+
 	GYVOID CleanUp()
 	{
 		m_fd = INVALID_SOCKET;
+		m_isRegisterToReactor = GYFALSE;
 	}
 };
 
