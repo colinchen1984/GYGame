@@ -5,7 +5,6 @@
 // file type:	cpp
 ////////////////////////////////////////////
 #include "GYNetWorkCommonDefine.h"
-#include <winsock2.h>
 
 extern GYINT32 InitNetWork()
 {
