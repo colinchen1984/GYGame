@@ -18,6 +18,7 @@
 	#include <sys/socket.h>
 	#include <netinet/in.h>
 	#include <arpa/inet.h>
+	#include <sys/types.h>
 	typedef GYINT32 GYSOCKET;
 	const GYINT32 INVALID_SOCKET = INVALID_VALUE;
 #endif
