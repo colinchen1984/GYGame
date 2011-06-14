@@ -7,6 +7,8 @@
 
 #ifndef __GYWIN32SELECT_H__
 #define __GYWIN32SELECT_H__
+#ifdef WIN32
+
 #include "GYCommonDefine.h"
 #include "GYNetWorkCommonDefine.h"
 #include "GYEvent.h"
@@ -36,5 +38,6 @@ private:
 private:
 	GYVOID _CleanUp();
 };
+#endif // WIN32
 
 #endif

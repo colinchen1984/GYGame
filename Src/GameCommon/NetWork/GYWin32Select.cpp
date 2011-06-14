@@ -4,6 +4,8 @@
 // file name:	GYWin32Select
 // file type:	cpp
 ////////////////////////////////////////////
+#ifdef WIN32
+
 #include "GYWin32Select.h"
 #include "GYBufferStreamSock.h"
 #include "GYReactor.h"
@@ -110,3 +112,4 @@ GYINT32 GYWin32SelectReactor::_RunOnce()
 	} while (GYFALSE);
 	return result;
 }
+#endif // WIN32
