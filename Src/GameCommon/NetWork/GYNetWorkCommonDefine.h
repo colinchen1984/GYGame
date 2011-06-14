@@ -15,6 +15,9 @@
 #ifdef LINUX64
 	#include <netdb.h>
 	#include <unistd.h>
+	#include <sys/socket.h>
+	#include <netinet/in.h>
+	#include <arpa/inet.h>
 	typedef GYINT32 GYSOCKET;
 	const GYINT32 INVALID_SOCKET = INVALID_VALUE;
 #endif
