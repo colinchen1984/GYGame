@@ -80,7 +80,7 @@ GYINT32 GYListenSocket::Accept(GYSocket& s, GYNetAddress& clientAddress)
 	GYSOCKET sock = ::accept(m_fd, (sockaddr*)&addr, (GYINT32*)&len);
 	if(GYTRUE == GYIsValidSocket(sock))
 	{
-		clientAddress.SetAddr(addr.sin_addr.s_addr);
+		clientAddress.SetAddr(addr.sin_addr.s_addr, GYTRUE);
 		clientAddress.SetPort(addr.sin_port, GYTRUE);
 		s.SetFd(sock);
 		result = 0;
