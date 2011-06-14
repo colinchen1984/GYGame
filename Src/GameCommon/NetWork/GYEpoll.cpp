@@ -7,6 +7,8 @@
 #ifdef LINUX64
 #include "GYEpoll.h"
 #include "GYEvent.h"
+#include "GYReactor.h"
+#include "GYSocket.h"
 #include <sys/epoll.h>
 #include <memory.h>
 
