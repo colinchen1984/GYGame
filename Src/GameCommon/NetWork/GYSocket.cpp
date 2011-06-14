@@ -78,7 +78,13 @@ GYINT32 GYListenSocket::Accept(GYSocket& s, GYNetAddress& clientAddress)
 	const static GYINT32 len = clientAddress.GetAddressLength();
 	sockaddr_in addr;
 	clientAddress.CleanUp();
+#ifdef WIN32
 	GYSOCKET sock = ::accept(m_fd, (sockaddr*)&addr, (GYINT32*)&len);
+#endif // WIN32
+#ifdef LINUX64
+	GYSOCKET sock = ::accept(m_fd, (sockaddr*)&addr, (socklen_t*)&len);
+#endif // LINUX64
+
 	if(GYTRUE == GYIsValidSocket(sock))
 	{
 		clientAddress.SetAddr(addr.sin_addr.s_addr, GYTRUE);
@@ -117,7 +123,12 @@ GYINT32
 GYStreamSocket::GetPeerName(GYNetAddress& addr)
 {
 	GYINT32 len = addr.GetAddressLength();
+#ifdef WIN32
 	GYINT32 result = ::getpeername(m_fd, const_cast<sockaddr *>(addr.GetAddress()), &len);
+#endif // WIN32
+#ifdef LINUX64
+	GYINT32 result = ::getpeername(m_fd, const_cast<sockaddr *>(addr.GetAddress()), (socklen_t*)&len);
+#endif // LINUX64
 	return result;
 }
 
@@ -125,6 +136,11 @@ GYINT32
 GYStreamSocket::GetSockName(GYNetAddress& addr)
 {
 	GYINT32 len = addr.GetAddressLength();
+#ifdef WIN32
 	GYINT32 result = ::getsockname(m_fd, const_cast<sockaddr *>(addr.GetAddress()), &len);
+#endif // WIN32
+#ifdef LINUX64
+	GYINT32 result = ::getsockname(m_fd, const_cast<sockaddr *>(addr.GetAddress()), (socklen_t*)&len);
+#endif // LINUX64
 	return result;
 }
