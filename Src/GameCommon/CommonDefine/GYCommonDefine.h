@@ -13,6 +13,7 @@
 	typedef char 					GYCHAR;
 	typedef wchar_t 				GYWCHAR;
 	typedef char					GYINT8;
+	typedef unsigned char			GYUINT8;
 	typedef short					GYINT16;
 	typedef unsigned short			GYUINT16;
 	typedef int						GYINT32;
@@ -25,6 +26,7 @@
 	typedef char 					GYCHAR;
 	typedef wchar_t 				GYWCHAR;
 	typedef char					GYINT8;
+	typedef unsigned char			GYUINT8;
 	typedef short					GYINT16;
 	typedef unsigned short			GYUINT16;
 	typedef int						GYINT32;

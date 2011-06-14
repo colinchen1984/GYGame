@@ -42,7 +42,8 @@ public:
 	GYINT32 GetAddressLength()const { return sizeof(sockaddr_in); };
 
 	const sockaddr* GetAddress() const;
-	
+private:
+	GYUINT32 _inet_ntoa_r(in_addr in, GYCHAR* buf, GYINT32 buflen);
 // 
 // 	GYINT32
 // 	SetAddrByName(const char* name)

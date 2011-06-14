@@ -91,21 +91,10 @@ GYINT32 GYNetAddress::GetAddressString(char* address, GYINT32 len)
 	GYINT32 result = INVALID_VALUE;
 	do 
 	{
-#ifdef WIN32
-		GYUINT32 bufferLength = len;
-		if(0 != WSAAddressToStringA(reinterpret_cast<SOCKADDR*>(&m_sockAddr), sizeof(m_sockAddr), GYNULL, address, &bufferLength))
-		{
-			GYINT32 err  = GetLastNetWorkError();
-			break;
-		}
-#endif // WIN32
-#ifdef LINUX64
-		char* a = inet_ntoa_r(m_sockAddr.sin_addr, address, len);
-		if (GYNULL == a)
+		if (0 != _inet_ntoa_r(m_sockAddr.sin_addr, address, len))
 		{
 			break;
 		}
-#endif
 		result = 0;
 	} while (GYFALSE);
 	return result;
@@ -114,4 +103,49 @@ GYINT32 GYNetAddress::GetAddressString(char* address, GYINT32 len)
 const sockaddr* GYNetAddress::GetAddress() const
 {
 	return reinterpret_cast<const sockaddr*>(&m_sockAddr);
+}
+
+GYUINT32 GYNetAddress::_inet_ntoa_r(in_addr in, GYCHAR* buf, GYINT32 buflen) 
+{
+	GYUINT32 addr = in.s_addr;
+	register GYUINT8* addr_p = (GYUINT8*)&addr;
+	register GYUINT8* t = GYNULL;
+	register GYINT32 i = 0;
+	register GYINT32 pos  = 0;
+	GYUINT8 tmp[4] = {0};
+
+	for (i = 4, pos = 0; ; addr_p++) 
+	{
+		i--;
+		t = tmp;
+		do 
+		{
+			*t++ = "0123456789"[*addr_p % 10];
+		} while (*addr_p /= 10);
+		for (; t > tmp; pos++)
+		{
+			if (pos >= buflen)
+			{
+				return INVALID_VALUE;
+			}
+			buf[pos] = *--t;
+		}
+		if (!i)
+		{
+			break;
+		}
+		if (pos >= buflen)
+		{
+			return INVALID_VALUE;
+		}
+		buf[pos++] = '.';
+	}
+
+	if (pos >= buflen)
+	{
+		return INVALID_VALUE;
+	}
+	buf[pos] = 0;
+
+	return 0;
 }
