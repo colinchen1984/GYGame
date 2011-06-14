@@ -108,7 +108,7 @@ GYINT32 GYEpollReactor::_AddEvent(GYNetEvent& event)
 		GYZeroMem(&operation, sizeof(operation));
 		operation.events |= EPOLLET;
 		operation.events |= EventMask2EpollEvent(event.m_eventType);
-		operation.data.ptr = static<GYVOID*>(&event);
+		operation.data.ptr = static_cast<GYVOID*>(&event);
 
 		if(INVALID_VALUE == epoll_ctl(m_nFdForEpoll, EPOLL_CTL_ADD, event.m_fd->GetFD(), &operation))
 		{
@@ -157,7 +157,7 @@ GYINT32 GYEpollReactor::_RunOnce()
 			break;
 		}
 		
-		GYINT32 eventCount = epoll_wait(m_nFdForEpoll, m_pEvForWait, currentEventCount, NULL);
+		GYINT32 eventCount = epoll_wait(m_nFdForEpoll, m_pEvForWait, currentEventCount, INVALID_VALUE);
 		if (INVALID_VALUE == eventCount)
 		{
 			if (EINTR == GetLastNetWorkError())
