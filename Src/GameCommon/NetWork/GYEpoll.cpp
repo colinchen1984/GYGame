@@ -106,7 +106,7 @@ GYINT32 GYEpollReactor::_AddEvent(GYNetEvent& event)
 		}
 		epoll_event operation;
 		GYZeroMem(&operation, sizeof(operation));
-		operation.events |= EPOLLET；
+		operation.events |= EPOLLET;
 		operation.events |= EventMask2EpollEvent(event.m_eventType);
 		operation.data.ptr = static<GYVOID*>(&event);
 
@@ -131,9 +131,9 @@ GYINT32 GYEpollReactor::_DeleteEvent( GYNetEvent& event )
 
 		epoll_event operation;
 		GYZeroMem(&operation, sizeof(operation));
-		operation.events |= EPOLLET；
+		operation.events |= EPOLLET;
 		operation.events |= EventMask2EpollEvent(event.m_eventType);
-		operation.data.ptr = static<GYVOID*>(&event);
+		operation.data.ptr = static_cast<GYVOID*>(&event);
 
 		if(INVALID_VALUE == epoll_ctl(m_nFdForEpoll, EPOLL_CTL_DEL, event.m_fd->GetFD(), &operation))
 		{
@@ -176,7 +176,7 @@ GYINT32 GYEpollReactor::_RunOnce()
 		for (GYINT32 i = 0; i < eventCount; ++i)
 		{
 			epoll_event& eventData = m_pEvForWait[i];
-			const GYNetEvent& event = *static_cast<GYNetEvent*>(eventData.data.ptr);.
+			GYNetEvent& event = *static_cast<GYNetEvent*>(eventData.data.ptr);
 			if(eventData.events & EPOLLIN && GYNetEventTypeRead == event.m_eventType)
 			{
 				m_reactor->PostEvent(event);
