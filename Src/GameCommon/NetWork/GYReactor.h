@@ -11,6 +11,7 @@
 #include "GYWin32Select.h"
 #endif // WIN32
 #ifdef LINUX64
+#include "GYEpoll.h"
 #endif // LINUX64
 
 #include "GYCommonDefine.h"
