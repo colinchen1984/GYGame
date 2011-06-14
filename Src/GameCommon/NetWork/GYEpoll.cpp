@@ -6,7 +6,9 @@
 ////////////////////////////////////////////
 #ifdef LINUX64
 #include "GYEpoll.h"
+#include "GYEvent.h"
 #include <sys/epoll.h>
+#include <memory.h>
 
 GYEpollReactor::GYEpollReactor()
 {
@@ -44,8 +46,8 @@ GYINT32 GYEpollReactor::_Init(GYINT32 maxEventCount, GYReactor* reactor)
 		m_pEvForWait = GYNew epoll_event[maxEventCount];
 		if (GYNULL == m_pEvForWait)
 		{
-			close(m_nFdForEpoll);
-			break
+			::close(m_nFdForEpoll);
+			break;
 		}
 		
 		GYZeroMem(m_pEvForWait, sizeof(epoll_event) * maxEventCount);
@@ -57,7 +59,7 @@ GYINT32 GYEpollReactor::_Init(GYINT32 maxEventCount, GYReactor* reactor)
 GYINT32 GYEpollReactor::_Release()
 {
 	GYDelete[] m_pEvForWait;
-	close(m_nFdForEpoll);
+	::close(m_nFdForEpoll);
 	_CleanUp();
 	return 0;
 }
