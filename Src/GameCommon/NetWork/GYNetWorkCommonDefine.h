@@ -10,11 +10,12 @@
 #include "GYCommonDefine.h"
 
 #ifdef WIN32
-#include <WinSock2.h>
-typedef SOCKET GYSOCKET;
+	#include <WinSock2.h>
+	typedef SOCKET GYSOCKET;
 #endif
 #ifdef LINUX64
 	#include <netdb.h>
+	#include <unistd.h>
 	typedef GYINT32 GYSOCKET;
 	const GYINT32 INVALID_SOCKET = INVALID_VALUE;
 #endif
