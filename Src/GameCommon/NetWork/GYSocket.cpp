@@ -77,6 +77,7 @@ GYINT32 GYListenSocket::Accept(GYSocket& s, GYNetAddress& clientAddress)
 	GYINT32 result = INVALID_VALUE;
 	const static GYINT32 len = clientAddress.GetAddressLength();
 	sockaddr_in addr;
+	clientAddress.CleanUp();
 	GYSOCKET sock = ::accept(m_fd, (sockaddr*)&addr, (GYINT32*)&len);
 	if(GYTRUE == GYIsValidSocket(sock))
 	{

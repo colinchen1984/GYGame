@@ -10,6 +10,7 @@
 #ifdef LINUX64
 #include "GYCommonDefine.h"
 #include "GYNetWorkCommonDefine.h"
+class GYNetEvent;
 class GYReactor;
 struct epoll_event;
 class GYEpollReactor
