@@ -10,7 +10,6 @@
 #include "GYReactor.h"
 #include "GYSocket.h"
 #include <sys/epoll.h>
-#include <memory.h>
 
 GYEpollReactor::GYEpollReactor()
 {

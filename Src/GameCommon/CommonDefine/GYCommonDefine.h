@@ -6,6 +6,9 @@
 ////////////////////////////////////////////
 #ifndef __GYCOMMONDEFINE_H__
 #define __GYCOMMONDEFINE_H__
+#include <memory.h>
+#include <errno.h>
+
 #ifdef WIN32
 	typedef char 					GYCHAR;
 	typedef wchar_t 				GYWCHAR;

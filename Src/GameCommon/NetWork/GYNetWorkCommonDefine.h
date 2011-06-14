@@ -8,7 +8,6 @@
 #define __GYNETWORKCOMMONDEFINE_H__
 
 #include "GYCommonDefine.h"
-#include <errno.h>
 #ifdef WIN32
 	#include <WinSock2.h>
 	typedef SOCKET GYSOCKET;
