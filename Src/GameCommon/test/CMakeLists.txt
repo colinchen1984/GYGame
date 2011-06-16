@@ -6,7 +6,7 @@ SET(CMAKE_CXX_COMPILER "g++")
 INCLUDE_DIRECTORIES(../CommonDefine)
 INCLUDE_DIRECTORIES(../NetWork)
 
-LINK_DIRECTORIES(/home/colin/Desktop/GYGame/Bin/NetWork/Lib)
+LINK_DIRECTORIES(/home/colin/workspace/GYGame/Bin/NetWork/Lib)
 ADD_EXECUTABLE(NetWorkTest test.cpp)
 TARGET_LINK_LIBRARIES(NetWorkTest NetWork)
 IF(WIN32)

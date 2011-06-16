@@ -20,7 +20,7 @@ enum GYNetEventType
 struct GYNetEvent;
 typedef GYVOID (*GYEventHandler)(GYNetEvent& event);
 
-class GYStreamSocket;
+class GYSocket;
 
 struct GYNetEvent
 {
@@ -28,7 +28,7 @@ struct GYNetEvent
 	GYBOOL						m_accept;		//是否绑定了监听端口
 	GYBOOL						m_busy;			//是否正在工作
 	GYNetEventType				m_eventType;	//事件类型
-	GYStreamSocket*				m_fd;			//fd
+	GYSocket*					m_fd;			//fd
 	GYEventHandler				m_eventHandler;	//事件handler
 	
 	GYNetEvent*					m_prevEvent;	//链表中的上一个
