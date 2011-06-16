@@ -50,7 +50,7 @@ GYINT32 GYEpollReactor::_Init(GYINT32 maxEventCount, GYReactor* reactor)
 			::close(m_nFdForEpoll);
 			break;
 		}
-		
+		m_reactor = reactor;
 		GYZeroMem(m_pEvForWait, sizeof(epoll_event) * maxEventCount);
 		result = 0;
 	}while(GYFALSE);
