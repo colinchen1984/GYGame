@@ -9,6 +9,7 @@
 
 #include "GYCommonDefine.h"
 #ifdef WIN32
+	#pragma comment(lib, "WSock32.lib")
 	#include <WinSock2.h>
 	typedef SOCKET GYSOCKET;
 #endif
