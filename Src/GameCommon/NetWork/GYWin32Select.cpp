@@ -113,3 +113,4 @@ GYINT32 GYWin32SelectReactor::_RunOnce()
 	return result;
 }
 #endif // WIN32
+

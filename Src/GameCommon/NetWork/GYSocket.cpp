@@ -144,3 +144,4 @@ GYStreamSocket::GetSockName(GYNetAddress& addr)
 #endif // LINUX64
 	return result;
 }
+

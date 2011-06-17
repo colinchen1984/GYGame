@@ -149,3 +149,4 @@ GYUINT32 GYNetAddress::_inet_ntoa_r(in_addr in, GYCHAR* buf, GYINT32 buflen)
 
 	return 0;
 }
+

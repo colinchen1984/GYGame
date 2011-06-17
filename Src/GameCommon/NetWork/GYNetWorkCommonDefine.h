@@ -29,3 +29,4 @@ extern GYINT32 ReleaseNetWork();
 extern GYINT32 GYIsValidSocket(GYSOCKET fd);
 extern GYINT32 GetLastNetWorkError();
 #endif
+

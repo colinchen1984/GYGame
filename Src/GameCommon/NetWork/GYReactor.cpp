@@ -161,3 +161,4 @@ GYVOID GYReactor::PostEvent( GYNetEvent& event )
 	event.m_nexEvent = m_eventList;
 	m_eventList = &event;
 }
+
