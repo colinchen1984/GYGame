@@ -9,19 +9,19 @@
 
 #include "GYCommonDefine.h"
 #ifdef WIN32
-	#pragma comment(lib, "WSock32.lib")
-	#include <WinSock2.h>
-	typedef SOCKET GYSOCKET;
+#pragma comment(lib, "WSock32.lib")
+#include <WinSock2.h>
+typedef SOCKET GYSOCKET;
 #endif
 #ifdef LINUX64
-	#include <netdb.h>
-	#include <unistd.h>
-	#include <sys/types.h>
-	#include <sys/socket.h>
-	#include <netinet/in.h>
-	#include <arpa/inet.h>
-	typedef GYINT32 GYSOCKET;
-	const GYINT32 INVALID_SOCKET = INVALID_VALUE;
+#include <netdb.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+typedef GYINT32 GYSOCKET;
+const GYINT32 INVALID_SOCKET = INVALID_VALUE;
 #endif
 
 extern GYINT32 InitNetWork();

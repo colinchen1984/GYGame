@@ -8,40 +8,41 @@
 
 extern GYINT32 InitNetWork()
 {
-	GYINT32 result = INVALID_VALUE;
-	do 
-	{
+    GYINT32 result = INVALID_VALUE;
+    do
+    {
 #ifdef WIN32
-		WSADATA wsaData;
-		if (NO_ERROR != WSAStartup(MAKEWORD(2,2), &wsaData))
-		{
-			break;
-		}
+        WSADATA wsaData;
+        if (NO_ERROR != WSAStartup(MAKEWORD(2,2), &wsaData))
+        {
+            break;
+        }
 #endif
-		result = 0;
-	} while (GYFALSE);
+        result = 0;
+    }
+    while (GYFALSE);
 
-	return result;
+    return result;
 }
 
 GYINT32 ReleaseNetWork()
 {
-	return 0;
+    return 0;
 }
 
 GYINT32 GYIsValidSocket( GYSOCKET fd )
 {
-	return INVALID_SOCKET == fd ? GYFALSE : GYTRUE;
+    return INVALID_SOCKET == fd ? GYFALSE : GYTRUE;
 }
 
 GYINT32 GetLastNetWorkError()
 {
 #ifdef WIN32
-	return WSAGetLastError();
+    return WSAGetLastError();
 #endif
 
 #ifdef LINUX64
-	return errno;
+    return errno;
 #endif
 }
 

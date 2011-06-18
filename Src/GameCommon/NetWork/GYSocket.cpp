@@ -17,131 +17,131 @@
 
 GYINT32 GYSocket::SetBlock(GYBOOL block)
 {
-	GYINT32 ret = INVALID_VALUE;
-	u_long opt = 0xffffffff;
+    GYINT32 ret = INVALID_VALUE;
+    u_long opt = 0xffffffff;
 #ifdef LINUX64
-	ret = fcntl(m_fd, F_GETFL);
-	opt = GYTRUE == block ? ~O_NONBLOCK : O_NONBLOCK;
-	if(-1 != ret)
-		ret = fcntl(m_fd, F_SETFL, ret | opt);
+    ret = fcntl(m_fd, F_GETFL);
+    opt = GYTRUE == block ? ~O_NONBLOCK : O_NONBLOCK;
+    if(-1 != ret)
+        ret = fcntl(m_fd, F_SETFL, ret | opt);
 #endif
 #ifdef WIN32
-	opt = GYTRUE == block ? 0 : 1;
-	ret = 0 == ioctlsocket(m_fd, FIONBIO, &opt) ? 0 : -1;
+    opt = GYTRUE == block ? 0 : 1;
+    ret = 0 == ioctlsocket(m_fd, FIONBIO, &opt) ? 0 : -1;
 #endif
-	return INVALID_VALUE != ret ? 0 : INVALID_VALUE;
+    return INVALID_VALUE != ret ? 0 : INVALID_VALUE;
 }
 
 GYSOCKET GYSocket::Open(GYINT32 family, GYINT32 type, GYINT32 protocol)
 {
-	m_fd = ::socket(family, type, protocol);
-	return m_fd;
+    m_fd = ::socket(family, type, protocol);
+    return m_fd;
 }
 
 GYINT32 GYSocket::Close()
 {
 #ifndef WIN32
-	::close(m_fd);
+    ::close(m_fd);
 #else
-	::closesocket(m_fd);
+    ::closesocket(m_fd);
 #endif
-	SetFd(INVALID_SOCKET);
-	return 0;
+    SetFd(INVALID_SOCKET);
+    return 0;
 }
 
 GYINT32 GYSocket::Bind(const GYNetAddress& addr)
 {
-	GYINT32 ret = -1;
-	if(GYIsValidSocket(m_fd) )
-	{
-		ret = 0 == ::bind(m_fd, addr.GetAddress(), addr.GetAddressLength()) ? 0 : -1;
-	}
-	return ret;
+    GYINT32 ret = -1;
+    if(GYIsValidSocket(m_fd) )
+    {
+        ret = 0 == ::bind(m_fd, addr.GetAddress(), addr.GetAddressLength()) ? 0 : -1;
+    }
+    return ret;
 }
 
 const GYINT32 listen_num = 500;
 
 GYINT32 GYListenSocket::Open(GYNetAddress& addr)
 {
-	GYINT32 ret = INVALID_VALUE;
-	GYSocket::Open(AF_INET, SOCK_STREAM, 0);
-	if(0 == Bind(addr))
-	{
-		ret = ::listen(m_fd, listen_num);
-	}
-	return ret;
+    GYINT32 ret = INVALID_VALUE;
+    GYSocket::Open(AF_INET, SOCK_STREAM, 0);
+    if(0 == Bind(addr))
+    {
+        ret = ::listen(m_fd, listen_num);
+    }
+    return ret;
 }
 
 GYINT32 GYListenSocket::Accept(GYSocket& s, GYNetAddress& clientAddress)
 {
-	GYINT32 result = INVALID_VALUE;
-	const static GYINT32 len = clientAddress.GetAddressLength();
-	sockaddr_in addr;
-	clientAddress.CleanUp();
+    GYINT32 result = INVALID_VALUE;
+    const static GYINT32 len = clientAddress.GetAddressLength();
+    sockaddr_in addr;
+    clientAddress.CleanUp();
 #ifdef WIN32
-	GYSOCKET sock = ::accept(m_fd, (sockaddr*)&addr, (GYINT32*)&len);
+    GYSOCKET sock = ::accept(m_fd, (sockaddr*)&addr, (GYINT32*)&len);
 #endif // WIN32
 #ifdef LINUX64
-	GYSOCKET sock = ::accept(m_fd, (sockaddr*)&addr, (socklen_t*)&len);
+    GYSOCKET sock = ::accept(m_fd, (sockaddr*)&addr, (socklen_t*)&len);
 #endif // LINUX64
 
-	if(GYTRUE == GYIsValidSocket(sock))
-	{
-		clientAddress.SetAddr(addr.sin_addr.s_addr, GYTRUE);
-		clientAddress.SetPort(addr.sin_port, GYTRUE);
-		s.SetFd(sock);
-		result = 0;
-	}
-	return result;
+    if(GYTRUE == GYIsValidSocket(sock))
+    {
+        clientAddress.SetAddr(addr.sin_addr.s_addr, GYTRUE);
+        clientAddress.SetPort(addr.sin_port, GYTRUE);
+        s.SetFd(sock);
+        result = 0;
+    }
+    return result;
 }
 
 GYINT32 GYStreamSocket::Open()
-{ 
-	GYINT32 result = GYSocket::Open(AF_INET, SOCK_STREAM, 0);
-	return result;
+{
+    GYINT32 result = GYSocket::Open(AF_INET, SOCK_STREAM, 0);
+    return result;
 }
 
 GYINT32 GYStreamSocket::Connect(const GYNetAddress& addr)
-{ 
-	GYINT32 result = ::connect(m_fd, addr.GetAddress(), addr.GetAddressLength()); 
-	return result;
+{
+    GYINT32 result = ::connect(m_fd, addr.GetAddress(), addr.GetAddressLength());
+    return result;
 }
 
 GYINT32 GYStreamSocket::Send(const GYCHAR* buff, GYINT32 len)
-{ 
-	GYINT32 result = ::send(m_fd, (char*)buff, len, 0); 
-	return result;
+{
+    GYINT32 result = ::send(m_fd, (char*)buff, len, 0);
+    return result;
 }
 
 GYINT32 GYStreamSocket::Recv(GYCHAR* buff, GYINT32 len)
-{ 
-	GYINT32 result = ::recv(m_fd, buff, len, 0);
-	return result;
+{
+    GYINT32 result = ::recv(m_fd, buff, len, 0);
+    return result;
 }
 
 GYINT32
 GYStreamSocket::GetPeerName(GYNetAddress& addr)
 {
-	GYINT32 len = addr.GetAddressLength();
+    GYINT32 len = addr.GetAddressLength();
 #ifdef WIN32
-	GYINT32 result = ::getpeername(m_fd, const_cast<sockaddr *>(addr.GetAddress()), &len);
+    GYINT32 result = ::getpeername(m_fd, const_cast<sockaddr *>(addr.GetAddress()), &len);
 #endif // WIN32
 #ifdef LINUX64
-	GYINT32 result = ::getpeername(m_fd, const_cast<sockaddr *>(addr.GetAddress()), (socklen_t*)&len);
+    GYINT32 result = ::getpeername(m_fd, const_cast<sockaddr *>(addr.GetAddress()), (socklen_t*)&len);
 #endif // LINUX64
-	return result;
+    return result;
 }
 
 GYINT32
 GYStreamSocket::GetSockName(GYNetAddress& addr)
 {
-	GYINT32 len = addr.GetAddressLength();
+    GYINT32 len = addr.GetAddressLength();
 #ifdef WIN32
-	GYINT32 result = ::getsockname(m_fd, const_cast<sockaddr *>(addr.GetAddress()), &len);
+    GYINT32 result = ::getsockname(m_fd, const_cast<sockaddr *>(addr.GetAddress()), &len);
 #endif // WIN32
 #ifdef LINUX64
-	GYINT32 result = ::getsockname(m_fd, const_cast<sockaddr *>(addr.GetAddress()), (socklen_t*)&len);
+    GYINT32 result = ::getsockname(m_fd, const_cast<sockaddr *>(addr.GetAddress()), (socklen_t*)&len);
 #endif // LINUX64
-	return result;
+    return result;
 }
 

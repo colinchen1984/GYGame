@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="test" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug Win32">
+				<Option output="test" prefix_auto="1" extension_auto="1" />
+				<Option object_output="../../Output/test/Debug Win32" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-O0" />
+					<Add option="-DLINUX64" />
+					<Add option="-D_DEBUG" />
+					<Add option="-D_CONSOLE" />
+					<Add directory="../../Src/GameCommon/NetWork" />
+					<Add directory="../../Src/GameCommon/CommonDefine" />
+				</Compiler>
+				<ResourceCompiler>
+					<Add directory="../../Src/GameCommon/NetWork" />
+					<Add directory="../../Src/GameCommon/CommonDefine" />
+				</ResourceCompiler>
+				<Linker>
+					<Add library="NetWork" />
+					<Add directory="../../Bin/NetWork/" />
+				</Linker>
+			</Target>
+		</Build>
+		<Unit filename="../../Src/GameCommon/test/test.cpp" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<lib_finder disable_auto="1" />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

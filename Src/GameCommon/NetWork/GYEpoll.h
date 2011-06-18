@@ -15,26 +15,26 @@ class GYReactor;
 struct epoll_event;
 class GYEpollReactor
 {
-	friend class GYReactor;
-	GYReactor*					m_reactor;
-	GYINT32						m_nFdForEpoll;
-	epoll_event*				m_pEvForWait;
+    friend class GYReactor;
+    GYReactor*					m_reactor;
+    GYINT32						m_nFdForEpoll;
+    epoll_event*				m_pEvForWait;
 private:
-	GYEpollReactor();
-	~GYEpollReactor();
+    GYEpollReactor();
+    ~GYEpollReactor();
 
-	GYINT32 _Init(GYINT32 maxEventCount, GYReactor* reactor);
+    GYINT32 _Init(GYINT32 maxEventCount, GYReactor* reactor);
 
-	GYINT32 _Release();
+    GYINT32 _Release();
 
-	GYINT32 _AddEvent(GYNetEvent& event);
+    GYINT32 _AddEvent(GYNetEvent& event);
 
-	GYINT32 _DeleteEvent(GYNetEvent& event);
+    GYINT32 _DeleteEvent(GYNetEvent& event);
 
-	GYINT32	_RunOnce();
+    GYINT32	_RunOnce();
 
 private:
-	GYVOID _CleanUp();
+    GYVOID _CleanUp();
 };
 
 #endif // LINUX64

@@ -1,0 +1,49 @@
+# depslib dependency file v1.0
+1308369015 source:/home/colin/workspace/GYGame/Src/GameCommon/test/test.cpp
+	"GYNetAddress.h"
+	"GYCommonDefine.h"
+	"GYNetWorkCommonDefine.h"
+	"GYSocket.h"
+	"GYEvent.h"
+	"GYReactor.h"
+	<list>
+	<stdio.h>
+
+1308375192 /home/colin/workspace/GYGame/Src/GameCommon/NetWork/GYNetAddress.h
+	"GYCommonDefine.h"
+	"GYNetWorkCommonDefine.h"
+
+1308375191 /home/colin/workspace/GYGame/Src/GameCommon/CommonDefine/GYCommonDefine.h
+	<memory.h>
+	<errno.h>
+
+1308375192 /home/colin/workspace/GYGame/Src/GameCommon/NetWork/GYNetWorkCommonDefine.h
+	"GYCommonDefine.h"
+	<WinSock2.h>
+	<netdb.h>
+	<unistd.h>
+	<sys/types.h>
+	<sys/socket.h>
+	<netinet/in.h>
+	<arpa/inet.h>
+
+1308375192 /home/colin/workspace/GYGame/Src/GameCommon/NetWork/GYSocket.h
+	"GYNetWorkCommonDefine.h"
+
+1308375192 /home/colin/workspace/GYGame/Src/GameCommon/NetWork/GYEvent.h
+	"GYCommonDefine.h"
+
+1308375192 /home/colin/workspace/GYGame/Src/GameCommon/NetWork/GYReactor.h
+	"GYWin32Select.h"
+	"GYEpoll.h"
+	"GYCommonDefine.h"
+
+1308375192 /home/colin/workspace/GYGame/Src/GameCommon/NetWork/GYWin32Select.h
+	"GYCommonDefine.h"
+	"GYNetWorkCommonDefine.h"
+	"GYEvent.h"
+
+1308375192 /home/colin/workspace/GYGame/Src/GameCommon/NetWork/GYEpoll.h
+	"GYCommonDefine.h"
+	"GYNetWorkCommonDefine.h"
+

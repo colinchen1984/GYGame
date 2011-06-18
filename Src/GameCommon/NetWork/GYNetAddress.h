@@ -13,38 +13,41 @@
 class GYNetAddress
 {
 private:
-	sockaddr_in		m_sockAddr;
-	static const GYINT32 MaxAddrStringLengh = 32;
+    sockaddr_in		m_sockAddr;
+    static const GYINT32 MaxAddrStringLengh = 32;
 #ifdef _DEBUG
-	GYCHAR			m_addressString[MaxAddrStringLengh];
-	GYUINT16		m_port;
+    GYCHAR			m_addressString[MaxAddrStringLengh];
+    GYUINT16		m_port;
 
 #endif
 public:
-	GYNetAddress();
+    GYNetAddress();
 
-	~GYNetAddress();
+    ~GYNetAddress();
 
-	GYVOID operator=(const GYNetAddress& addr);
+    GYVOID operator=(const GYNetAddress& addr);
 
-	GYBOOL operator==(const GYNetAddress& addr)const ;
+    GYBOOL operator==(const GYNetAddress& addr)const ;
 
     GYINT32 SetAddr(const char* addr);
 
-	GYINT32 SetPort(GYUINT16 port, GYBOOL bIsNetOrder = GYFALSE);
-	
-	GYVOID CleanUp();
+    GYINT32 SetPort(GYUINT16 port, GYBOOL bIsNetOrder = GYFALSE);
+
+    GYVOID CleanUp();
 
     GYINT32 SetAddr(GYINT32 addr, GYBOOL is_net_order = GYFALSE);
 
-	GYINT32 GetAddressString(GYCHAR* addr, GYINT32 len);
+    GYINT32 GetAddressString(GYCHAR* addr, GYINT32 len);
 
-	GYINT32 GetAddressLength()const { return sizeof(sockaddr_in); };
+    GYINT32 GetAddressLength()const
+    {
+        return sizeof(sockaddr_in);
+    };
 
-	const sockaddr* GetAddress() const;
+    const sockaddr* GetAddress() const;
 private:
-	GYUINT32 _inet_ntoa_r(in_addr in, GYCHAR* buf, GYINT32 buflen);
-// 
+    GYUINT32 _inet_ntoa_r(in_addr in, GYCHAR* buf, GYINT32 buflen);
+//
 // 	GYINT32
 // 	SetAddrByName(const char* name)
 // 	{
@@ -56,7 +59,7 @@ private:
 //         }
 //         return ret;
 //     }
-// 
+//
 // 	char*
 // 	GetHostName(char* name, GYINT32 name_len)
 // 	{
@@ -65,29 +68,29 @@ private:
 //         else
 //             return NULL;
 //     }
-// 
+//
 //     const sockaddr*
 // 	GetConstAddr() const
 // 	{ return (const sockaddr*)(&m_sockAddr); }
-// 
+//
 //     sockaddr*
 // 	GetSocketAddr()
 // 	{ return reinterpret_cast< sockaddr* >(&m_sockAddr); };
-// 
+//
 
-// 
+//
 // 	const char*
 // 	GetAddr() const
 // 	{
 // 		return m_addressString;
 // 	}
-// 
+//
 // 	GYUSHORT
 // 	GetPort() const
 // 	{
 // 		return  m_usPort;
 // 	}
-// 
+//
 
 };
 #endif

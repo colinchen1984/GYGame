@@ -19,25 +19,25 @@ template< GYINT32 input_buffer_len, GYINT32 output_buffer_len>
 class GYBufferStreamSocket : public GYStreamSocket
 {
 public:
-	//GYCycleBuffer<input_buffer_len> m_inputBuffer;
-	//GYCycleBuffer<output_buffer_len> m_outputBuffer;
+    //GYCycleBuffer<input_buffer_len> m_inputBuffer;
+    //GYCycleBuffer<output_buffer_len> m_outputBuffer;
 
-	GYBufferStreamSocket(){};
+    GYBufferStreamSocket() {};
 
-	~GYBufferStreamSocket(){}
-	
-	GYINT32
-	Close()
-	{
-		GYStreamSocket::Close();
-		//m_inputBuffer.Clear();
-		//m_outputBuffer.Clear();
-		return 0;
-	}
+    ~GYBufferStreamSocket() {}
 
-	GYINT32
-	Send()
-	{
+    GYINT32
+    Close()
+    {
+        GYStreamSocket::Close();
+        //m_inputBuffer.Clear();
+        //m_outputBuffer.Clear();
+        return 0;
+    }
+
+    GYINT32
+    Send()
+    {
 // 		GYINT32 buf_len = m_outputBuffer.GetReadSize();
 // 		if(0 == buf_len)
 // 			return (GYINT32)SOCKNOERROR;
@@ -60,12 +60,12 @@ public:
 // 			}
 // 		}
 // 		return err;
-		return 0;
-	}
+        return 0;
+    }
 
-	GYINT32
-	Recv()
-	{
+    GYINT32
+    Recv()
+    {
 // 		//get data from socket buff to cycle buff
 // 		GYINT32 buf_len = m_inputBuffer.GetWriteSize();
 // 		GYINT32 toread = 0;
@@ -79,7 +79,7 @@ public:
 // 			//can not get number of readable bytes from socket buff
 // 			return (GYINT32)FAILTOCHECKSOCKBUFFER;
 // 		}
-// 
+//
 // 		if(0 == toread)
 // 		{
 // 			//no readable byte
@@ -111,7 +111,7 @@ public:
 // 		{
 // 			if (toread > buf_len)
 // 				toread = buf_len - 1;
-// 
+//
 // 			const char* const tail = m_inputBuffer.GetTail();
 // 			char* writer = m_inputBuffer.WritePtr();
 // 			GYINT32 ret = -1;
@@ -124,7 +124,7 @@ public:
 // 				if(0 < (ret_ = GYStreamSocket::Recv((BYTE*)writer, tail - writer)))
 // 					ret = GYStreamSocket::Recv((BYTE*)m_inputBuffer.GetHead(), toread- (tail - writer));
 // 			}
-// 
+//
 // 			if(0 == ret)
 // 			{
 // 				//the connection is closed by client
@@ -146,28 +146,28 @@ public:
 // 				{
 // 					goto DORECV;
 // 				}
-// 
+//
 // 				else
 // 				{
 // 					//the connection is closed by client
 // 					return (GYINT32)CONNETCTIONCLOSED;
 // 				}
-// 
+//
 // 			}
 // 			m_inputBuffer.WritePtr(ret + ret_);
 // 		}
 // 		return (GYINT32)SOCKNOERROR;
-		return 0;
-	}
+        return 0;
+    }
 
 private:
-	GYINT32
-	Send(const char* p, GYINT32 len)
-	{
+    GYINT32
+    Send(const char* p, GYINT32 len)
+    {
 // 	    SocketError err = SOCKNOERROR;
 // 		if(NULL == p)
 // 			return  NOSENDCONTENT;
-// 
+//
 // 		GYINT32 n = -1;
 // 		for(; len > 0;)
 // 		{
@@ -202,11 +202,11 @@ private:
 // 			    	err = SENDZEROBYTE;
 // 			    	break;
 // 			}
-// 
+//
 // 		}
 // 		return err;
-		return 0;
-	}
+        return 0;
+    }
 };
 #endif
 

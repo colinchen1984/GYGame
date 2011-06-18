@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="NetWork" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug Win32">
+				<Option output="../../Bin/NetWork/libNetWork" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="../../Output/NetWork/" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-O0" />
+					<Add option="-DLINUX64" />
+					<Add option="-D_DEBUG" />
+					<Add option="-D_LIB" />
+					<Add directory="../../Src/GameCommon/CommonDefine" />
+				</Compiler>
+				<ResourceCompiler>
+					<Add directory="../../Src/GameCommon/CommonDefine" />
+				</ResourceCompiler>
+			</Target>
+		</Build>
+		<Unit filename="../../Src/GameCommon/NetWork/GYBufferStreamSock.h" />
+		<Unit filename="../../Src/GameCommon/NetWork/GYEpoll.cpp" />
+		<Unit filename="../../Src/GameCommon/NetWork/GYEpoll.h" />
+		<Unit filename="../../Src/GameCommon/NetWork/GYEvent.h" />
+		<Unit filename="../../Src/GameCommon/NetWork/GYNetAddress.cpp" />
+		<Unit filename="../../Src/GameCommon/NetWork/GYNetAddress.h" />
+		<Unit filename="../../Src/GameCommon/NetWork/GYNetWorkCommonDefine.cpp" />
+		<Unit filename="../../Src/GameCommon/NetWork/GYNetWorkCommonDefine.h" />
+		<Unit filename="../../Src/GameCommon/NetWork/GYReactor.cpp" />
+		<Unit filename="../../Src/GameCommon/NetWork/GYReactor.h" />
+		<Unit filename="../../Src/GameCommon/NetWork/GYSocket.cpp" />
+		<Unit filename="../../Src/GameCommon/NetWork/GYSocket.h" />
+		<Unit filename="../../Src/GameCommon/NetWork/GYWin32Select.cpp" />
+		<Unit filename="../../Src/GameCommon/NetWork/GYWin32Select.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<lib_finder disable_auto="1" />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
