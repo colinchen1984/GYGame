@@ -30,11 +30,14 @@ struct GYNetEvent
 	GYNetEventType				m_eventType;	//事件类型
 	GYSocket*					m_fd;			//fd
 	GYEventHandler				m_eventHandler;	//事件handler
-	
+
 	GYNetEvent*					m_prevEvent;	//链表中的上一个
 	GYNetEvent*					m_nexEvent;		//链表中的下一个
 
 	GYINT32						m_reactorIndex;	//reactor event*数组内的index
+	
+	GYINT64						m_recvDataCount;//接收的数据的总数
+	GYINT64						m_sendDataCount;//发送的数据的总数
 
 };
 

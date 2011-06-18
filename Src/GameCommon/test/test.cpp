@@ -24,12 +24,25 @@ GYVOID testHandler(GYNetEvent& event)
 	GYCHAR testBUffer[1024] = {0};
 	GYStreamSocket* stream = static_cast<GYStreamSocket*>(event.m_fd);
 	GYINT32 ret = stream->Recv(testBUffer, 1024);
+	GYBOOL err = GYTRUE;
 	if(ret > 0)
 	{
-		stream->Send(testBUffer, ret);
+		event.m_recvDataCount += ret;
+		ret = stream->Send(testBUffer, ret);
+		if(ret > 0)
+		{
+			event.m_sendDataCount += ret;
+			printf("%lld\t%lld\n", event.m_recvDataCount, event.m_sendDataCount);	
+			err = GYFALSE;				
+		}
+		else
+		{
+			err = GYTRUE;
+		}
 	}
-	else
+	if(GYTRUE == err)
 	{
+		printf("Delete Error Peer\n");
 		reactor.DeleteEvent(event);
 		delete stream;
 		delete &event;
@@ -53,6 +66,8 @@ GYVOID acceptHandler(GYNetEvent& event)
 		e->m_eventHandler = testHandler;
 		e->m_fd = p;
 		e->m_eventType = GYNetEventTypeRead;
+		e->m_recvDataCount = 0;
+		e->m_sendDataCount = 0;
 		reactor.AddEvent(*e);
 	}
 }
@@ -62,13 +77,11 @@ GYINT32 main()
 	InitNetWork();
 	GYNetAddress test;
 	test.SetAddr("127.0.0.1");
-	test.SetPort(9999);
-	GYCHAR testBUffer[1024] = {0};
+	test.SetPort(9998);
 	GYListenSocket listensocket;
 	GYStreamSocket stream;
 	listensocket.Open(test);
 	listensocket.SetBlock(GYFALSE);
-	GYINT32 i = 0;
 	GYNetEvent event;
 	event.m_accept = GYTRUE;
 	event.m_eventHandler = acceptHandler;
