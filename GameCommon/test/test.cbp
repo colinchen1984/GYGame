@@ -7,8 +7,9 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug Win32">
-				<Option output="test" prefix_auto="1" extension_auto="1" />
-				<Option object_output="../../Output/test/Debug Win32" />
+				<Option output="../../Bin/test/NetWorkTest" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../../Bin/test/" />
+				<Option object_output="../../Output/test/Debug" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
