@@ -1,4 +1,4 @@
-/////////////////////////////////////////////
+﻿/////////////////////////////////////////////
 // create time:2011/6/10 10:57
 // author:	colin chen
 // file name:	GYCommonDefine
@@ -22,6 +22,7 @@ typedef __int64					GYINT64;
 typedef void					GYVOID;
 typedef char					GYBOOL;
 #endif
+
 #ifdef LINUX64
 typedef char 					GYCHAR;
 typedef wchar_t 				GYWCHAR;

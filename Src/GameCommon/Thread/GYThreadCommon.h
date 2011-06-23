@@ -1,4 +1,4 @@
-/////////////////////////////////////////////
+﻿/////////////////////////////////////////////
 // create time:2011/6/21 10:37
 // author:	colin chen
 // file name:	GYThreadCommon
@@ -6,7 +6,7 @@
 ////////////////////////////////////////////
 #ifndef __GYTHREADCOMMON_H__
 #define __GYTHREADCOMMON_H__
-
+#include "GYCommonDefine.h"
 #ifdef WIN32
 #include <windows.h>
 typedef HANDLE GYThreadHandle;
@@ -21,5 +21,6 @@ typedef pthread_mutex_t GYMutexHandle;
 typedef GYMutexHandle GYFastMutexHandle;
 typedef pthread_cond_t GYContition;
 #endif // LINUX64
+extern GYINT32 InitThread();
 
 #endif

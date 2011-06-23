@@ -1,4 +1,4 @@
-/////////////////////////////////////////////
+﻿/////////////////////////////////////////////
 // create time:2011/6/10 13:28
 // author:	colin chen
 // file name:	test
@@ -88,7 +88,7 @@ GYINT32 main()
 	event.m_fd = &listensocket;
 	event.m_eventType = GYNetEventTypeRead;
 	
-	reactor.Init(1024);
+	reactor.Init(32);
 	reactor.AddEvent(event);
 	while (GYTRUE)
 	{
