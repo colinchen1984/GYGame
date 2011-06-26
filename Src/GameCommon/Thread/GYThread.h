@@ -27,39 +27,21 @@ class GYThread
 	friend GYBOOL WhenSuspend(GYThread& thread);
 	friend GYBOOL WhenRunning(GYThread& thread);
 	friend GYBOOL WhenTeminating(GYThread& thread);
-	GY_THREAD_STATUS	m_threadStatus;
 	GYFastMutex			m_threadMutex;
 	GYThreadHandle		m_threadHandle;
 	GYThreadTask		m_taskInfo;
 
 #ifdef LINUX64
-	GYThreadCondition m_condition;
 	static pthread_attr_t thread_attr;
 #endif
 
 public:
-	GYINT32 InitThread();
-
-	GYINT32 SetTask(const GYThreadTask& task);
+	GYINT32 InitThread(const GYThreadTask& task);
+	
+	GYINT32 Join();
 	
 	const GYThreadTask& GetTask();
-
-	GY_THREAD_STATUS GetStatus();
-
-	GYINT32 Terminate();
-
-	GYINT32 Join();
-
-	GYINT32 Resume();
-	
-	GYINT32 Suspend();
 private:
-	GYVOID _SetStatus(const GY_THREAD_STATUS& state);
-
-	GYINT32 _Suspend();
-
-	GYINT32 _Resume();
-
 	GYThread();
 
 	~GYThread();

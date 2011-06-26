@@ -24,12 +24,6 @@ public:
 
 	GYINT32 AddTask(const GYThreadTask& task);
 
-	GYINT32 SuspendThread(GYINT32 threadIndex);
-
-	GYINT32 ResumeThread(GYINT32 threadIndex);
-
-	GYINT32 TerminateThread(GYINT32 threadIndex);
-	
 	static GYThreadPool& Singleton()
 	{
 		static GYThreadPool p;

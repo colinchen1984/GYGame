@@ -40,72 +40,9 @@ GYINT32 GYThreadPool::Release()
 {
 	for (GYINT32 i = 0; i < m_currentThreadCount; ++i)
 	{
-		if (m_threads[i]->GetStatus()==GY_THREAD_STATUS_SUSPEND)
-		{
-			m_threads[i]->Resume();
-		}
-		m_threads[i]->Terminate();
 		m_threads[i]->Join();
 		delete m_threads[i];
 		m_threads[i] = GYNULL;
-	}
-	return 0;
-}
-
-GYINT32 GYThreadPool::SuspendThread( GYINT32 threadIndex )
-{
-	if (threadIndex >= m_currentThreadCount)
-	{
-		return INVALID_VALUE;
-	}
-	if (GYNULL == m_threads[threadIndex])
-	{
-		return INVALID_VALUE;
-	}
-
-	return m_threads[threadIndex]->Suspend();
-}
-
-GYINT32 GYThreadPool::ResumeThread( GYINT32 threadIndex )
-{
-	if (threadIndex >= m_currentThreadCount)
-	{
-		return INVALID_VALUE;
-	}
-	if (GYNULL == m_threads[threadIndex])
-	{
-		return INVALID_VALUE;
-	}
-
-	return m_threads[threadIndex]->Resume();
-}
-
-GYINT32 GYThreadPool::TerminateThread( GYINT32 threadIndex )
-{
-	if (threadIndex >= m_currentThreadCount)
-	{
-		return INVALID_VALUE;
-	}
-	if (GYNULL == m_threads[threadIndex])
-	{
-		return INVALID_VALUE;
-	}
-
-	if (m_threads[threadIndex]->GetStatus()==GY_THREAD_STATUS_SUSPEND)
-	{
-		m_threads[threadIndex]->Resume();
-	}
-	m_threads[threadIndex]->Terminate();
-	m_threads[threadIndex]->Join();
-	delete m_threads[threadIndex];
-	if (threadIndex != --m_currentThreadCount)
-	{
-		m_threads[threadIndex] = m_threads[m_currentThreadCount];
-		m_threads[m_currentThreadCount] = GYNULL;
-	}
-	else
-	{
-		m_threads[threadIndex] = GYNULL;
 	}
 	return 0;
 }
@@ -119,8 +56,6 @@ GYINT32 GYThreadPool::AddTask( const GYThreadTask& task )
 	
 	GYThread*& th = m_threads[m_currentThreadCount++];
 	th = new GYThread;
-	th->InitThread();
-	th->SetTask(task);
-	th->Resume();
+	th->InitThread(task);
 	return 0;
 }

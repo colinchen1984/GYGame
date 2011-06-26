@@ -112,6 +112,7 @@ GYVOID ThreadHandler(GYVOID* param)
 	{
 		g_array[i] = rand();
 	}
+	Sleep(3 * 1000);
 	return ;
 };
 int main()
@@ -121,7 +122,6 @@ int main()
 	t.m_threadFunction = ThreadHandler;
 	ThreadPool.Init(10);
 	ThreadPool.AddTask(t);
-	getc(stdin);
 	ThreadPool.Release();
 	getc(stdin);
 };
