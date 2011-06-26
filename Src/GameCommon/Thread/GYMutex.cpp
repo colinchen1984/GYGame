@@ -35,7 +35,7 @@ GYVOID GYMutex::Acquire()
 #endif
 
 #if LINUX64
-	pthread_mutex_lock(m_handle);
+	pthread_mutex_lock(&m_handle);
 #endif
 }
 
