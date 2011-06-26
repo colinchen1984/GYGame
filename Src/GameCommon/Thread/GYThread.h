@@ -12,6 +12,7 @@
 #include "GYFastMutex.h"
 #include "GYGuard.h"
 #include "GYThreadTask.h"
+#include "GYCondition.h"
 
 class GYThread
 {

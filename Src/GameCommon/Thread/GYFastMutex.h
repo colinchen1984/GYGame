@@ -27,7 +27,7 @@ public:
 #endif // WIN32
 
 #ifdef LINUX64
-#define GYMutex GYFastMutex 
+#define GYFastMutex GYMutex  
 #endif // LINUX64
 
 #endif
