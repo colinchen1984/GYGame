@@ -53,7 +53,7 @@ GYINT32 GYThread::Join()
 	result = WaitForSingleObject(m_threadHandle, 0xFFFFFFFF);
 #endif
 #ifdef LINUX64
-	result = pthread_join(m_threadHandle, NULL);
+	result = pthread_join(&m_threadHandle, NULL);
 #endif
 	return result;
 }
@@ -74,7 +74,7 @@ GYINT32 GYThread::InitThread()
 	result = 0 == m_threadHandle ? INVALID_VALUE : 0;
 #endif
 #ifdef LINUX64
-	result = pthread_create(m_threadHandle, &thread_attr, thread_proc, static_cast<GYVOID*>(this));
+	result = pthread_create(&m_threadHandle, &thread_attr, thread_proc, static_cast<GYVOID*>(this));
 	result = 0 == result ? 0 : INVALID_VALUE;
 #endif
 	if (INVALID_VALUE == result)
