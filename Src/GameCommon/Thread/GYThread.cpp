@@ -53,7 +53,7 @@ GYINT32 GYThread::Join()
 	result = WaitForSingleObject(m_threadHandle, 0xFFFFFFFF);
 #endif
 #ifdef LINUX64
-	result = pthread_join(&m_threadHandle, NULL);
+	result = pthread_join(m_threadHandle, NULL);
 #endif
 	return result;
 }
