@@ -6,10 +6,6 @@
 ////////////////////////////////////////////
 #include "GYThread.h"
 
-#ifdef LINUX64
-pthread_attr_t GYThread::thread_attr;
-#endif
-
 GYThread::GYThread()
 {
 }
@@ -39,7 +35,7 @@ GYINT32 GYThread::InitThread(const GYThreadTask& task)
 	result = 0 == m_threadHandle ? INVALID_VALUE : 0;
 #endif
 #ifdef LINUX64
-	result = pthread_create(&m_threadHandle, &thread_attr, thread_proc, static_cast<GYVOID*>(this));
+	result = pthread_create(&m_threadHandle, GYNULL, thread_proc, static_cast<GYVOID*>(this));
 	result = 0 == result ? 0 : INVALID_VALUE;
 #endif
 	if (INVALID_VALUE == result)

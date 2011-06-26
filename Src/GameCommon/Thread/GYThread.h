@@ -31,10 +31,6 @@ class GYThread
 	GYThreadHandle		m_threadHandle;
 	GYThreadTask		m_taskInfo;
 
-#ifdef LINUX64
-	static pthread_attr_t thread_attr;
-#endif
-
 public:
 	GYINT32 InitThread(const GYThreadTask& task);
 	

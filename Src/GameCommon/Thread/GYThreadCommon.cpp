@@ -29,11 +29,5 @@ GYVOID* thread_proc(GYVOID * param)
 
 GYINT32 InitThread()
 {
-#ifdef LINUX64
-	if(0 != pthread_attr_setdetachstate(&GYThread::thread_attr, PTHREAD_CREATE_JOINABLE))
-	{
-		return INVALID_VALUE;
-	}
-#endif // LINUX64
 	return 0;
 }
