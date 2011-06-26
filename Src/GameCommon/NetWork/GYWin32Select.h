@@ -17,8 +17,8 @@ class GYReactor;
 class GYWin32SelectReactor
 {
     friend class GYReactor;
-    fd_set		m_workingfdSet[GYNetEventTypeCount];
-    fd_set		m_masterfdSet[GYNetEventTypeCount];
+    fd_set		m_workingfdSet[GY_NET_EVENT_TYPE_COUNT];
+    fd_set		m_masterfdSet[GY_NET_EVENT_TYPE_COUNT];
     GYReactor*	m_reactor;
     GYBOOL		m_isUpdated;
 private:

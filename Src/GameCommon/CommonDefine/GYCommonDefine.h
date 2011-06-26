@@ -17,7 +17,7 @@ typedef unsigned char			GYUINT8;
 typedef short					GYINT16;
 typedef unsigned short			GYUINT16;
 typedef int						GYINT32;
-typedef unsigned long			GYUINT32;
+typedef unsigned int			GYUINT32;
 typedef __int64					GYINT64;
 typedef void					GYVOID;
 typedef char					GYBOOL;

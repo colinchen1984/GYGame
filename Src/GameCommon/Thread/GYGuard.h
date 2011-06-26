@@ -13,7 +13,7 @@
 //foward declare
 
 template<typename lock>
-class GYGuard :
+class GYGuard
 {
 	lock& _l;
 public:

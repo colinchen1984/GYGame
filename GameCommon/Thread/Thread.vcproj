@@ -145,6 +145,14 @@
 	</References>
 	<Files>
 		<File
+			RelativePath="..\..\Src\GameCommon\Thread\GYCondition.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\Src\GameCommon\Thread\GYCondition.h"
+			>
+		</File>
+		<File
 			RelativePath="..\..\Src\GameCommon\Thread\GYFastMutex.cpp"
 			>
 		</File>
@@ -165,6 +173,10 @@
 			>
 		</File>
 		<File
+			RelativePath="..\..\Src\GameCommon\Thread\GYThread.cpp"
+			>
+		</File>
+		<File
 			RelativePath="..\..\Src\GameCommon\Thread\GYThread.h"
 			>
 		</File>
@@ -174,6 +186,18 @@
 		</File>
 		<File
 			RelativePath="..\..\Src\GameCommon\Thread\GYThreadCommon.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\Src\GameCommon\Thread\GYThreadPool.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\Src\GameCommon\Thread\GYThreadPool.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\Src\GameCommon\Thread\GYThreadTask.h"
 			>
 		</File>
 	</Files>

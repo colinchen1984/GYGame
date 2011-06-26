@@ -13,7 +13,6 @@
 class GYFastMutex 
 {
 	GYFastMutexHandle m_handler;
-
 public:
 	GYFastMutex();
 

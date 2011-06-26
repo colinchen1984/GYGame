@@ -7,7 +7,7 @@
 
 
 
-#include "GYNetAddress.h"
+/*#include "GYNetAddress.h"
 #include "GYCommonDefine.h"
 #include "GYNetWorkCommonDefine.h"
 #include "GYSocket.h"
@@ -65,7 +65,7 @@ GYVOID acceptHandler(GYNetEvent& event)
 		e->m_accept = GYFALSE;
 		e->m_eventHandler = testHandler;
 		e->m_fd = p;
-		e->m_eventType = GYNetEventTypeRead;
+		e->m_eventType = GY_NET_EVENT_TYPE_READ;
 		e->m_recvDataCount = 0;
 		e->m_sendDataCount = 0;
 		reactor.AddEvent(*e);
@@ -86,7 +86,7 @@ GYINT32 main()
 	event.m_accept = GYTRUE;
 	event.m_eventHandler = acceptHandler;
 	event.m_fd = &listensocket;
-	event.m_eventType = GYNetEventTypeRead;
+	event.m_eventType = GY_NET_EVENT_TYPE_READ;
 	
 	reactor.Init(32);
 	reactor.AddEvent(event);
@@ -96,4 +96,32 @@ GYINT32 main()
 	}
 	return 0;
 }
+*/
 
+#include <stdio.h>
+#include <stdlib.h>
+#include "GYThreadPool.h"
+#include "GYThreadTask.h"
+#include "GYThreadCommon.h"
+
+const GYINT32 length = 1000;
+GYINT32 g_array[length] = {0};
+GYVOID ThreadHandler(GYVOID* param)
+{
+	for (GYINT32 i = 0; i < length; ++i)
+	{
+		g_array[i] = rand();
+	}
+	return ;
+};
+int main()
+{
+	InitThread();
+	GYThreadTask t;
+	t.m_threadFunction = ThreadHandler;
+	ThreadPool.Init(10);
+	ThreadPool.AddTask(t);
+	getc(stdin);
+	ThreadPool.Release();
+	getc(stdin);
+};

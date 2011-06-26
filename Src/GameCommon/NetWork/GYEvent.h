@@ -9,13 +9,13 @@
 #define __GYEVENT_H__
 #include "GYCommonDefine.h"
 
-enum GYNetEventType
+enum GY_NET_EVNET_TYPE
 {
-	GYNetEventTypeInvalid = -1,
-	GYNetEventTypeRead,
-	GYNetEventTypeWrite,
-	GYNetEventTypeException,
-	GYNetEventTypeCount,
+	GY_NET_EVNET_TYPE_INVALID = -1,
+	GY_NET_EVENT_TYPE_READ,
+	GY_NET_EVENT_TYPE_WRITE,
+	GY_NET_EVENT_TYPE_EXCEPTION,
+	GY_NET_EVENT_TYPE_COUNT,
 };
 struct GYNetEvent;
 typedef GYVOID (*GYEventHandler)(GYNetEvent& event);
@@ -27,7 +27,7 @@ struct GYNetEvent
 	GYVOID*						m_data;			//指向的数据块
 	GYBOOL						m_accept;		//是否绑定了监听端口
 	GYBOOL						m_busy;			//是否正在工作
-	GYNetEventType				m_eventType;	//事件类型
+	GY_NET_EVNET_TYPE			m_eventType;	//事件类型
 	GYSocket*					m_fd;			//fd
 	GYEventHandler				m_eventHandler;	//事件handler
 	GYNetEvent*					m_prevEvent;	//链表中的上一个

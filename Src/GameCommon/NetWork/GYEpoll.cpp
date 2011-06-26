@@ -66,22 +66,22 @@ GYINT32 GYEpollReactor::_Release()
     return 0;
 }
 
-static GYINT32 EventMask2EpollEvent(GYNetEventType eventType)
+static GYINT32 EventMask2EpollEvent(GY_NET_EVNET_TYPE eventType)
 {
     GYINT32 result = 0;
     switch(eventType)
     {
-    case GYNetEventTypeRead:
+    case GY_NET_EVENT_TYPE_READ:
     {
         result |= EPOLLIN;
     }
     break;
-    case GYNetEventTypeWrite:
+    case GY_NET_EVENT_TYPE_WRITE:
     {
         result |= EPOLLOUT;
     }
     break;
-    case GYNetEventTypeException:
+    case GY_NET_EVENT_TYPE_EXCEPTION:
     {
         result |= EPOLLHUP | EPOLLERR | EPOLLPRI;
     }
@@ -179,15 +179,15 @@ GYINT32 GYEpollReactor::_RunOnce()
         {
             epoll_event& eventData = m_pEvForWait[i];
             GYNetEvent& event = *static_cast<GYNetEvent*>(eventData.data.ptr);
-            if(eventData.events & EPOLLIN && GYNetEventTypeRead == event.m_eventType)
+            if(eventData.events & EPOLLIN && GY_NET_EVENT_TYPE_READ == event.m_eventType)
             {
                 m_reactor->PostEvent(event);
             }
-            if (eventData.events & EPOLLOUT && GYNetEventTypeWrite == event.m_eventType)
+            if (eventData.events & EPOLLOUT && GY_NET_EVENT_TYPE_WRITE == event.m_eventType)
             {
                 m_reactor->PostEvent(event);
             }
-            if ((eventData.events & EPOLLHUP || eventData.events & EPOLLERR || eventData.events & EPOLLPRI) && GYNetEventTypeException == event.m_eventType)
+            if ((eventData.events & EPOLLHUP || eventData.events & EPOLLERR || eventData.events & EPOLLPRI) && GY_NET_EVENT_TYPE_EXCEPTION == event.m_eventType)
             {
                 m_reactor->PostEvent(event);
             }

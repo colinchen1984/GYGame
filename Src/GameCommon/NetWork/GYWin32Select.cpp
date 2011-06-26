@@ -21,7 +21,7 @@ GYWin32SelectReactor::~GYWin32SelectReactor()
 
 GYVOID GYWin32SelectReactor::_CleanUp()
 {
-    for (GYINT32 i = 0; i < GYNetEventTypeCount; ++i)
+    for (GYINT32 i = 0; i < GY_NET_EVENT_TYPE_COUNT; ++i)
     {
         FD_ZERO(&m_workingfdSet[i]);
         FD_ZERO(&m_masterfdSet[i]);
@@ -77,7 +77,7 @@ GYINT32 GYWin32SelectReactor::_RunOnce()
     {
         if (GYTRUE == m_isUpdated)
         {
-            for (GYINT32 i = 0; i < GYNetEventTypeCount; ++i)
+            for (GYINT32 i = 0; i < GY_NET_EVENT_TYPE_COUNT; ++i)
             {
                 m_workingfdSet[i] = m_masterfdSet[i];
             }
@@ -93,7 +93,7 @@ GYINT32 GYWin32SelectReactor::_RunOnce()
             break;
         }
 
-        GYINT32 err = ::select(0, &m_workingfdSet[GYNetEventTypeRead], &m_workingfdSet[GYNetEventTypeWrite], &m_workingfdSet[GYNetEventTypeException], GYNULL);
+        GYINT32 err = ::select(0, &m_workingfdSet[GY_NET_EVENT_TYPE_READ], &m_workingfdSet[GY_NET_EVENT_TYPE_WRITE], &m_workingfdSet[GY_NET_EVENT_TYPE_EXCEPTION], GYNULL);
         if (SOCKET_ERROR == err)
         {
             break;

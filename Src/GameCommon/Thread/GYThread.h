@@ -11,76 +11,55 @@
 #include "GYThreadCommon.h"
 #include "GYFastMutex.h"
 #include "GYGuard.h"
+#include "GYThreadTask.h"
 
-
-//using declare
-
-//foward declare
-/*enum ThraedStatus
-{
-	NOTHREAD = -1,
-	SUSPEND,
-	RUNNING,
-	TERMINATE,
-	TERMINATED,
-};
-
-class GYThread : public GYManagerHelper, private GYNoncopyable
+class GYThread
 {
 #ifdef WIN32
-	friend static GYUINT __stdcall thread_proc(GYVOID* param);
-#else
+	friend  GYUINT32 __stdcall thread_proc(GYVOID* param);
+#endif 
+#ifdef LINUX64
 	friend GYVOID* thread_proc(GYVOID* param);
 #endif
-	friend GYVOID GYSuspendThread(GYThread& th);
-	friend GYVOID GYResumeThread(GYThread& th);
-	friend GYINT  GYJoinThread(GYThread& th);
-
-	ThraedStatus		m_threadStatus;
+	friend class GYThreadPool;
+	friend GYBOOL WhenSuspend(GYThread& thread);
+	friend GYBOOL WhenRunning(GYThread& thread);
+	friend GYBOOL WhenTeminating(GYThread& thread);
+	GY_THREAD_STATUS	m_threadStatus;
 	GYFastMutex			m_threadMutex;
 	GYThreadHandle		m_threadHandle;
-	ThreadTaskInfo		m_taskInfo;
+	GYThreadTask		m_taskInfo;
 
-#ifndef WIN32
-	GYThreadCondition cond;
+#ifdef LINUX64
+	GYThreadCondition m_condition;
+	static pthread_attr_t thread_attr;
 #endif
 
 public:
-	GYThread()
-	{
-		m_threadStatus = NOTHREAD;
-		m_taskInfo.p = NULL;
-		m_taskInfo.mission_index = -1;
-	};
+	GYINT32 InitThread();
 
-	~GYThread()
-	{
-	};
+	GYINT32 SetTask(const GYThreadTask& task);
+	
+	const GYThreadTask& GetTask();
 
-	GYINT
-	InitThread();
+	GY_THREAD_STATUS GetStatus();
 
-	GYINT
-	SetTask(const ThreadTaskInfo& task_info);
+	GYINT32 Terminate();
 
-	ThraedStatus
-	GetStatus();
+	GYINT32 Join();
 
-	GYVOID 
-	SetStatus(ThraedStatus state);
+	GYINT32 Resume();
+	
+	GYINT32 Suspend();
+private:
+	GYVOID _SetStatus(const GY_THREAD_STATUS& state);
 
-	GYINT
-	Suspend();
+	GYINT32 _Suspend();
 
-	GYINT
-	Resume();
+	GYINT32 _Resume();
 
-	GYINT
-	Terminate();
+	GYThread();
 
-	GYINT
-	Join();
+	~GYThread();
 };
-*/
-
 #endif
