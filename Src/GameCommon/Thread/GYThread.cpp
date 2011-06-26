@@ -6,6 +6,10 @@
 ////////////////////////////////////////////
 #include "GYThread.h"
 
+#ifdef LINUX64
+pthread_attr_t GYThread::thread_attr;
+#endif
+
 GYThread::GYThread()
 {
 }
