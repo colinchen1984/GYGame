@@ -41,9 +41,6 @@ GYVOID* thread_proc(GYVOID * param)
 #endif
 {
 	GY_THREAD_STATUS state = GY_THREAD_STATUS_INVALID;
-	GYINT32 mission = INVALID_VALUE;
-	GYVOID* p = NULL;
-
 	GYThread& t = *static_cast<GYThread*>(param);
 	while (GYTRUE)
 	{
