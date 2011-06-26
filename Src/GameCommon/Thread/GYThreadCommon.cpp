@@ -55,6 +55,9 @@ GYVOID* thread_proc(GYVOID * param)
 #ifdef WIN32
 	return 0;
 #endif
+#ifdef LINUX64
+	return GYNULL;
+#endif
 }
 
 GYINT32 InitThread()
