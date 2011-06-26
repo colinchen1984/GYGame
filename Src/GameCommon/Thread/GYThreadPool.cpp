@@ -28,7 +28,7 @@ GYINT32 GYThreadPool::Init(GYINT32 maxThreadCount)
 			break;
 		}
 		m_threads = new GYThread*[maxThreadCount];
-		ZeroMemory(m_threads, sizeof(GYThread*) * maxThreadCount);
+		GYZeroMem(m_threads, sizeof(GYThread*) * maxThreadCount);
 		m_maxThreadCount = maxThreadCount;
 		m_currentThreadCount = 0;
 		result = 0;
