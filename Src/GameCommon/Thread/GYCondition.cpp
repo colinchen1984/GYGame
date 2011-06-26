@@ -9,23 +9,23 @@
 
 GYThreadCondition::GYThreadCondition()
 {
-	pthread_mutex_init(&cond_mutex,NULL);
-	pthread_cond_init(&cond,NULL);
+	pthread_mutex_init(&m_conditionMutex,NULL);
+	pthread_cond_init(&m_condition,NULL);
 };
 
 GYThreadCondition::~GYThreadCondition()
 {
-	pthread_mutex_destroy(&cond_mutex);
-	pthread_cond_destroy(&cond);
+	pthread_mutex_destroy(&m_conditionMutex);
+	pthread_cond_destroy(&m_condition);
 }
 
 GYVOID GYThreadCondition::Acquire()
 {
-	pthread_cond_wait(&cond, &cond_mutex);
+	pthread_cond_wait(&m_condition, &m_conditionMutex);
 };
 
 GYVOID GYThreadCondition::Signal()
 {
-	pthread_cond_wait(&cond, &cond_mutex);
+	pthread_cond_wait(&m_condition, &m_conditionMutex);
 }
 #endif
