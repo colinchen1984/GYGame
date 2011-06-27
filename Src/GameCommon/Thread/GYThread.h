@@ -23,10 +23,6 @@ class GYThread
 	friend GYVOID* thread_proc(GYVOID* param);
 #endif
 	friend class GYThreadPool;
-	friend GYINT32 InitThread();
-	friend GYBOOL WhenSuspend(GYThread& thread);
-	friend GYBOOL WhenRunning(GYThread& thread);
-	friend GYBOOL WhenTeminating(GYThread& thread);
 	GYFastMutex			m_threadMutex;
 	GYThreadHandle		m_threadHandle;
 	GYThreadTask		m_taskInfo;

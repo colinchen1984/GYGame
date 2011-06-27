@@ -18,7 +18,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="../../Bin/$(ProjectName)/$(ConfigurationName)"
+			OutputDirectory="../../Bin/$(ProjectName)"
 			IntermediateDirectory="../../Output/$(ProjectName)/$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="1"
@@ -63,7 +63,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="NetWork.lib Thread.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;../../Bin/NetWork/$(ConfigurationName)&quot;;&quot;../../Bin/Thread/$(ConfigurationName)&quot;"
+				AdditionalLibraryDirectories="../../Bin/NetWork;../../Bin/Thread"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"

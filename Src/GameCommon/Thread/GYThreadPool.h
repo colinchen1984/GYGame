@@ -34,8 +34,6 @@ private:
 	GYThreadPool();
 
 	~GYThreadPool();
-
-	GYBOOL RightThreadIndex(GYINT32 threadIndex);
 };
 #define ThreadPool GYThreadPool::Singleton()
 
