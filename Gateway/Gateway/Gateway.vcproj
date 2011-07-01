@@ -168,12 +168,20 @@
 	<References>
 	</References>
 	<Files>
+		<Filter
+			Name="ListenThread"
+			>
+			<File
+				RelativePath="..\..\Src\Gateway\ListenThread\GYListenThread.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Src\Gateway\ListenThread\GYListenThread.h"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath="..\..\Src\Gateway\main.cpp"
-			>
-		</File>
-		<File
-			RelativePath="..\..\Src\Gateway\Test\test.cpp"
 			>
 		</File>
 	</Files>

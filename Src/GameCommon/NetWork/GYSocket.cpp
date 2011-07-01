@@ -60,7 +60,7 @@ GYINT32 GYSocket::Bind(const GYNetAddress& addr)
 
 const GYINT32 listen_num = 500;
 
-GYINT32 GYListenSocket::Open(GYNetAddress& addr)
+GYINT32 GYListenSocket::Open(const GYNetAddress& addr)
 {
     GYINT32 ret = INVALID_VALUE;
     GYSocket::Open(AF_INET, SOCK_STREAM, 0);

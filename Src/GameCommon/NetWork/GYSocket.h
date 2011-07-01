@@ -99,7 +99,7 @@ public:
         GYSocket::operator=(socket);
     };
 
-    GYINT32 Open(GYNetAddress& addr);
+    GYINT32 Open(const GYNetAddress& addr);
 
     GYINT32 Accept(GYSocket& s, GYNetAddress& clientAddress);
 

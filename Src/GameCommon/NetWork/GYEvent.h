@@ -35,7 +35,20 @@ struct GYNetEvent
 	GYINT32						m_reactorIndex;	//reactor event*数组内的index
 	GYINT64						m_recvDataCount;//接收的数据的总数
 	GYINT64						m_sendDataCount;//发送的数据的总数
-
+	GYVOID CleanUp()
+	{
+		m_data = GYNULL;
+		m_accept = GYFALSE;
+		m_busy = GYFALSE;
+		m_eventType = GY_NET_EVNET_TYPE_INVALID;
+		m_fd = GYNULL;
+		m_eventHandler = GYNULL;
+		m_prevEvent = GYNULL;
+		m_nexEvent = GYNULL;
+		m_reactorIndex = INVALID_VALUE;
+		m_recvDataCount = 0;
+		m_sendDataCount = 0;
+	}
 };
 
 #endif

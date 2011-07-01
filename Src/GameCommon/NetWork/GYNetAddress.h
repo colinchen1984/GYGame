@@ -13,8 +13,8 @@
 class GYNetAddress
 {
 private:
-    sockaddr_in		m_sockAddr;
-    static const GYINT32 MaxAddrStringLengh = 32;
+    sockaddr_in				m_sockAddr;
+    static const GYINT32	MaxAddrStringLengh = 32;
 #ifdef _DEBUG
     GYCHAR			m_addressString[MaxAddrStringLengh];
     GYUINT16		m_port;

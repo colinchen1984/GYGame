@@ -9,16 +9,16 @@
 #define __GYLISTENTHREAD_H__
 #include "GYReactor.h"
 #include "GYSocket.h"
-#include "GYArray.h"
-
+#include "GYEvent.h"
+class GYNetAddress;
 class GYSocket;
-typedef GYVOID (*GYAcceptConnectionEventHandler)(GYSocket& sock, GYVOID* RegistedData);
+typedef GYVOID (*GYAcceptConnectionEventHandler)(const GYSocket& sock, const GYNetAddress& listenAddress, GYVOID* RegistedData);
 
-struct RegisteAcceptConnection 
+struct AcceptEventHandler 
 {
 	GYAcceptConnectionEventHandler	m_handler;
 	GYVOID*							m_data;
-	RegisteAcceptConnection()
+	AcceptEventHandler()
 	{
 		m_data = GYNULL;
 		m_handler = GYNULL;
@@ -28,13 +28,20 @@ struct RegisteAcceptConnection
 class GYListenThread
 {
 	GYReactor							m_reactor;
-	GYListenSocket						m_acceptorActor;
-	GYArray<RegisteAcceptConnection>	m_eventHandler;
+	GYListenSocket						m_acceptorSocket;
+	AcceptEventHandler					m_eventHandler;
+	GYNetEvent							m_event;
 public:
 	GYListenThread();
 	~GYListenThread();
 
-	GYINT32 Init();
+	GYINT32 Init(const GYNetAddress& listenAddress, const AcceptEventHandler& handler);
+	
+	GYINT32 Run();
 
+	static GYVOID EpllEventHandler(GYNetEvent& event);
+
+private:
+	GYVOID _HandlerAcceptSocket();
 };
 #endif

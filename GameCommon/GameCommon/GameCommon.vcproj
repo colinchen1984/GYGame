@@ -166,6 +166,10 @@
 	</References>
 	<Files>
 		<File
+			RelativePath="..\..\Src\GameCommon\CommonDefine\GYArray.h"
+			>
+		</File>
+		<File
 			RelativePath="..\..\Src\GameCommon\CommonDefine\GYCommonDefine.h"
 			>
 		</File>
