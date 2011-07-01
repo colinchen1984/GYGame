@@ -48,5 +48,7 @@ typedef char					GYBOOL;
 const GYBOOL GYTRUE = 1;
 const GYBOOL GYFALSE = 0;
 const GYINT32 GYNULL = 0;
+
+#define GYAssert(x)				assert(x)
 #endif
 

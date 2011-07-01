@@ -1,6 +1,6 @@
 ﻿#include "GYCommonDefine.h"
 #include <stdio.h>
-#include "test.h"
+#include "./Test/test.h"
 GYINT32 main()
 {
 	test();
