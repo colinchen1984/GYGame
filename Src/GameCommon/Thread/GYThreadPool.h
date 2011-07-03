@@ -7,7 +7,7 @@
 
 #ifndef __GYTHREADPOOL_H__
 #define __GYTHREADPOOL_H__
-#include "GYThreadTask.h"
+#include "GYCommonDefine.h"
 class GYThread;
 struct GYThreadTask;
 class GYThreadPool

@@ -1,0 +1,30 @@
+﻿/////////////////////////////////////////////
+// create time: 2011/7/2 11:05
+// author:	colin chen
+// file name:	GYNetWorkErrorCode
+// file type:	h
+////////////////////////////////////////////
+
+#ifndef __GYNETWORKERRORCODE_H__
+#define __GYNETWORKERRORCODE_H__
+
+enum GY_SOCKET_OPERATION_ERROR_CODE
+{
+	GY_SOCKET_OPERATION_ERROR_CODE_SUCESS = 0,
+	GY_SOCKET_OPERATION_ERROR_CODE_CYCLE_BUFFER_FULL,
+	GY_SOCKET_OPERATION_ERROR_CODE_CYCLE_BUFFER_EMPTY,
+	GY_SOCKET_OPERATION_ERROR_CODE_WOULD_BLOCK,
+	GY_SOCKET_OPERATION_ERROR_CODE_CONNECTION_CLOSED,
+};
+
+#ifdef WIN32
+const GYINT32 GYSOCKEWOULDBLOCK = WSAEWOULDBLOCK;
+#endif
+
+#ifdef LINUX64
+const GYINT32 GYSOCKEWOULDBLOCK = EWOULDBLOCK;
+#endif
+
+const GYINT32 GYEINTR = EINTR;
+const GYINT32 GYEAGAIN = EAGAIN;
+#endif

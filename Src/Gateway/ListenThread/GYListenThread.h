@@ -10,6 +10,7 @@
 #include "GYReactor.h"
 #include "GYSocket.h"
 #include "GYEvent.h"
+
 class GYNetAddress;
 class GYSocket;
 typedef GYVOID (*GYAcceptConnectionEventHandler)(const GYSocket& sock, const GYNetAddress& listenAddress, GYVOID* RegistedData);
@@ -33,6 +34,7 @@ class GYListenThread
 	GYNetEvent							m_event;
 public:
 	GYListenThread();
+
 	~GYListenThread();
 
 	GYINT32 Init(const GYNetAddress& listenAddress, const AcceptEventHandler& handler);

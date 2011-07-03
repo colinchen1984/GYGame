@@ -4,6 +4,7 @@
 // file name:	GYThreadPool
 // file type:	cpp
 ////////////////////////////////////////////
+#include "GYThreadTask.h"
 #include "GYThreadPool.h"
 #include "GYThread.h"
 GYThreadPool::GYThreadPool()

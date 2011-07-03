@@ -1,8 +1,14 @@
 ﻿#include "GYCommonDefine.h"
-#include <stdio.h>
+#include "GYServer.h"
+#include "GYNetWorkCommonDefine.h"
+#include "GYThreadCommon.h"
 GYINT32 main()
 {
-	printf("test\n");
+	InitNetWork();
+	InitThread();
+	GYServer* pServer = GYNew GYServer();
+	pServer->Init();
+	Sleep(INVALID_VALUE);
 	return 0;
 }
 

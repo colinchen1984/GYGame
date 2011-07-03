@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../Src/GameCommon/Thread;../../Src/GameCommon/NetWork;../../Src/GameCommon/CommonDefine"
+				AdditionalIncludeDirectories="../../Src/GameCommon/Thread;../../Src/GameCommon/NetWork;../../Src/GameCommon/CommonDefine;../../Src/Gateway/ListenThread;../../Src/Gateway/GatewayThread"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -180,6 +180,26 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="GatewayThread"
+			>
+			<File
+				RelativePath="..\..\Src\Gateway\GatewayThread\GYGatewayThread.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Src\Gateway\GatewayThread\GYGatewayThread.h"
+				>
+			</File>
+		</Filter>
+		<File
+			RelativePath="..\..\Src\Gateway\GYServer.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\Src\Gateway\GYServer.h"
+			>
+		</File>
 		<File
 			RelativePath="..\..\Src\Gateway\main.cpp"
 			>
