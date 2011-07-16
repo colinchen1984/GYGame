@@ -12,8 +12,8 @@
 #include "GYBufferStreamSocket.h"
 #include "GYEvent.h"
 #include "GYObject.h"
-const GYINT32 CLIENT_SESSION_RECV_BUFFER_LEN = 1024 * 1024;
-const GYINT32 CLIENT_SESSION_SEND_BUFFER_LEN = 1024 * 1024;
+const GYINT32 CLIENT_SESSION_RECV_BUFFER_LEN = 16 * 1024;
+const GYINT32 CLIENT_SESSION_SEND_BUFFER_LEN = 16 * 1024;
 class GYReactor;
 class GYServer;
 class GYClientSession : public GYObject

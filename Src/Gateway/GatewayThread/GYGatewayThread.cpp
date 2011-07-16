@@ -8,6 +8,7 @@
 #include "GYGuard.h"
 #include <stdio.h>
 #include "GYTimeStamp.h"
+const GYINT32 CLIENT_FOR_PER_THREAD = 32;
 GYGatewayThread::GYGatewayThread()
 {
 }
@@ -16,7 +17,6 @@ GYGatewayThread::~GYGatewayThread()
 {
 }
 
-const GYINT32 CLIENT_FOR_PER_THREAD = 32;
 GYINT32 GYGatewayThread::Init(const GYNetAddress& targetServerAddress)
 {
 	GYINT32 result = INVALID_VALUE;

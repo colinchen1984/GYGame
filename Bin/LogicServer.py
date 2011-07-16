@@ -3,7 +3,9 @@ import time
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind(("127.0.0.1", 5556))
 s.listen(5)
-c = s.accept()
+c = []
+while(1):
+	c.append(s.accept())
 print c
 c = c[0]
 c.setblocking(False)

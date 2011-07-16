@@ -10,8 +10,8 @@
 #include "GYGatewayThread.h"
 #include "GYTimeStamp.h"
 
-const GYINT32 GatewayThreadCount = 1;
-const GYINT32 GatewayClientSessionCount = 32;
+const GYINT32 GatewayClientSessionCount = 10000;
+const GYINT32 GatewayThreadCount = GatewayClientSessionCount / 60 + 1;
 const GYINT32 GateListenReactorMaxCount = 32;
 GYServer::GYServer()
 {
@@ -80,14 +80,24 @@ GYINT32 GYServer::Init()
 		GYNetAddress logicServerAddress;
 		logicServerAddress.SetAddr("127.0.0.1");
 		logicServerAddress.SetPort(5556);
-		if (0 != m_gateThread[0].Init(logicServerAddress))
+		GYBOOL threadInit = GYTRUE;
+		GYThreadTask task;
+		for (GYINT32 i = 0; i < GatewayThreadCount && GYTRUE == threadInit; ++i)
+		{
+			if (0 != m_gateThread[i].Init(logicServerAddress))
+			{
+				threadInit = GYFALSE;
+				break;
+			}
+			task.m_threadFunction = GatewayThreadFunction;
+			task.param = &m_gateThread[i];
+			ThreadPool.AddTask(task);
+
+		}
+		if (GYTRUE != threadInit)
 		{
 			break;
 		}
-		GYThreadTask task;
-		task.m_threadFunction = GatewayThreadFunction;
-		task.param = m_gateThread;
-		ThreadPool.AddTask(task);
 		m_wholeClientSession = new GYClientSession[GatewayClientSessionCount];
 		for (GYINT32 i = 0; i < GatewayClientSessionCount; ++i)
 		{
@@ -121,6 +131,7 @@ GYVOID GYServer::_OnAcceptClient()
 			sock.Close();
 			continue;
 		}
+		static GYINT32 count  = 0;
 		GYClientSession& session = *m_freeClientSession.PickUpFirstItem();
 		if(0 != session.Init(sock, address, *this))
 		{
@@ -135,9 +146,11 @@ GYVOID GYServer::_OnAcceptClient()
 // 		
 // 		m_usingClientSession.Add(session);
 
-		m_gateThread[0].AddSession(session);
+		m_gateThread[count++].AddSession(session);
+		if (count >= GatewayThreadCount)
+		{
+			count = 0;
+		}
 	}
-
-	
 }
 

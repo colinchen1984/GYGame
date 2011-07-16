@@ -52,7 +52,7 @@ public:
     GYINT32 GetWriteSize()
     {
         const GYCHAR* const pWriter = m_pWriter;
-        GYINT32 nWriteBufferSize = pWriter >= m_pReader ? m_nBufferLen - (pWriter - m_pReader): m_pReader - pWriter;
+        GYINT32 nWriteBufferSize = pWriter >= m_pReader ? m_nBufferLen - static_cast<ptrdiff_t>(pWriter - m_pReader): m_pReader - pWriter;
         return nWriteBufferSize;
     }
 
@@ -62,11 +62,11 @@ public:
         GYINT32 nReadBufferSize = 0;
         if(m_pReader >= pWriter)
 		{
-			nReadBufferSize = m_nBufferLen - (m_pReader - pWriter);
+			nReadBufferSize = m_nBufferLen - static_cast<ptrdiff_t>(m_pReader - pWriter);
 		}
         else if(m_pReader < pWriter)
 		{
-			nReadBufferSize = pWriter - m_pReader;
+			nReadBufferSize = static_cast<ptrdiff_t>(pWriter - m_pReader);
 		}
         return nReadBufferSize;
     }
@@ -118,7 +118,7 @@ public:
             else
             {
                 GYMemcpy(m_pWriter, p, m_pTail - m_pWriter);
-                GYMemcpy(m_pHeader, p + (m_pTail - m_pWriter), nLen - (m_pTail - m_pWriter));
+                GYMemcpy(m_pHeader, p + (m_pTail - m_pWriter), nLen - static_cast<ptrdiff_t>(m_pTail - m_pWriter));
             }
             WritePtr(nLen);
             err = 0;
