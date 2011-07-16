@@ -97,7 +97,7 @@ GYINT32 GYListenSocket::Accept(GYSocket& s, GYNetAddress& clientAddress)
 GYINT32 GYStreamSocket::Open()
 {
     GYINT32 result = GYSocket::Open(AF_INET, SOCK_STREAM, 0);
-    return result;
+	return result > 0 ? 0 : INVALID_VALUE;
 }
 
 GYINT32 GYStreamSocket::Connect(const GYNetAddress& addr)
@@ -109,12 +109,21 @@ GYINT32 GYStreamSocket::Connect(const GYNetAddress& addr)
 GYINT32 GYStreamSocket::Send(const GYCHAR* buff, GYINT32 len)
 {
     GYINT32 result = ::send(m_fd, (char*)buff, len, 0);
+	if (result > 0)
+	{
+		m_totalSend +=result;
+	}
+	
     return result;
 }
 
 GYINT32 GYStreamSocket::Recv(GYCHAR* buff, GYINT32 len)
 {
     GYINT32 result = ::recv(m_fd, buff, len, 0);
+	if (result > 0)
+	{
+		m_totalRecv +=result;
+	}
     return result;
 }
 

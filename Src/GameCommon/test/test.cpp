@@ -27,27 +27,27 @@ GYVOID testHandler(GYNetEvent& event)
 	GYBOOL err = GYTRUE;
 	if(ret > 0)
 	{
-		event.m_recvDataCount += ret;
 		ret = stream->Send(testBUffer, ret);
 		if(ret > 0)
 		{
-			event.m_sendDataCount += ret;
-			printf("%lld\t%lld\n", event.m_recvDataCount, event.m_sendDataCount);	
-			err = GYFALSE;				
+			err = GYTRUE;				
 		}
 		else
 		{
-			err = GYTRUE;
+			err = GYFALSE;
 		}
 	}
-	if(GYTRUE == err)
+	else
+	{
+		err = GYFALSE;
+	}
+	if(GYTRUE != err)
 	{
 		printf("Delete Error Peer\n");
 		reactor.DeleteEvent(event);
 		delete stream;
 		delete &event;
 	}
-	printf("%d\n", ++i);
 }
 
 GYVOID acceptHandler(GYNetEvent& event)
@@ -66,8 +66,6 @@ GYVOID acceptHandler(GYNetEvent& event)
 		e->m_eventHandler = testHandler;
 		e->m_fd = p;
 		e->m_eventType = GY_NET_EVENT_TYPE_READ;
-		e->m_recvDataCount = 0;
-		e->m_sendDataCount = 0;
 		reactor.AddEvent(*e);
 	}
 }
@@ -98,7 +96,7 @@ GYINT32 main()
 }
 */
 
-#include <stdio.h>
+/*#include <stdio.h>
 #include <stdlib.h>
 #include "GYThreadPool.h"
 #include "GYThreadTask.h"
@@ -125,3 +123,74 @@ int main()
 	ThreadPool.Release();
 	getc(stdin);
 };
+*/
+
+#include "GYList.h"
+#include "GYArray.h"
+#include "WinSock2.h"
+#pragma comment(lib, "WSock32.lib")
+
+struct Test
+{
+	Test* m_prev;
+	Test* m_next;
+	Test* m_this;
+	GYINT32 m_index;
+	Test()
+	{
+		memset(this, 0, sizeof(*this));
+		m_this = this;
+	}
+};
+const int len = 100;
+Test g[len];
+int main()
+{
+	WSADATA wsaData;
+	if (NO_ERROR != WSAStartup(MAKEWORD(2,2), &wsaData))
+	{
+		return -1;
+	}
+	timeval waitTime;
+	waitTime.tv_sec =0;
+	waitTime.tv_usec =0;
+	fd_set gg;
+	int e = ::select(0, &gg, 0, 0, &waitTime);
+	e = WSAGetLastError();
+	GYList<Test> t;
+	GYList<Test> t2;
+	GYPointArray<Test> a;
+	a.Init(len);
+	for (int i =0; i < len; ++i)
+	{
+		a.Add(g[i]);
+	}
+	for (int i =49; i >= 0; --i)
+	{
+		t.Add(g[i]);
+	}
+	for (int i =len - 1; i >= 50; --i)
+	{
+		t2.Add(g[i]);
+	}
+	t.Add(t2);
+
+
+	a.Delete(g[1]);
+	
+}
+
+/*int main()
+{
+	int a = 0;
+	if (a)
+	{
+		return 1;
+	}
+	if (0 != a)
+	{
+		return 1;
+	}
+	
+	
+}*/

@@ -10,6 +10,7 @@
 #include "GYReactor.h"
 #include "GYSocket.h"
 #include <sys/epoll.h>
+#include "GYTimeStamp.h"
 
 GYEpollReactor::GYEpollReactor()
 {
@@ -146,23 +147,23 @@ GYINT32 GYEpollReactor::_DeleteEvent( GYNetEvent& event )
     return result;
 }
 
-GYINT32 GYEpollReactor::_RunOnce()
+GYINT32 GYEpollReactor::_RunOnce(const GYTimeStamp& timeStamp)
 {
     GYINT32 result = INVALID_VALUE;
     do
     {
-        GYINT32 currentEventCount = m_reactor->GetCurrentEventCount();
-        if (currentEventCount <= 0)
+        GYINT32 eventCount = m_reactor->GetCurrentEventCount();
+        if (eventCount <= 0)
         {
             //TODO: 函数参数中添加时间，然后调用select来sleep
             result = 0;
             break;
         }
 
-        GYINT32 eventCount = epoll_wait(m_nFdForEpoll, m_pEvForWait, currentEventCount, INVALID_VALUE);
+        GYINT32 eventCount = epoll_wait(m_nFdForEpoll, m_pEvForWait, eventCount, timeStamp.m_termTime);
         if (INVALID_VALUE == eventCount)
         {
-            if (EINTR == GetLastNetWorkError())
+            if (GYEINTR == GetLastNetWorkError())
             {
                 result = 0;
             }

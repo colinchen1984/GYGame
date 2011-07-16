@@ -28,7 +28,7 @@ extern GYINT32 InitNetWork();
 extern GYINT32 ReleaseNetWork();
 extern GYINT32 GYIsValidSocket(GYSOCKET fd);
 extern GYINT32 GetLastNetWorkError();
-
+extern GYINT32 GYIOCtl(GYSOCKET fd, GYINT32 cmd, GYINT32* argp);
 
 #endif
 

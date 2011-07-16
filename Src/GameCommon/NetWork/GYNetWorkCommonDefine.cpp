@@ -46,3 +46,15 @@ GYINT32 GetLastNetWorkError()
 #endif
 }
 
+extern GYINT32 GYIOCtl( GYSOCKET fd, GYINT32 cmd, GYINT32* argp )
+{
+	GYINT32 result = INVALID_VALUE;
+#ifdef WIN32
+	result = ioctlsocket(fd, cmd, (u_long*)argp);
+#endif // WIN32
+#ifdef LINUX64
+	result = ioctl(fd, cmd, (u_long*)argp);
+#endif // LINUX64
+	return result;
+}
+

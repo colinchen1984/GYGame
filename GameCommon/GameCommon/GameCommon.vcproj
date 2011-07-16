@@ -177,6 +177,18 @@
 			RelativePath="..\..\Src\GameCommon\CommonDefine\GYCycleBuffer.h"
 			>
 		</File>
+		<File
+			RelativePath="..\..\Src\GameCommon\CommonDefine\GYList.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\Src\GameCommon\CommonDefine\GYObject.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\Src\GameCommon\CommonDefine\GYTimeStamp.h"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

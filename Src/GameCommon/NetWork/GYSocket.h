@@ -52,7 +52,7 @@ public:
 
     GYINT32 Bind(const GYNetAddress& addr);
 
-    GYSOCKET GetFD()
+    GYSOCKET GetFD() const
     {
         return m_fd;
     };
@@ -107,9 +107,11 @@ public:
 
 class GYStreamSocket : public GYSocket
 {
+	GYINT64 m_totalSend;
+	GYINT64 m_totalRecv;
 public:
     GYStreamSocket()
-    {};
+    {m_totalSend = 0; m_totalRecv= 0;};
 
     ~GYStreamSocket()
     {};

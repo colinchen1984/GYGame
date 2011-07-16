@@ -15,16 +15,16 @@
 #endif // LINUX64
 
 #include "GYCommonDefine.h"
-struct GYNetEvent;
-
+#include "GYList.h"
+#include "GYEvent.h"
+class GYTimeStamp;
 class GYReactor
 {
-    GYNetEvent**	m_event;
-    GYINT32			m_maxEventCount;
-    GYINT32			m_currentEventCount;
-    GYNetEvent*		m_eventList;
+    GYINT32					m_maxEventCount;
+    GYINT32					m_currentEventCount;
+    GYList<GYNetEvent>		m_eventList;
 #ifdef WIN32
-    GYWin32SelectReactor m_reactor;
+    GYWin32SelectReactor	m_reactor;
 #endif // WIN32
 #ifdef LINUX64
     GYEpollReactor m_reactor;
@@ -42,13 +42,11 @@ public:
 
     GYINT32 DeleteEvent(GYNetEvent& event);
 
-    GYINT32	RunOnce();
+    GYINT32	RunOnce(const GYTimeStamp& timeStamp);
 
     GYINT32 GetCurrentEventCount();
 
     GYINT32 GetMaxEventCount();
-
-    const GYNetEvent** GetEventSet();
 
     GYVOID	PostEvent(GYNetEvent& event);
 private:

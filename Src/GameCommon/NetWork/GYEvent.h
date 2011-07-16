@@ -8,7 +8,7 @@
 #ifndef __GYEVENT_H__
 #define __GYEVENT_H__
 #include "GYCommonDefine.h"
-
+#include "GYObject.h"
 enum GY_NET_EVNET_TYPE
 {
 	GY_NET_EVNET_TYPE_INVALID = -1,
@@ -22,7 +22,7 @@ typedef GYVOID (*GYEventHandler)(GYNetEvent& event);
 
 class GYSocket;
 
-struct GYNetEvent
+struct GYNetEvent : public GYObject
 {
 	GYVOID*						m_data;			//指向的数据块
 	GYBOOL						m_accept;		//是否绑定了监听端口
@@ -30,11 +30,6 @@ struct GYNetEvent
 	GY_NET_EVNET_TYPE			m_eventType;	//事件类型
 	GYSocket*					m_fd;			//fd
 	GYEventHandler				m_eventHandler;	//事件handler
-	GYNetEvent*					m_prevEvent;	//链表中的上一个
-	GYNetEvent*					m_nexEvent;		//链表中的下一个
-	GYINT32						m_reactorIndex;	//reactor event*数组内的index
-	GYINT64						m_recvDataCount;//接收的数据的总数
-	GYINT64						m_sendDataCount;//发送的数据的总数
 	GYVOID CleanUp()
 	{
 		m_data = GYNULL;
@@ -43,11 +38,6 @@ struct GYNetEvent
 		m_eventType = GY_NET_EVNET_TYPE_INVALID;
 		m_fd = GYNULL;
 		m_eventHandler = GYNULL;
-		m_prevEvent = GYNULL;
-		m_nexEvent = GYNULL;
-		m_reactorIndex = INVALID_VALUE;
-		m_recvDataCount = 0;
-		m_sendDataCount = 0;
 	}
 };
 

@@ -13,6 +13,7 @@
 class GYNetEvent;
 class GYReactor;
 struct epoll_event;
+class GYTimeStamp;
 class GYEpollReactor
 {
     friend class GYReactor;
@@ -31,7 +32,7 @@ private:
 
     GYINT32 _DeleteEvent(GYNetEvent& event);
 
-    GYINT32	_RunOnce();
+    GYINT32	_RunOnce(const GYTimeStamp& timeStamp);
 
 private:
     GYVOID _CleanUp();

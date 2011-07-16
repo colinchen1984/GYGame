@@ -37,7 +37,7 @@ public:
     ~GYCycleBuffer()
     {};
 
-    /*GYCHAR*
+    GYCHAR*
     WritePtr()
     {
         return m_pWriter;
@@ -47,7 +47,7 @@ public:
     ReadPtr()
     {
         return m_pReader;
-    }*/
+    }
 
     GYINT32 GetWriteSize()
     {
@@ -78,17 +78,15 @@ public:
         return 0;
     }
 
-    /*const GYCHAR* const
-    GetHead()
+    const GYCHAR* const GetHead()
     {
         return m_pHeader;
     }
 
-    const GYCHAR* const
-    GetTail()
+    const GYCHAR* const GetTail()
     {
         return m_pTail;
-    }*/
+    }
 
     GYINT32 WritePtr(GYINT32 n)
     {

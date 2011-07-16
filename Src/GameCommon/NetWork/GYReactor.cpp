@@ -20,10 +20,9 @@ GYReactor::~GYReactor()
 
 GYVOID GYReactor::_CleanUp()
 {
-    m_event					= GYNULL;
-    m_eventList				= GYNULL;
     m_maxEventCount			= 0;
     m_currentEventCount		= 0;
+	m_eventList.CleanUp();
 }
 
 GYINT32 GYReactor::Init(GYINT32 maxEventCount)
@@ -33,11 +32,6 @@ GYINT32 GYReactor::Init(GYINT32 maxEventCount)
     do
     {
         if (0 != m_reactor._Init(maxEventCount, this))
-        {
-            break;
-        }
-        m_event = GYNew GYNetEvent* [maxEventCount];
-        if (GYNULL == m_event)
         {
             break;
         }
@@ -56,10 +50,6 @@ GYINT32 GYReactor::Release()
         if (0 != m_reactor._Release())
         {
             break;
-        }
-        if (GYNULL != m_event)
-        {
-            GYDelete[] m_event;
         }
         _CleanUp();
         result = 0;
@@ -86,8 +76,7 @@ GYINT32 GYReactor::AddEvent(GYNetEvent& event)
         {
             break;
         }
-        event.m_reactorIndex = m_currentEventCount++;
-        m_event[event.m_reactorIndex] = &event;
+        ++m_currentEventCount;
         event.m_busy = GYTRUE;
         event.m_fd->SetRegisted(GYTRUE);
         result = 0;
@@ -105,27 +94,12 @@ GYINT32 GYReactor::DeleteEvent(GYNetEvent& event)
         {
             break;
         }
-        if (event.m_reactorIndex >= m_currentEventCount)
-        {
-            break;
-        }
-
-        if (event.m_reactorIndex < 0)
-        {
-            break;
-        }
         if (0 != m_reactor._DeleteEvent(event))
         {
             break;
         }
         event.m_busy = GYFALSE;
         --m_currentEventCount;
-        if (event.m_reactorIndex != m_currentEventCount)
-        {
-            m_event[event.m_reactorIndex] = m_event[m_currentEventCount];
-            m_event[event.m_reactorIndex]->m_reactorIndex = event.m_reactorIndex;
-        }
-        m_event[m_currentEventCount] = GYNULL;
         event.m_fd->SetRegisted(GYFALSE);
         result = 0;
     }
@@ -133,14 +107,14 @@ GYINT32 GYReactor::DeleteEvent(GYNetEvent& event)
     return result;
 }
 
-GYINT32 GYReactor::RunOnce()
+GYINT32 GYReactor::RunOnce(const GYTimeStamp& timeStamp)
 {
-    m_eventList = GYNULL;
-    GYINT32 result = m_reactor._RunOnce();
-    while (GYNULL != m_eventList)
+    m_eventList.CleanUp();
+    GYINT32 result = m_reactor._RunOnce(timeStamp);
+    while (0 != m_eventList.GetItemCount())
     {
-        m_eventList->m_eventHandler(*m_eventList);
-        m_eventList = m_eventList->m_nexEvent;
+		GYNetEvent& event = *m_eventList.PickUpFirstItem();
+		event.m_eventHandler(event);
     }
     return result;
 }
@@ -150,11 +124,6 @@ GYINT32 GYReactor::GetCurrentEventCount()
     return m_currentEventCount;
 }
 
-const GYNetEvent** GYReactor::GetEventSet()
-{
-    return (const_cast<const GYNetEvent**>(m_event));
-}
-
 GYINT32 GYReactor::GetMaxEventCount()
 {
     return m_maxEventCount;
@@ -162,7 +131,6 @@ GYINT32 GYReactor::GetMaxEventCount()
 
 GYVOID GYReactor::PostEvent( GYNetEvent& event )
 {
-    event.m_nexEvent = m_eventList;
-    m_eventList = &event;
+	m_eventList.Add(event);
 }
 

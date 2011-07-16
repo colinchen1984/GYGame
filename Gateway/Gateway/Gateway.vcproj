@@ -169,20 +169,20 @@
 	</References>
 	<Files>
 		<Filter
-			Name="ListenThread"
-			>
-			<File
-				RelativePath="..\..\Src\Gateway\ListenThread\GYListenThread.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Src\Gateway\ListenThread\GYListenThread.h"
-				>
-			</File>
-		</Filter>
-		<Filter
 			Name="GatewayThread"
 			>
+			<File
+				RelativePath="..\..\Src\CMakeLists.txt"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Src\Gateway\GatewayThread\GYClientSession.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Src\Gateway\GatewayThread\GYClientSession.h"
+				>
+			</File>
 			<File
 				RelativePath="..\..\Src\Gateway\GatewayThread\GYGatewayThread.cpp"
 				>

@@ -8,7 +8,9 @@ GYINT32 main()
 	InitThread();
 	GYServer* pServer = GYNew GYServer();
 	pServer->Init();
-	Sleep(INVALID_VALUE);
+	pServer->Run();
+	char t[1] = {0};
+	char tt[4] = {0};
 	return 0;
 }
 
