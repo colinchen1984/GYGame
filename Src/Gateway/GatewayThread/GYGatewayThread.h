@@ -14,6 +14,7 @@
 #include "GYFastMutex.h"
 #include "GYList.h"
 
+const GYINT32 CLIENT_FOR_PER_THREAD = 32;
 const GYINT32 LOGIC_SESSION_RECV_BUFFER_LEN = 1024 * 1024;
 const GYINT32 LOGIC_SESSION_SEND_BUFFER_LEN = 1024 * 1024;
 class GYGatewayThread

@@ -58,6 +58,11 @@ GYVOID GYClientSession::_OnReceive()
 	GY_SOCKET_OPERATION_ERROR_CODE result = m_connection.Recv();
 	if (GY_SOCKET_OPERATION_ERROR_CODE_SUCESS != result)
 	{
+		if(GYNULL != m_reactor)
+		{
+			m_reactor->DeleteEvent(m_clientNetEvnet);
+			m_reactor = GYNULL;
+		}
 		return;
 	}
 	GYINT32 length = INPUTBUFFER.GetReadSize();

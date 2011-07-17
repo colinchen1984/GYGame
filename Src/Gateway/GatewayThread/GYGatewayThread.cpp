@@ -8,7 +8,6 @@
 #include "GYGuard.h"
 #include <stdio.h>
 #include "GYTimeStamp.h"
-const GYINT32 CLIENT_FOR_PER_THREAD = 32;
 GYGatewayThread::GYGatewayThread()
 {
 }

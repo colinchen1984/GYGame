@@ -10,8 +10,8 @@
 #include "GYGatewayThread.h"
 #include "GYTimeStamp.h"
 
-const GYINT32 GatewayClientSessionCount = 10000;
-const GYINT32 GatewayThreadCount = GatewayClientSessionCount / 60 + 1;
+const GYINT32 GatewayThreadCount = 4;
+const GYINT32 GatewayClientSessionCount = GatewayThreadCount * (CLIENT_FOR_PER_THREAD - 1) ;
 const GYINT32 GateListenReactorMaxCount = 32;
 GYServer::GYServer()
 {
@@ -123,6 +123,7 @@ GYVOID GYServer::_OnAcceptClient()
 {
 	GYStreamSocket sock;
 	GYNetAddress address;
+	static GYINT32 debugCount = 0;
 	while(0 == m_acceptorSocket.Accept(sock, address))
 	{
 		if (m_freeClientSession.GetItemCount() <= 0)
@@ -145,12 +146,13 @@ GYVOID GYServer::_OnAcceptClient()
 // 		}
 // 		
 // 		m_usingClientSession.Add(session);
-
+		++debugCount;
 		m_gateThread[count++].AddSession(session);
 		if (count >= GatewayThreadCount)
 		{
 			count = 0;
 		}
+
 	}
 }
 

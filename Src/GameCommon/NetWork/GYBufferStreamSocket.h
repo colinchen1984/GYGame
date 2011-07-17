@@ -94,7 +94,7 @@ public:
 		{
 			//no readable byte
 			//try to figure out whether the connection is closed
-			char t;
+			GYCHAR t;
 			GYINT32 ret = GYStreamSocket::Recv((GYCHAR*)&t, 1);
 			if(0 == ret)
 			{
