@@ -15,7 +15,14 @@
 const GYINT32 CLIENT_SESSION_RECV_BUFFER_LEN = 16 * 1024;
 const GYINT32 CLIENT_SESSION_SEND_BUFFER_LEN = 16 * 1024;
 class GYReactor;
-class GYServer;
+enum EM_CLIENT_SESSION_STATUS
+{
+	EM_CLIENT_SESSION_STATUS_INVALID = -1,
+	EM_CLIENT_SESSION_STATUS_IN_SERVER_WITH_NO_SERVER,			//尚未为客户的连接到指定的服务器
+	EM_CLIENT_SESSION_STATUS_WITH_SERVER,						//已经为客户的连接到指定的服务器
+	EM_CLIENT_SESSION_STATUS_COUNT,
+};
+
 class GYClientSession : public GYObject
 {
 	friend static GYVOID HandleClientData(GYNetEvent& event);
@@ -23,16 +30,21 @@ class GYClientSession : public GYObject
 	GYNetAddress	m_clientAddress;
 	GYNetAddress	m_targetServerAddress;
 	GYNetEvent		m_clientNetEvnet;
-	GYServer*		m_server;
+	GYVOID*			m_server;
 	GYReactor*		m_reactor;
+	EM_CLIENT_SESSION_STATUS m_status;
 public:
 	GYClientSession();
 	~GYClientSession();
 	GYVOID CleanUp();
-	GYINT32 Init(const GYSocket& sock, const GYNetAddress& clientAddress, GYServer& server);
-	GYINT32 Regeist2Reactor(GYReactor& reactor);
+	GYINT32 Init(const GYSocket& sock, const GYNetAddress& clientAddress);
+	GYINT32 Regeist2Reactor(GYReactor& reactor, GYVOID* Onwer, EM_CLIENT_SESSION_STATUS status);
 
-private:
-	GYVOID _OnReceive();
+public:
+	GYVOID OnReceiveWithServer();
+	GYVOID OnReceiveWithNoServer();
+	GYVOID OnClientCloseWithServer();
+	GYVOID OnClientCloseWithNoServer();
 };
+
 #endif

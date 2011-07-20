@@ -12,7 +12,7 @@
 #include "GYSocket.h"
 #include "GYList.h"
 #include "GYClientSession.h"
-
+#include "GYFastMutex.h"
 class GYGatewayThread;
 class GYServer
 {
@@ -26,12 +26,15 @@ class GYServer
 	GYList<GYClientSession>				m_usingClientSession;
 	GYList<GYClientSession>				m_freeClientSession;
 	GYClientSession*					m_wholeClientSession;
+	GYFastMutex							m_sessionCloseMutex;
 public:
 	GYServer();
 	~GYServer();
 
 	GYINT32 Init();
 	GYINT32 Run();
+
+	GYVOID OnClientSessionClose(GYClientSession& session);
 private:
 	GYVOID _OnAcceptClient();
 };

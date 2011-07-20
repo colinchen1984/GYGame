@@ -17,6 +17,7 @@
 const GYINT32 CLIENT_FOR_PER_THREAD = 32;
 const GYINT32 LOGIC_SESSION_RECV_BUFFER_LEN = 1024 * 1024;
 const GYINT32 LOGIC_SESSION_SEND_BUFFER_LEN = 1024 * 1024;
+class GYServer;
 class GYGatewayThread
 {
 	GYBufferStreamSocket<LOGIC_SESSION_RECV_BUFFER_LEN, LOGIC_SESSION_SEND_BUFFER_LEN>	m_connection2Logic;
@@ -26,16 +27,20 @@ class GYGatewayThread
 	GYList<GYClientSession> m_addSession;
 	GYFastMutex				m_addSessionMutex;
 	GYList<GYClientSession> m_workSession;
+	GYList<GYClientSession> m_ClosedSession;
+	GYServer*				m_server;
 public:
 	GYGatewayThread();
 
 	~GYGatewayThread();
 
-	GYINT32 Init(const GYNetAddress& targetServerAddress);
+	GYINT32 Init(const GYNetAddress& targetServerAddress, GYServer* server);
 	
 	GYVOID	Run();
 
 	GYVOID	AddSession(GYClientSession& session);
+
+	GYVOID	OnClientSessionClose(GYClientSession& session);
 };
 
 #endif

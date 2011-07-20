@@ -8,6 +8,8 @@
 #include "GYGuard.h"
 #include <stdio.h>
 #include "GYTimeStamp.h"
+#include "GYServer.h"
+
 GYGatewayThread::GYGatewayThread()
 {
 }
@@ -16,11 +18,16 @@ GYGatewayThread::~GYGatewayThread()
 {
 }
 
-GYINT32 GYGatewayThread::Init(const GYNetAddress& targetServerAddress)
+GYINT32 GYGatewayThread::Init(const GYNetAddress& targetServerAddress, GYServer* server)
 {
 	GYINT32 result = INVALID_VALUE;
 	do 
 	{
+		if (GYNULL == server)
+		{
+			break;
+		}
+		
 		if (0 != m_connection2Logic.Open())
 		{
 			break;
@@ -32,6 +39,7 @@ GYINT32 GYGatewayThread::Init(const GYNetAddress& targetServerAddress)
 			break;
 		}
 		m_targetServerAddress = targetServerAddress;
+		m_server = server;
 		result = 0;
 	} while (GYFALSE);
 	return result;
@@ -68,14 +76,20 @@ GYVOID GYGatewayThread::Run()
 		return;
 	}
 
+	GYClientSession* pSession = GYNULL;
 	while(GYTRUE)
 	{
+		pSession = GYNULL;
+		while(GYNULL != (pSession = m_ClosedSession.PickUpFirstItem()))
+		{
+			m_server->OnClientSessionClose(*pSession);
+		}
+		 pSession = GYNULL;
 		{
 			GYGuard<GYFastMutex> g(m_addSessionMutex);
-			GYClientSession* pSession = GYNULL;
 			while(GYNULL != (pSession = m_addSession.PickUpFirstItem()))
 			{
-				if(0 != pSession->Regeist2Reactor(m_reactor))
+				if(0 != pSession->Regeist2Reactor(m_reactor, this, EM_CLIENT_SESSION_STATUS_WITH_SERVER))
 				{
 					//TODO: 将该session还给server
 					continue;
@@ -94,4 +108,9 @@ GYVOID GYGatewayThread::AddSession( GYClientSession& session )
 {
 	GYGuard<GYFastMutex> g(m_addSessionMutex);
 	m_addSession.Add(session);
+}
+
+GYVOID GYGatewayThread::OnClientSessionClose( GYClientSession& session )
+{
+	m_ClosedSession.Add(session);
 }

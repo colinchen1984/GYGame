@@ -9,7 +9,7 @@
 #include "GYNetAddress.h"
 #include "GYGatewayThread.h"
 #include "GYTimeStamp.h"
-
+#include "GYGuard.h"
 const GYINT32 GatewayThreadCount = 4;
 const GYINT32 GatewayClientSessionCount = GatewayThreadCount * (CLIENT_FOR_PER_THREAD - 1) ;
 const GYINT32 GateListenReactorMaxCount = 32;
@@ -84,7 +84,7 @@ GYINT32 GYServer::Init()
 		GYThreadTask task;
 		for (GYINT32 i = 0; i < GatewayThreadCount && GYTRUE == threadInit; ++i)
 		{
-			if (0 != m_gateThread[i].Init(logicServerAddress))
+			if (0 != m_gateThread[i].Init(logicServerAddress, this))
 			{
 				threadInit = GYFALSE;
 				break;
@@ -123,20 +123,25 @@ GYVOID GYServer::_OnAcceptClient()
 {
 	GYStreamSocket sock;
 	GYNetAddress address;
-	static GYINT32 debugCount = 0;
 	while(0 == m_acceptorSocket.Accept(sock, address))
 	{
-		if (m_freeClientSession.GetItemCount() <= 0)
-		{
-			//TODO: 通知客户端不能稍后再试
-			sock.Close();
-			continue;
+		static GYINT32 count = 0;
+		GYClientSession* session = GYNULL;
+		{	
+			GYGuard<GYFastMutex> g(m_sessionCloseMutex);
+			if (m_freeClientSession.GetItemCount() <= 0)
+			{
+				//TODO: 通知客户端不能稍后再试
+				sock.Close();
+				continue;
+			}
+			session = m_freeClientSession.PickUpFirstItem();
 		}
-		static GYINT32 count  = 0;
-		GYClientSession& session = *m_freeClientSession.PickUpFirstItem();
-		if(0 != session.Init(sock, address, *this))
+
+
+		if(0 != session->Init(sock, address))
 		{
-			m_freeClientSession.Add(session);
+			m_freeClientSession.Add(*session);
 			continue;
 		}
 // 		if (0 != session.Regeist2Reactor(m_reactor, GYNULL))
@@ -146,13 +151,18 @@ GYVOID GYServer::_OnAcceptClient()
 // 		}
 // 		
 // 		m_usingClientSession.Add(session);
-		++debugCount;
-		m_gateThread[count++].AddSession(session);
+		m_gateThread[count++].AddSession(*session);
 		if (count >= GatewayThreadCount)
 		{
 			count = 0;
 		}
 
 	}
+}
+
+GYVOID GYServer::OnClientSessionClose( GYClientSession& session )
+{
+	GYGuard<GYFastMutex> g(m_sessionCloseMutex);
+	m_freeClientSession.Add(session);
 }
 
