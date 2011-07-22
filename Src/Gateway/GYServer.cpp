@@ -10,6 +10,7 @@
 #include "GYGatewayThread.h"
 #include "GYTimeStamp.h"
 #include "GYGuard.h"
+#include <wchar.h>
 const GYINT32 GatewayThreadCount = 4;
 const GYINT32 GatewayClientSessionCount = GatewayThreadCount * (CLIENT_FOR_PER_THREAD - 1) ;
 const GYINT32 GateListenReactorMaxCount = 32;
@@ -113,6 +114,11 @@ GYINT32 GYServer::Run()
 {
 	while(GYTRUE)
 	{
+		{
+			GYGuard<GYFastMutex> g(m_sessionCloseMutex);
+			GYINT32 freeSessionCount = m_freeClientSession.GetItemCount();
+			wprintf(L"Current free session count is %d \n", freeSessionCount);
+		}
 		GYTimeStamp termTime;
 		termTime.m_termTime = 30;
 		m_reactor.RunOnce(termTime);

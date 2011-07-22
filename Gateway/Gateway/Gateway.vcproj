@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../Src/GameCommon/Thread;../../Src/GameCommon/NetWork;../../Src/GameCommon/CommonDefine;../../Src/Gateway/ListenThread;../../Src/Gateway;../../Src/Gateway/GatewayThread"
+				AdditionalIncludeDirectories="../../Src/GameCommon/Thread;../../Src/GameCommon/NetWork;../../Src/GameCommon/String;../../Src/GameCommon/CommonDefine;../../Src/Gateway/ListenThread;../../Src/Gateway;../../Src/Gateway/GatewayThread"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -61,9 +61,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Thread.lib NetWork.lib"
+				AdditionalDependencies="Thread.lib NetWork.lib GameCommon.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="../../Bin/NetWork;../../Bin/Thread"
+				AdditionalLibraryDirectories="../../Bin/NetWork;../../Bin/Thread;../../Bin/GameCommon"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"

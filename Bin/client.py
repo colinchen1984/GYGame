@@ -7,7 +7,7 @@ for x in range(G_ClientCount):
 	t = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	try:
 		t.connect(G_ServerAddress)	
-		time.sleep(0.001)
+		time.sleep(0.0001)
 		s.append((x, t))
 	except :
 		print x
