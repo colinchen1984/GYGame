@@ -15,7 +15,6 @@ GYUINT32 __stdcall thread_proc(GYVOID* param)
 GYVOID* thread_proc(GYVOID * param)
 #endif
 {
-	GY_THREAD_STATUS state = GY_THREAD_STATUS_INVALID;
 	GYThread& t = *static_cast<GYThread*>(param);
 	const GYThreadTask& task = t.GetTask();
 	task.m_threadFunction(task.param);
