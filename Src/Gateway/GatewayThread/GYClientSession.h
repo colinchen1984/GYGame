@@ -23,10 +23,8 @@ enum EM_CLIENT_SESSION_STATUS
 	EM_CLIENT_SESSION_STATUS_COUNT,
 };
 
-static GYVOID HandleClientData(GYNetEvent& event);
 class GYClientSession : public GYObject
 {
-	friend GYVOID HandleClientData(GYNetEvent& event);
 	GYBufferStreamSocket<CLIENT_SESSION_RECV_BUFFER_LEN, CLIENT_SESSION_SEND_BUFFER_LEN>	m_connection;
 	GYNetAddress	m_clientAddress;
 	GYNetAddress	m_targetServerAddress;
@@ -40,7 +38,7 @@ public:
 	GYVOID CleanUp();
 	GYINT32 Init(const GYSocket& sock, const GYNetAddress& clientAddress);
 	GYINT32 Regeist2Reactor(GYReactor& reactor, GYVOID* Onwer, EM_CLIENT_SESSION_STATUS status);
-
+	GYINLINE EM_CLIENT_SESSION_STATUS GetStatus(){return m_status;}
 public:
 	GYVOID OnReceiveWithServer();
 	GYVOID OnReceiveWithNoServer();

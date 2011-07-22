@@ -28,7 +28,7 @@ static ClientHandler handler[EM_CLIENT_SESSION_STATUS_COUNT] =
 static GYVOID HandleClientData(GYNetEvent& event)
 {
 	GYClientSession* pSession = static_cast<GYClientSession*>(event.m_data);
-	(pSession->*handler[pSession->m_status])();
+	(pSession->*handler[pSession->GetStatus()])();
 }
 
 GYINT32 GYClientSession::Init(const GYSocket& sock, const GYNetAddress& clientAddress)
