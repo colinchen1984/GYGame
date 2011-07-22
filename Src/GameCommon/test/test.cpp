@@ -121,13 +121,13 @@ int main()
 	ThreadPool.Init(10);
 	ThreadPool.AddTask(t);
 	ThreadPool.Release();
-	getc(stdin);
 };
 */
 
 #include "GYList.h"
 #include "GYArray.h"
 #include "WinSock2.h"
+#include "GYStringManger.h"
 #pragma comment(lib, "WSock32.lib")
 
 struct Test
@@ -144,8 +144,18 @@ struct Test
 };
 const int len = 100;
 Test g[len];
+#include <bitset>
+#include "GYString.h"
+using std::bitset;
+GYStringManager gM;
 int main()
 {
+	gM.Init();
+	const GYWCHAR* p = L"test";
+	GYINT32 len = wcslen(p);
+	GYString teststing(p, len, gM);
+	GYString teststing2 = teststing;
+	teststing == teststing2;
 	WSADATA wsaData;
 	if (NO_ERROR != WSAStartup(MAKEWORD(2,2), &wsaData))
 	{

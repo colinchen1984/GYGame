@@ -10,7 +10,7 @@
 			>
 			<DebugSettings
 				Command="$(TargetPath)"
-				WorkingDirectory="../../Bin/$(ProjectName)/$(ConfigurationName)"
+				WorkingDirectory="../../Bin/$(ProjectName)"
 				CommandArguments=""
 				Attach="false"
 				DebuggerType="3"
