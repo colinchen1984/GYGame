@@ -36,23 +36,23 @@ class GYStringManager
 		}
 	};
 
-	GYList<GYStringBuffer<16>>		m_16poolFree;
-	GYList<GYStringBuffer<16>>		m_16poolUsed;
+	GYList<GYStringBuffer<16> >		m_16poolFree;
+	GYList<GYStringBuffer<16> >		m_16poolUsed;
 	GYStringBuffer<16>				m_16pooldata[BufferCount16];
-	GYList<GYStringBuffer<32>>		m_32poolFree;
-	GYList<GYStringBuffer<32>>		m_32poolUsed;
+	GYList<GYStringBuffer<32> >		m_32poolFree;
+	GYList<GYStringBuffer<32> >		m_32poolUsed;
 	GYStringBuffer<32>				m_32pooldata[BufferCount32];
-	GYList<GYStringBuffer<64>>		m_64poolFree;
-	GYList<GYStringBuffer<64>>		m_64poolUsed;
+	GYList<GYStringBuffer<64> >		m_64poolFree;
+	GYList<GYStringBuffer<64> >		m_64poolUsed;
 	GYStringBuffer<64>				m_64pooldata[BufferCount64];
-	GYList<GYStringBuffer<128>>		m_128poolFree;
-	GYList<GYStringBuffer<128>>		m_128poolUsed;
+	GYList<GYStringBuffer<128> >		m_128poolFree;
+	GYList<GYStringBuffer<128> >		m_128poolUsed;
 	GYStringBuffer<128>				m_128pooldata[BufferCount128];
-	GYList<GYStringBuffer<512>>		m_512poolFree;
-	GYList<GYStringBuffer<512>>		m_512poolUsed;
+	GYList<GYStringBuffer<512> >		m_512poolFree;
+	GYList<GYStringBuffer<512> >		m_512poolUsed;
 	GYStringBuffer<512>				m_512pooldata[BufferCount512];
-	GYList<GYStringBuffer<1024>>	m_1024poolFree;
-	GYList<GYStringBuffer<1024>>	m_1024poolUsed;
+	GYList<GYStringBuffer<1024> >	m_1024poolFree;
+	GYList<GYStringBuffer<1024> >	m_1024poolUsed;
 	GYStringBuffer<1024>			m_1024pooldata[BufferCount1024];
 	
 public:
