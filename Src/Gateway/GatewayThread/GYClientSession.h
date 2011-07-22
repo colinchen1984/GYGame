@@ -23,6 +23,7 @@ enum EM_CLIENT_SESSION_STATUS
 	EM_CLIENT_SESSION_STATUS_COUNT,
 };
 
+static GYVOID HandleClientData(GYNetEvent& event);
 class GYClientSession : public GYObject
 {
 	friend GYVOID HandleClientData(GYNetEvent& event);
