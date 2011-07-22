@@ -25,7 +25,7 @@ enum EM_CLIENT_SESSION_STATUS
 
 class GYClientSession : public GYObject
 {
-	friend static GYVOID HandleClientData(GYNetEvent& event);
+	friend GYVOID HandleClientData(GYNetEvent& event);
 	GYBufferStreamSocket<CLIENT_SESSION_RECV_BUFFER_LEN, CLIENT_SESSION_SEND_BUFFER_LEN>	m_connection;
 	GYNetAddress	m_clientAddress;
 	GYNetAddress	m_targetServerAddress;
