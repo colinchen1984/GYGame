@@ -9,8 +9,9 @@
 #include "GYEvent.h"
 #include "GYReactor.h"
 #include "GYSocket.h"
-#include <sys/epoll.h>
 #include "GYTimeStamp.h"
+#include "GYNetWorkErrorCode.h"
+#include <sys/epoll.h>
 
 GYEpollReactor::GYEpollReactor()
 {
@@ -160,7 +161,7 @@ GYINT32 GYEpollReactor::_RunOnce(const GYTimeStamp& timeStamp)
             break;
         }
 
-        GYINT32 eventCount = epoll_wait(m_nFdForEpoll, m_pEvForWait, eventCount, timeStamp.m_termTime);
+        eventCount = epoll_wait(m_nFdForEpoll, m_pEvForWait, eventCount, timeStamp.m_termTime);
         if (INVALID_VALUE == eventCount)
         {
             if (GYEINTR == GetLastNetWorkError())
