@@ -9,8 +9,6 @@ GYINT32 main()
 	GYServer* pServer = GYNew GYServer();
 	pServer->Init();
 	pServer->Run();
-	char t[1] = {0};
-	char tt[4] = {0};
 	return 0;
 }
 

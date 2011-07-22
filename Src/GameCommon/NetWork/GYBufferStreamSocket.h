@@ -178,7 +178,7 @@ DORECV:
     }
 
 private:
-    GY_SOCKET_OPERATION_ERROR_CODE _Send(const char* p, GYINT32 len)
+    GY_SOCKET_OPERATION_ERROR_CODE _Send(const GYCHAR* p, GYINT32 len)
     {
 		if (GYNULL == p)
 		{
@@ -187,7 +187,7 @@ private:
 		GYINT32 sendResult = 0;
 		while (len > 0)
 		{
-			sendResult = GYStreamSocket::Send((BYTE*)p, len);
+			sendResult = GYStreamSocket::Send(p, len);
 			if (sendResult > 0)
 			{
 				len -= sendResult;
