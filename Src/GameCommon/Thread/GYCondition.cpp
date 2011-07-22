@@ -26,6 +26,6 @@ GYVOID GYThreadCondition::Acquire()
 
 GYVOID GYThreadCondition::Signal()
 {
-	pthread_cond_signal(&m_condition, &m_conditionMutex);
+	pthread_cond_signal(&m_condition);
 }
 #endif
