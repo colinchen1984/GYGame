@@ -22,7 +22,7 @@ GYServer::~GYServer()
 {
 }
 
-static GYVOID AcceptEventHandler(GYNetEvent& event)
+GYVOID AcceptEventHandler(GYNetEvent& event)
 {
 	GYServer* pServer = static_cast<GYServer*>(event.m_data);
 	pServer->_OnAcceptClient();
