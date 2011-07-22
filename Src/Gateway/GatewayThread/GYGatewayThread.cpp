@@ -55,7 +55,7 @@ GYVOID GYGatewayThread::Run()
 	while(0 != m_connection2Logic.Connect(m_targetServerAddress))
 	{
 		wprintf(L"Connect logic server fail\n");
-		Sleep(1 * 1000);
+		GYSleep(1 * 1000);
 	}
 
 	if (0 != m_connection2Logic.SetBlock(GYFALSE))

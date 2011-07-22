@@ -51,6 +51,8 @@ const GYINT32 GYNULL = 0;
 
 #define GYAssert(x)				//assert(x)
 #define GYINLINE				inline
-#define GYSleep					Sleep
+extern GYVOID	GYSleep(GYINT32 ms);					
 #endif
+
+
 
