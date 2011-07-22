@@ -6,7 +6,7 @@
 ////////////////////////////////////////////
 #include "GYString.h"
 #include "GYStringManger.h"
-#include <string.h>
+#include <wchar.h>
 
 GYString::GYString(GYStringManager& stringManager):m_strManager(stringManager)
 {
