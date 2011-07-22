@@ -7,6 +7,7 @@
 #include "GYGatewayThread.h"
 #include "GYGuard.h"
 #include <stdio.h>
+#include <wchar.h>
 #include "GYTimeStamp.h"
 #include "GYServer.h"
 
