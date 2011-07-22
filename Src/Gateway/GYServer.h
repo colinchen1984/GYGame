@@ -16,7 +16,7 @@
 class GYGatewayThread;
 class GYServer
 {
-	friend static GYVOID AcceptEventHandler(GYNetEvent& event);
+	friend GYVOID AcceptEventHandler(GYNetEvent& event);
 
 	//GYServer需要负责监听
 	GYReactor							m_reactor;
