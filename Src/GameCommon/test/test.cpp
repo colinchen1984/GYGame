@@ -30,7 +30,7 @@ GYVOID testHandler(GYNetEvent& event)
 		ret = stream->Send(testBUffer, ret);
 		if(ret > 0)
 		{
-			err = GYTRUE;				
+			err = GYTRUE;
 		}
 		else
 		{
@@ -85,7 +85,7 @@ GYINT32 main()
 	event.m_eventHandler = acceptHandler;
 	event.m_fd = &listensocket;
 	event.m_eventType = GY_NET_EVENT_TYPE_READ;
-	
+
 	reactor.Init(32);
 	reactor.AddEvent(event);
 	while (GYTRUE)
@@ -126,9 +126,7 @@ int main()
 
 #include "GYList.h"
 #include "GYArray.h"
-#include "WinSock2.h"
 #include "GYStringManger.h"
-#pragma comment(lib, "WSock32.lib")
 
 struct Test
 {
@@ -156,17 +154,10 @@ int main()
 	GYString teststing(p, len, gM);
 	GYString teststing2 = teststing;
 	teststing == teststing2;
-	WSADATA wsaData;
-	if (NO_ERROR != WSAStartup(MAKEWORD(2,2), &wsaData))
-	{
-		return -1;
-	}
 	timeval waitTime;
-	waitTime.tv_sec =0;
-	waitTime.tv_usec =0;
-	fd_set gg;
-	int e = ::select(0, &gg, 0, 0, &waitTime);
-	e = WSAGetLastError();
+	waitTime.tv_sec = 1;
+	waitTime.tv_usec = 0;
+	int e = ::select(0, 0, 0, 0, &waitTime);
 	GYList<Test> t;
 	GYList<Test> t2;
 	GYPointArray<Test> a;
@@ -187,7 +178,7 @@ int main()
 
 
 	a.Delete(g[1]);
-	
+
 }
 
 /*int main()
@@ -201,6 +192,6 @@ int main()
 	{
 		return 1;
 	}
-	
-	
+
+
 }*/

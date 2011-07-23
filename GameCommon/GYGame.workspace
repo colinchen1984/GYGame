@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_workspace_file>
-	<Workspace title="Workspace">
-		<Project filename="NetWork/NetWork.cbp" active="1" />
-		<Project filename="test/test.cbp" />
+	<Workspace title="GameCommon workspace">
+		<Project filename="NetWork/NetWork.cbp" />
+		<Project filename="test/test.cbp" active="1" />
+		<Project filename="Thread/Thread.cbp" />
+		<Project filename="GameCommon/GameCommon.cbp" />
 	</Workspace>
 </CodeBlocks_workspace_file>

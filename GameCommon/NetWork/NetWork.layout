@@ -1,25 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Debug Win32" />
-	<File name="../../Src/GameCommon/NetWork/GYEpoll.cpp" open="1" top="0" tabpos="1">
-		<Cursor position="3543" topLine="154" />
-	</File>
-	<File name="../../Src/GameCommon/NetWork/GYEpoll.h" open="1" top="0" tabpos="2">
-		<Cursor position="578" topLine="11" />
-	</File>
-	<File name="../../Src/GameCommon/NetWork/GYNetAddress.cpp" open="1" top="0" tabpos="4">
-		<Cursor position="262" topLine="11" />
-	</File>
-	<File name="../../Src/GameCommon/NetWork/GYReactor.cpp" open="1" top="0" tabpos="7">
-		<Cursor position="2783" topLine="130" />
-	</File>
-	<File name="../../Src/GameCommon/NetWork/GYSocket.cpp" open="1" top="0" tabpos="5">
-		<Cursor position="0" topLine="0" />
-	</File>
-	<File name="../../Src/GameCommon/NetWork/GYSocket.h" open="1" top="0" tabpos="6">
-		<Cursor position="477" topLine="21" />
-	</File>
-	<File name="../../Src/GameCommon/NetWork/GYWin32Select.h" open="1" top="0" tabpos="3">
-		<Cursor position="867" topLine="13" />
-	</File>
 </CodeBlocks_layout_file>
