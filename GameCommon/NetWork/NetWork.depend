@@ -1,1 +1,88 @@
 # depslib dependency file v1.0
+1308842782 source:/media/新加卷/Project/GYGame/Src/GameCommon/NetWork/GYNetAddress.cpp
+	"GYNetAddress.h"
+
+1309505935 /media/新加卷/Project/GYGame/Src/GameCommon/NetWork/GYNetAddress.h
+	"GYCommonDefine.h"
+	"GYNetWorkCommonDefine.h"
+
+1311340636 /media/新加卷/Project/GYGame/Src/GameCommon/CommonDefine/GYCommonDefine.h
+	<memory.h>
+	<errno.h>
+
+1311340636 /media/新加卷/Project/GYGame/Src/GameCommon/NetWork/GYNetWorkCommonDefine.h
+	"GYCommonDefine.h"
+	<WinSock2.h>
+	<netdb.h>
+	<unistd.h>
+	<sys/types.h>
+	<sys/socket.h>
+	<netinet/in.h>
+	<arpa/inet.h>
+	<sys/ioctl.h>
+
+1309793079 source:/media/新加卷/Project/GYGame/Src/GameCommon/NetWork/GYNetWorkCommonDefine.cpp
+	"GYNetWorkCommonDefine.h"
+
+1310486145 source:/media/新加卷/Project/GYGame/Src/GameCommon/NetWork/GYReactor.cpp
+	"GYReactor.h"
+	"GYEvent.h"
+	"GYSocket.h"
+
+1310486135 /media/新加卷/Project/GYGame/Src/GameCommon/NetWork/GYReactor.h
+	"GYWin32Select.h"
+	"GYEpoll.h"
+	"GYCommonDefine.h"
+	"GYList.h"
+	"GYEvent.h"
+
+1310486167 /media/新加卷/Project/GYGame/Src/GameCommon/NetWork/GYWin32Select.h
+	"GYCommonDefine.h"
+	"GYNetWorkCommonDefine.h"
+	"GYEvent.h"
+	"GYArray.h"
+
+1310182386 /media/新加卷/Project/GYGame/Src/GameCommon/NetWork/GYEvent.h
+	"GYCommonDefine.h"
+	"GYObject.h"
+
+1310182443 /media/新加卷/Project/GYGame/Src/GameCommon/CommonDefine/GYObject.h
+
+1310486826 /media/新加卷/Project/GYGame/Src/GameCommon/CommonDefine/GYArray.h
+	"GYCommonDefine.h"
+
+1310486684 /media/新加卷/Project/GYGame/Src/GameCommon/NetWork/GYEpoll.h
+	"GYCommonDefine.h"
+	"GYNetWorkCommonDefine.h"
+
+1311436204 /media/新加卷/Project/GYGame/Src/GameCommon/CommonDefine/GYList.h
+	"GYCommonDefine.h"
+
+1310226969 /media/新加卷/Project/GYGame/Src/GameCommon/NetWork/GYSocket.h
+	"GYNetWorkCommonDefine.h"
+
+1310394736 source:/media/新加卷/Project/GYGame/Src/GameCommon/NetWork/GYSocket.cpp
+	"GYSocket.h"
+	<fcntl.h>
+	"GYNetAddress.h"
+
+1310656573 source:/media/新加卷/Project/GYGame/Src/GameCommon/NetWork/GYWin32Select.cpp
+	"GYWin32Select.h"
+	"GYBufferStreamSocket.h"
+	"GYReactor.h"
+	"GYTimeStamp.h"
+
+1311340636 /media/新加卷/Project/GYGame/Src/GameCommon/NetWork/GYBufferStreamSocket.h
+	"GYSocket.h"
+	"GYCycleBuffer.h"
+	"GYNetWorkErrorCode.h"
+
+1311340636 /media/新加卷/Project/GYGame/Src/GameCommon/CommonDefine/GYCycleBuffer.h
+	<memory.h>
+	"GYCommonDefine.h"
+
+1309793256 /media/新加卷/Project/GYGame/Src/GameCommon/NetWork/GYNetWorkErrorCode.h
+
+1310486110 /media/新加卷/Project/GYGame/Src/GameCommon/CommonDefine/GYTimeStamp.h
+	"GYCommonDefine.h"
+

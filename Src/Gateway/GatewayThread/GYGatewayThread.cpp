@@ -13,11 +13,15 @@
 
 GYGatewayThread::GYGatewayThread()
 {
+	_SetThreadStatus(EM_GATE_WAY_THREAD_STATUS_INVALID);
 }
 
 GYGatewayThread::~GYGatewayThread()
 {
 }
+
+typedef GYVOID (GYGatewayThread::*ThreadRunFunction)();
+static ThreadRunFunction handler[EM_GATE_WAY_THREAD_STATUS_COUNT] = {GYNULL};
 
 GYINT32 GYGatewayThread::Init(const GYNetAddress& targetServerAddress, GYServer* server)
 {
@@ -41,6 +45,9 @@ GYINT32 GYGatewayThread::Init(const GYNetAddress& targetServerAddress, GYServer*
 		}
 		m_targetServerAddress = targetServerAddress;
 		m_server = server;
+		handler[EM_GATE_WAY_THREAD_STATUS_CONNECTING_LOGIC_SERVER] = &GYGatewayThread::_ConnectLogicServer;
+		handler[EM_GATE_WAY_THREAD_STATUS_SERVERING_CLIENT_SESSION] = &GYGatewayThread::_ServeringClientSession;
+		_SetThreadStatus(EM_GATE_WAY_THREAD_STATUS_CONNECTING_LOGIC_SERVER);
 		result = 0;
 	} while (GYFALSE);
 	return result;
@@ -48,15 +55,37 @@ GYINT32 GYGatewayThread::Init(const GYNetAddress& targetServerAddress, GYServer*
 
 static GYVOID LogicServerConnectionEventHandler(GYNetEvent& event)
 {
-
+	GYGatewayThread* pThrad = static_cast<GYGatewayThread*>(event.m_data);
+	pThrad->ProcessLogicServerData();
 }
 
+#define _GetThreadStatus() m_status
 GYVOID GYGatewayThread::Run()
 {
-	while(0 != m_connection2Logic.Connect(m_targetServerAddress))
+	while(GYTRUE)
+	{
+		(this->*handler[_GetThreadStatus()])();
+	};
+}
+
+GYVOID GYGatewayThread::AddSession( GYClientSession& session )
+{
+	GYGuard<GYFastMutex> g(m_addSessionMutex);
+	m_addSession.Add(session);
+}
+
+GYVOID GYGatewayThread::OnClientSessionClose( GYClientSession& session )
+{
+	m_ClosedSession.Add(session);
+}
+
+GYVOID GYGatewayThread::_ConnectLogicServer()
+{
+	if(0 != m_connection2Logic.Connect(m_targetServerAddress))
 	{
 		wprintf(L"Connect logic server fail\n");
 		GYSleep(1 * 1000);
+		return;
 	}
 
 	if (0 != m_connection2Logic.SetBlock(GYFALSE))
@@ -73,45 +102,69 @@ GYVOID GYGatewayThread::Run()
 	if (0 != m_reactor.AddEvent(m_event4Logic))
 	{
 		m_connection2Logic.Close();
-		m_reactor.Release();
+		return;
+	}
+	_SetThreadStatus(EM_GATE_WAY_THREAD_STATUS_SERVERING_CLIENT_SESSION);
+
+}
+
+GYVOID GYGatewayThread::_ServeringClientSession()
+{
+	GYClientSession* pSession = GYNULL;
+	pSession = GYNULL;
+	while(GYNULL != (pSession = m_ClosedSession.PickUpFirstItem()))
+	{
+		m_server->OnClientSessionClose(*pSession);
+	}
+	pSession = GYNULL;
+	{
+		GYGuard<GYFastMutex> g(m_addSessionMutex);
+		while(GYNULL != (pSession = m_addSession.PickUpFirstItem()))
+		{
+			if(0 != pSession->Regeist2Reactor(m_reactor, this, EM_CLIENT_SESSION_STATUS_WITH_SERVER))
+			{
+				m_server->OnClientSessionClose(*pSession);
+				continue;
+			}
+			m_workSession.Add(*pSession);
+		}
+	}
+	static GYTimeStamp termTime;
+	termTime.m_termTime = 30;
+	m_reactor.RunOnce(termTime);
+}
+
+GYVOID GYGatewayThread::ProcessLogicServerData()
+{
+	GY_SOCKET_OPERATION_ERROR_CODE result = m_connection2Logic.Recv();
+	if (GY_SOCKET_OPERATION_ERROR_CODE_CONNECTION_CLOSED == result 
+		|| GY_SOCKET_OPERATION_ERROR_CODE_FAIL_TO_CHECK_SOCKET_CORE_BUFFER == result
+		|| GY_SOCKET_OPERATION_ERROR_CODE_FAIL_TO_CHECK_SOCKET_CORE_BUFFER == result)
+	{
+		//当与logic server断开连接后，重新打开套接字，并尝试连接logic server
+		//同时释放所有正在服务的client sesson， 与其断开连接，并将所有的client session还给GYServer
+		m_connection2Logic.Close();
+		m_reactor.DeleteEvent(m_event4Logic);
+		m_connection2Logic.Open();
+		GYClientSession* pSession = GYNULL;
+		while (GYNULL != (pSession = m_workSession.PickUpFirstItem()))
+		{
+			pSession->OnClientCloseWithServer();
+			m_server->OnClientSessionClose(*pSession);
+		}
+		m_workSessionHash.CleanUp();
+		_SetThreadStatus(EM_GATE_WAY_THREAD_STATUS_CONNECTING_LOGIC_SERVER);
+		return;
+	}
+	if (GY_SOCKET_OPERATION_ERROR_CODE_SOCKET_CORE_BUFFER_EMPTY == result)
+	{
 		return;
 	}
 
-	GYClientSession* pSession = GYNULL;
-	while(GYTRUE)
+	GYINT32 length = m_connection2Logic.m_inputBuffer.GetReadSize();
+	if (length > 0)
 	{
-		pSession = GYNULL;
-		while(GYNULL != (pSession = m_ClosedSession.PickUpFirstItem()))
-		{
-			m_server->OnClientSessionClose(*pSession);
-		}
-		 pSession = GYNULL;
-		{
-			GYGuard<GYFastMutex> g(m_addSessionMutex);
-			while(GYNULL != (pSession = m_addSession.PickUpFirstItem()))
-			{
-				if(0 != pSession->Regeist2Reactor(m_reactor, this, EM_CLIENT_SESSION_STATUS_WITH_SERVER))
-				{
-					//TODO: 将该session还给server
-					continue;
-				}
-				m_workSession.Add(*pSession);
-			}
-		}
-		static GYTimeStamp termTime;
-		termTime.m_termTime = 30;
-		m_reactor.RunOnce(termTime);
+		const GYCHAR* p = m_connection2Logic.m_inputBuffer.ReadPtr();
+		//TODO: 分析数据包，找到对应的Client Session，并将数据发送个该Client 
 	}
-
-}
-
-GYVOID GYGatewayThread::AddSession( GYClientSession& session )
-{
-	GYGuard<GYFastMutex> g(m_addSessionMutex);
-	m_addSession.Add(session);
-}
-
-GYVOID GYGatewayThread::OnClientSessionClose( GYClientSession& session )
-{
-	m_ClosedSession.Add(session);
 }

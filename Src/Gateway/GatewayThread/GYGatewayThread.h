@@ -13,22 +13,55 @@
 #include "GYClientSession.h"
 #include "GYFastMutex.h"
 #include "GYList.h"
+#include "GYHashTable.h"
 
+#ifdef WIN32
 const GYINT32 CLIENT_FOR_PER_THREAD = 32;
+#endif
+#ifdef LINUX64
+const GYINT32 CLIENT_FOR_PER_THREAD = 32;
+#endif // LINUX64
+
 const GYINT32 LOGIC_SESSION_RECV_BUFFER_LEN = 1024 * 1024;
 const GYINT32 LOGIC_SESSION_SEND_BUFFER_LEN = 1024 * 1024;
 class GYServer;
+enum EM_GATE_WAY_THREAD_STATUS
+{
+	EM_GATE_WAY_THREAD_STATUS_INVALID = -1,
+	EM_GATE_WAY_THREAD_STATUS_CONNECTING_LOGIC_SERVER,
+	EM_GATE_WAY_THREAD_STATUS_SERVERING_CLIENT_SESSION,
+	EM_GATE_WAY_THREAD_STATUS_COUNT,
+};
 class GYGatewayThread
 {
+	//连接logic server
 	GYBufferStreamSocket<LOGIC_SESSION_RECV_BUFFER_LEN, LOGIC_SESSION_SEND_BUFFER_LEN>	m_connection2Logic;
-	GYNetAddress			m_targetServerAddress;
-	GYNetEvent				m_event4Logic;
-	GYReactor				m_reactor;
-	GYList<GYClientSession> m_addSession;
-	GYFastMutex				m_addSessionMutex;
-	GYList<GYClientSession> m_workSession;
-	GYList<GYClientSession> m_ClosedSession;
-	GYServer*				m_server;
+	//logic server的Address
+	GYNetAddress					m_targetServerAddress;
+	//logic server相关的NetEvent
+	GYNetEvent						m_event4Logic;
+
+	//本线程的Reactor
+	GYReactor						m_reactor;
+
+	//接受监听线程传来的session，并且在下一帧的时候将所有的session转到自己的reactor内
+	GYList<GYClientSession> 		m_addSession;
+	GYFastMutex						m_addSessionMutex;
+
+	//当前正在服务的session
+	GYList<GYClientSession>			m_workSession;
+	//当前正在服务的session的hash表，用于快速查找logic server传来的数据包对应的Client session
+	GYHashTable<GYClientSession*>	m_workSessionHash;
+
+	//当前帧内关闭的session，将在下一帧中还给监听线程
+	GYList<GYClientSession>			m_ClosedSession;
+	
+	//监听线程中的GYServer
+	GYServer*						m_server;
+	
+	//当前线程的状态
+	EM_GATE_WAY_THREAD_STATUS		m_status;
+
 public:
 	GYGatewayThread();
 
@@ -41,6 +74,12 @@ public:
 	GYVOID	AddSession(GYClientSession& session);
 
 	GYVOID	OnClientSessionClose(GYClientSession& session);
+	
+	GYVOID	ProcessLogicServerData();
+private:
+	GYVOID	_ConnectLogicServer();
+	GYVOID	_ServeringClientSession();
+	GYINLINE GYVOID	_SetThreadStatus(EM_GATE_WAY_THREAD_STATUS status){m_status = status;}
 };
 
 #endif

@@ -156,7 +156,7 @@ GYINT32 GYEpollReactor::_RunOnce(const GYTimeStamp& timeStamp)
         GYINT32 eventCount = m_reactor->GetCurrentEventCount();
         if (eventCount <= 0)
         {
-            //TODO: 函数参数中添加时间，然后调用select来sleep
+            GYSleep(timeStamp.m_termTime);
             result = 0;
             break;
         }

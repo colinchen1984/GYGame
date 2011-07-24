@@ -70,6 +70,7 @@ GYVOID GYClientSession::OnReceiveWithServer()
 		|| GY_SOCKET_OPERATION_ERROR_CODE_FAIL_TO_CHECK_SOCKET_CORE_BUFFER == result)
 	{
 		OnClientCloseWithServer();
+		static_cast<GYGatewayThread*>(m_server)->OnClientSessionClose(*this);
 		return;
 	}
 	if (GY_SOCKET_OPERATION_ERROR_CODE_SOCKET_CORE_BUFFER_EMPTY == result)
@@ -119,7 +120,6 @@ GYVOID GYClientSession::OnClientCloseWithServer()
 		m_reactor = GYNULL;
 	}
 	m_connection.Close();
-	static_cast<GYGatewayThread*>(m_server)->OnClientSessionClose(*this);
 	return;
 }
 

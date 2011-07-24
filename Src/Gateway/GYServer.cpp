@@ -13,7 +13,7 @@
 #include <wchar.h>
 const GYINT32 GatewayThreadCount = 4;
 const GYINT32 GatewayClientSessionCount = GatewayThreadCount * (CLIENT_FOR_PER_THREAD - 1) ;
-const GYINT32 GateListenReactorMaxCount = 32;
+const GYINT32 GateListenReactorMaxCount = CLIENT_FOR_PER_THREAD;
 GYServer::GYServer()
 {
 	m_gateThread = GYNULL;

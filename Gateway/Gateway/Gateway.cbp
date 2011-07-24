@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Gateway" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug Win32">
+				<Option output="../../Bin/Gateway/Gateway" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../../Bin/Gateway/Gateway" />
+				<Option object_output="../../Output/Gateway/Debug" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-std=c++98" />
+					<Add option="-Wfatal-errors" />
+					<Add option="-g" />
+					<Add option="-W" />
+					<Add option="-O0" />
+					<Add option="-DLINUX64" />
+					<Add option="-D_DEBUG" />
+					<Add option="-D_CONSOLE" />
+					<Add directory="../../Src/GameCommon/Thread" />
+					<Add directory="../../Src/GameCommon/NetWork" />
+					<Add directory="../../Src/GameCommon/String" />
+					<Add directory="../../Src/GameCommon/CommonDefine" />
+					<Add directory="../../Src/Gateway/ListenThread" />
+					<Add directory="../../Src/Gateway" />
+					<Add directory="../../Src/Gateway/GatewayThread" />
+				</Compiler>
+				<ResourceCompiler>
+					<Add directory="../../Src/GameCommon/Thread" />
+					<Add directory="../../Src/GameCommon/NetWork" />
+					<Add directory="../../Src/GameCommon/String" />
+					<Add directory="../../Src/GameCommon/CommonDefine" />
+					<Add directory="../../Src/Gateway/ListenThread" />
+					<Add directory="../../Src/Gateway" />
+					<Add directory="../../Src/Gateway/GatewayThread" />
+				</ResourceCompiler>
+				<Linker>
+					<Add library="Thread" />
+					<Add library="NetWork" />
+					<Add library="GameCommon" />
+					<Add library="pthread" />
+					<Add directory="../../Bin/NetWork" />
+					<Add directory="../../Bin/Thread" />
+					<Add directory="../../Bin/GameCommon" />
+				</Linker>
+			</Target>
+			<Target title="Release Win32">
+				<Option output="Gateway" prefix_auto="1" extension_auto="1" />
+				<Option object_output="Release Win32" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-DWIN32" />
+					<Add option="-DNDEBUG" />
+					<Add option="-D_CONSOLE" />
+					<Add option="-W" />
+					<Add option="-O2" />
+				</Compiler>
+			</Target>
+		</Build>
+		<Unit filename="../../Src/Gateway/CMakeLists.txt" />
+		<Unit filename="../../Src/Gateway/GYServer.cpp" />
+		<Unit filename="../../Src/Gateway/GYServer.h" />
+		<Unit filename="../../Src/Gateway/GatewayThread/GYClientSession.cpp" />
+		<Unit filename="../../Src/Gateway/GatewayThread/GYClientSession.h" />
+		<Unit filename="../../Src/Gateway/GatewayThread/GYGatewayThread.cpp" />
+		<Unit filename="../../Src/Gateway/GatewayThread/GYGatewayThread.h" />
+		<Unit filename="../../Src/Gateway/main.cpp" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

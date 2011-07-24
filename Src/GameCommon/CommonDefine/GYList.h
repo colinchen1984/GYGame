@@ -37,7 +37,7 @@ public:
 
 	GYINLINE T* PickUpFirstItem()
 	{
-		if (GYNULL == m_list)
+		if (GYNULL == m_list || m_itemCount <= 0)
 		{
 			return GYNULL;
 		}

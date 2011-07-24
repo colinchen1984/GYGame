@@ -193,6 +193,10 @@
 			>
 		</File>
 		<File
+			RelativePath="..\..\Src\GameCommon\CommonDefine\GYHashTable.h"
+			>
+		</File>
+		<File
 			RelativePath="..\..\Src\GameCommon\CommonDefine\GYList.h"
 			>
 		</File>

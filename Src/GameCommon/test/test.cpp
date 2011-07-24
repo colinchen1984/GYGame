@@ -127,7 +127,7 @@ int main()
 #include "GYList.h"
 #include "GYArray.h"
 #include "GYStringManger.h"
-
+#include "GYHashTable.h"
 struct Test
 {
 	Test* m_prev;
@@ -149,15 +149,20 @@ GYStringManager gM;
 int main()
 {
 	gM.Init();
+	GYHashTable<GYINT32> hashTest;
+	hashTest.Init(100, 100);
+	hashTest.Insert(12, 22);
+	hashTest.Remove(12);
+	hashTest.Remove(12);
 	const GYWCHAR* p = L"test";
 	GYINT32 len = wcslen(p);
 	GYString teststing(p, len, gM);
 	GYString teststing2 = teststing;
 	teststing == teststing2;
-	timeval waitTime;
-	waitTime.tv_sec = 1;
-	waitTime.tv_usec = 0;
-	int e = ::select(0, 0, 0, 0, &waitTime);
+// 	timeval waitTime;
+// 	waitTime.tv_sec = 1;
+// 	waitTime.tv_usec = 0;
+// 	int e = ::select(0, 0, 0, 0, &waitTime);
 	GYList<Test> t;
 	GYList<Test> t2;
 	GYPointArray<Test> a;

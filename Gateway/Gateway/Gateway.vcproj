@@ -172,10 +172,6 @@
 			Name="GatewayThread"
 			>
 			<File
-				RelativePath="..\..\Src\CMakeLists.txt"
-				>
-			</File>
-			<File
 				RelativePath="..\..\Src\Gateway\GatewayThread\GYClientSession.cpp"
 				>
 			</File>
@@ -192,6 +188,10 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath="..\..\Src\Gateway\CMakeLists.txt"
+			>
+		</File>
 		<File
 			RelativePath="..\..\Src\Gateway\GYServer.cpp"
 			>
