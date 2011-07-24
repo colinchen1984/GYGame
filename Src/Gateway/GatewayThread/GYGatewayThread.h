@@ -30,6 +30,7 @@ enum EM_GATE_WAY_THREAD_STATUS
 	EM_GATE_WAY_THREAD_STATUS_INVALID = -1,
 	EM_GATE_WAY_THREAD_STATUS_CONNECTING_LOGIC_SERVER,
 	EM_GATE_WAY_THREAD_STATUS_SERVERING_CLIENT_SESSION,
+	EM_GATE_WAY_THREAD_STATUS_EXIT,
 	EM_GATE_WAY_THREAD_STATUS_COUNT,
 };
 class GYGatewayThread
@@ -76,10 +77,21 @@ public:
 	GYVOID	OnClientSessionClose(GYClientSession& session);
 	
 	GYVOID	ProcessLogicServerData();
+
+	GYINLINE const GYNetAddress& GetLogicServerAddress(){return m_targetServerAddress;}
+
+	GYINLINE const GYINT32 GetCurrentSessionCount(){return m_workSession.GetItemCount();}
+
+	GYINLINE GYVOID	StopGateThread(){_SetThreadStatus(EM_GATE_WAY_THREAD_STATUS_EXIT);};
+
 private:
 	GYVOID	_ConnectLogicServer();
+
 	GYVOID	_ServeringClientSession();
+
 	GYINLINE GYVOID	_SetThreadStatus(EM_GATE_WAY_THREAD_STATUS status){m_status = status;}
+
+	GYVOID _StopCurrentService();
 };
 
 #endif

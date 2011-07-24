@@ -19,11 +19,7 @@ GYClientSession::~GYClientSession()
 }
 
 typedef GYVOID (GYClientSession::*ClientHandler)();
-static ClientHandler handler[EM_CLIENT_SESSION_STATUS_COUNT] = 
-{
-	&GYClientSession::OnReceiveWithNoServer,
-	&GYClientSession::OnReceiveWithServer,
-};
+static ClientHandler handler[EM_CLIENT_SESSION_STATUS_COUNT] = {GYNULL};
 
 static GYVOID HandleClientData(GYNetEvent& event)
 {
@@ -44,6 +40,9 @@ GYINT32 GYClientSession::Init(const GYSocket& sock, const GYNetAddress& clientAd
 		}
 		m_clientAddress = clientAddress;
 		result = 0;
+
+		handler[EM_CLIENT_SESSION_STATUS_IN_SERVER_WITH_NO_SERVER] = &GYClientSession::_OnReceiveWithNoServer;
+		handler[EM_CLIENT_SESSION_STATUS_WITH_SERVER] = &GYClientSession::_OnReceiveWithServer;
 	} while (GYFALSE);
 	return result;
 }
@@ -57,35 +56,6 @@ GYVOID GYClientSession::CleanUp()
 	m_targetServerAddress.CleanUp();
 	m_clientNetEvnet.CleanUp();
 	m_status = EM_CLIENT_SESSION_STATUS_INVALID;
-}
-
-#define  INPUTBUFFER m_connection.m_inputBuffer
-#define  OUTPUTBUFFER m_connection.m_outputBuffer
-
-GYVOID GYClientSession::OnReceiveWithServer()
-{
-	GY_SOCKET_OPERATION_ERROR_CODE result = m_connection.Recv();
-	if (GY_SOCKET_OPERATION_ERROR_CODE_CONNECTION_CLOSED == result 
-		|| GY_SOCKET_OPERATION_ERROR_CODE_FAIL_TO_CHECK_SOCKET_CORE_BUFFER == result
-		|| GY_SOCKET_OPERATION_ERROR_CODE_FAIL_TO_CHECK_SOCKET_CORE_BUFFER == result)
-	{
-		OnClientCloseWithServer();
-		static_cast<GYGatewayThread*>(m_server)->OnClientSessionClose(*this);
-		return;
-	}
-	if (GY_SOCKET_OPERATION_ERROR_CODE_SOCKET_CORE_BUFFER_EMPTY == result)
-	{
-		return;
-	}
-	
-	GYINT32 length = INPUTBUFFER.GetReadSize();
-	if (length > 0)
-	{
-		const GYCHAR* p = INPUTBUFFER.ReadPtr();
-		m_connection.Send(p, length);
-		INPUTBUFFER.ReadPtr(length);
-	}
-	
 }
 
 GYINT32 GYClientSession::Regeist2Reactor(GYReactor& reactor,  GYVOID* Onwer, EM_CLIENT_SESSION_STATUS status)
@@ -112,7 +82,35 @@ GYINT32 GYClientSession::Regeist2Reactor(GYReactor& reactor,  GYVOID* Onwer, EM_
 	return 0;
 }
 
-GYVOID GYClientSession::OnClientCloseWithServer()
+#define  INPUTBUFFER m_connection.m_inputBuffer
+#define  OUTPUTBUFFER m_connection.m_outputBuffer
+
+GYVOID GYClientSession::_OnReceiveWithServer()
+{
+	GY_SOCKET_OPERATION_ERROR_CODE result = m_connection.Recv();
+	if (GY_SOCKET_OPERATION_ERROR_CODE_CONNECTION_CLOSED == result 
+		|| GY_SOCKET_OPERATION_ERROR_CODE_FAIL_TO_CHECK_SOCKET_CORE_BUFFER == result
+		|| GY_SOCKET_OPERATION_ERROR_CODE_FAIL_TO_CHECK_SOCKET_CORE_BUFFER == result)
+	{
+		_OnClientCloseWithServer();
+		return;
+	}
+	if (GY_SOCKET_OPERATION_ERROR_CODE_SOCKET_CORE_BUFFER_EMPTY == result)
+	{
+		return;
+	}
+
+	GYINT32 length = INPUTBUFFER.GetReadSize();
+	if (length > 0)
+	{
+		const GYCHAR* p = INPUTBUFFER.ReadPtr();
+		m_connection.Send(p, length);
+		INPUTBUFFER.ReadPtr(length);
+	}
+
+}
+
+GYVOID GYClientSession::_OnClientCloseWithServer()
 {
 	if(GYNULL != m_reactor)
 	{
@@ -120,15 +118,16 @@ GYVOID GYClientSession::OnClientCloseWithServer()
 		m_reactor = GYNULL;
 	}
 	m_connection.Close();
+	static_cast<GYGatewayThread*>(m_server)->OnClientSessionClose(*this);
 	return;
 }
 
-GYVOID GYClientSession::OnReceiveWithNoServer()
+GYVOID GYClientSession::_OnReceiveWithNoServer()
 {
 
 }
 
-GYVOID GYClientSession::OnClientCloseWithNoServer()
+GYVOID GYClientSession::_OnClientCloseWithNoServer()
 {
 
 }

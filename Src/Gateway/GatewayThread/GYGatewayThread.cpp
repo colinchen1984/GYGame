@@ -64,7 +64,17 @@ GYVOID GYGatewayThread::Run()
 {
 	while(GYTRUE)
 	{
-		(this->*handler[_GetThreadStatus()])();
+		if (EM_GATE_WAY_THREAD_STATUS_EXIT != _GetThreadStatus())
+		{
+			(this->*handler[_GetThreadStatus()])();
+		} 
+		else
+		{
+			_StopCurrentService();
+			m_reactor.Release();
+			break;
+		}
+		
 	};
 }
 
@@ -143,16 +153,7 @@ GYVOID GYGatewayThread::ProcessLogicServerData()
 	{
 		//当与logic server断开连接后，重新打开套接字，并尝试连接logic server
 		//同时释放所有正在服务的client sesson， 与其断开连接，并将所有的client session还给GYServer
-		m_connection2Logic.Close();
-		m_reactor.DeleteEvent(m_event4Logic);
-		m_connection2Logic.Open();
-		GYClientSession* pSession = GYNULL;
-		while (GYNULL != (pSession = m_workSession.PickUpFirstItem()))
-		{
-			pSession->OnClientCloseWithServer();
-			m_server->OnClientSessionClose(*pSession);
-		}
-		m_workSessionHash.CleanUp();
+		_StopCurrentService();
 		_SetThreadStatus(EM_GATE_WAY_THREAD_STATUS_CONNECTING_LOGIC_SERVER);
 		return;
 	}
@@ -167,4 +168,24 @@ GYVOID GYGatewayThread::ProcessLogicServerData()
 		const GYCHAR* p = m_connection2Logic.m_inputBuffer.ReadPtr();
 		//TODO: 分析数据包，找到对应的Client Session，并将数据发送个该Client 
 	}
+}
+
+GYVOID GYGatewayThread::_StopCurrentService()
+{
+	m_connection2Logic.Close();
+	m_reactor.DeleteEvent(m_event4Logic);
+	m_connection2Logic.Open();
+	GYClientSession* pSession = GYNULL;
+	//通知Client Session关闭
+	while (GYNULL != (pSession = m_workSession.PickUpFirstItem()))
+	{
+		pSession->_OnClientCloseWithServer();
+	}
+	//将关闭了的Client Session还给GYServer
+	while (GYNULL != (pSession = m_ClosedSession.PickUpFirstItem()))
+	{
+		m_server->OnClientSessionClose(*pSession);
+	}
+	//清楚Hash表
+	m_workSessionHash.CleanUp();
 }

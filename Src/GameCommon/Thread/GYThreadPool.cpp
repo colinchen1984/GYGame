@@ -42,7 +42,7 @@ GYINT32 GYThreadPool::Release()
 	for (GYINT32 i = 0; i < m_currentThreadCount; ++i)
 	{
 		m_threads[i]->Join();
-		delete m_threads[i];
+		GYDelete m_threads[i];
 		m_threads[i] = GYNULL;
 	}
 	return 0;
@@ -56,7 +56,7 @@ GYINT32 GYThreadPool::AddTask( const GYThreadTask& task )
 	}
 	
 	GYThread*& th = m_threads[m_currentThreadCount++];
-	th = new GYThread;
+	th = GYNew GYThread;
 	th->InitThread(task);
 	return 0;
 }

@@ -23,6 +23,7 @@ class GYServer
 	GYListenSocket						m_acceptorSocket;
 	GYNetEvent							m_listenEvent;
 	GYGatewayThread*					m_gateThread;
+	GYINT32								m_gateThreadCount;
 	GYList<GYClientSession>				m_usingClientSession;
 	GYList<GYClientSession>				m_freeClientSession;
 	GYClientSession*					m_wholeClientSession;
@@ -32,7 +33,8 @@ public:
 	~GYServer();
 
 	GYINT32 Init();
-	GYINT32 Run();
+	GYINT32 RunOnce();
+	GYINT32 Release();
 
 	GYVOID OnClientSessionClose(GYClientSession& session);
 private:

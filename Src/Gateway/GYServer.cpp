@@ -73,7 +73,7 @@ GYINT32 GYServer::Init()
 
 		//设置gatewany工作线程
 		m_gateThread = GYNew GYGatewayThread[GatewayThreadCount];
-		
+		m_gateThreadCount = GatewayThreadCount;
 		if(0 != ThreadPool.Init(GatewayThreadCount))
 		{
 			break;
@@ -110,19 +110,17 @@ GYINT32 GYServer::Init()
 	return result;	
 }
 
-GYINT32 GYServer::Run()
+GYINT32 GYServer::RunOnce()
 {
-	while(GYTRUE)
 	{
-		{
-			GYGuard<GYFastMutex> g(m_sessionCloseMutex);
-			GYINT32 freeSessionCount = m_freeClientSession.GetItemCount();
-			wprintf(L"Current free session count is %d \n", freeSessionCount);
-		}
-		GYTimeStamp termTime;
-		termTime.m_termTime = 30;
-		m_reactor.RunOnce(termTime);
+		GYGuard<GYFastMutex> g(m_sessionCloseMutex);
+		GYINT32 freeSessionCount = m_freeClientSession.GetItemCount();
+		wprintf(L"Current free session count is %d \n", freeSessionCount);
 	}
+	GYTimeStamp termTime;
+	termTime.m_termTime = 30;
+	return  m_reactor.RunOnce(termTime);
+		
 }
 
 GYVOID GYServer::_OnAcceptClient()
@@ -170,5 +168,21 @@ GYVOID GYServer::OnClientSessionClose( GYClientSession& session )
 {
 	GYGuard<GYFastMutex> g(m_sessionCloseMutex);
 	m_freeClientSession.Add(session);
+}
+
+GYINT32 GYServer::Release()
+{
+	m_acceptorSocket.Close();
+	for (GYINT32 i = 0; i < m_gateThreadCount; ++i)
+	{
+		m_gateThread[i].StopGateThread();
+	}
+	ThreadPool.Release();
+	delete[] m_gateThread;
+	delete[] m_wholeClientSession;
+	m_usingClientSession.CleanUp();
+	m_freeClientSession.CleanUp();
+	m_reactor.Release();
+	return 0;
 }
 
