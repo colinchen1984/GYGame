@@ -113,7 +113,7 @@ GYINT32 GYServer::Init()
 
 GYINT32 GYServer::RunOnce()
 {
-	static GYUINT32 beginTime = GYTimeController::GetCupTime();
+	static GYUINT32 beginTime = GYTimeController::GetProcessRunTime();
 
 	{
 		static GYINT32 count = 0;
@@ -129,7 +129,7 @@ GYINT32 GYServer::RunOnce()
 	GYTimeStamp termTime;
 	termTime.m_termTime = 30;
 	GYINT32 result = m_reactor.RunOnce(termTime);
-	GYUINT32 endTime = GYTimeController::GetCupTime();
+	GYUINT32 endTime = GYTimeController::GetProcessRunTime();
 	wprintf(L"Frame time is %u\n", endTime - beginTime);
 	beginTime = endTime;
 	return result;
