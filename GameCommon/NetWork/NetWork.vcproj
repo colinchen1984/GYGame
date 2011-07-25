@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../Src/GameCommon/CommonDefine"
+				AdditionalIncludeDirectories="../../Src/GameCommon/CommonDefine/TimeController;../../Src/GameCommon/CommonDefine"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"

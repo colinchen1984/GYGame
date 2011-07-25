@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../Src/GameCommon/CommonDefine;../../Src/GameCommon/String"
+				AdditionalIncludeDirectories="../../Src/GameCommon/CommonDefine;../../Src/GameCommon/CommonDefine/String"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -160,19 +160,31 @@
 			Name="String"
 			>
 			<File
-				RelativePath="..\..\Src\GameCommon\String\GYString.cpp"
+				RelativePath="..\..\Src\GameCommon\CommonDefine\String\GYString.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Src\GameCommon\String\GYString.h"
+				RelativePath="..\..\Src\GameCommon\CommonDefine\String\GYString.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Src\GameCommon\String\GYStringManger.cpp"
+				RelativePath="..\..\Src\GameCommon\CommonDefine\String\GYStringManger.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Src\GameCommon\String\GYStringManger.h"
+				RelativePath="..\..\Src\GameCommon\CommonDefine\String\GYStringManger.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="TimeController"
+			>
+			<File
+				RelativePath="..\..\Src\GameCommon\CommonDefine\TimeController\GYTimeController.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Src\GameCommon\CommonDefine\TimeController\GYTimeController.h"
 				>
 			</File>
 		</Filter>

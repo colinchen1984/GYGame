@@ -10,6 +10,7 @@
 #include "GYGatewayThread.h"
 #include "GYTimeStamp.h"
 #include "GYGuard.h"
+#include "GYTimeController.h"
 #include <wchar.h>
 const GYINT32 GatewayThreadCount = 4;
 const GYINT32 GatewayClientSessionCount = GatewayThreadCount * (CLIENT_FOR_PER_THREAD - 1) ;
@@ -112,6 +113,8 @@ GYINT32 GYServer::Init()
 
 GYINT32 GYServer::RunOnce()
 {
+	static GYUINT32 beginTime = GYTimeController::GetCupTime();
+
 	{
 		static GYINT32 count = 0;
 		GYGuard<GYFastMutex> g(m_sessionCloseMutex);
@@ -125,10 +128,10 @@ GYINT32 GYServer::RunOnce()
 	}
 	GYTimeStamp termTime;
 	termTime.m_termTime = 30;
-	GYUINT32 beginTime = GetTickCount();
 	GYINT32 result = m_reactor.RunOnce(termTime);
-	GYUINT32 endTime = GetTickCount();
+	GYUINT32 endTime = GYTimeController::GetCupTime();
 	wprintf(L"Frame time is %u\n", endTime - beginTime);
+	beginTime = endTime;
 	return result;
 		
 }
