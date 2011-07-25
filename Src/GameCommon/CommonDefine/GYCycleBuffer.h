@@ -101,6 +101,10 @@ public:
 			{
 				m_pWriter += n;
 			}
+			if(m_pWriter == m_pReader)
+			{
+				m_pWriter = m_pReader = m_pHeader;
+			}
             err = 0;
         }
         return err;
@@ -138,6 +142,10 @@ public:
             else
 			{
 				m_pReader += n;
+			}
+			if(m_pWriter == m_pReader)
+			{
+				m_pWriter = m_pReader = m_pHeader;
 			}
             err = 0;
         }
