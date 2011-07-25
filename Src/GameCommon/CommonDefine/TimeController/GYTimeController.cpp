@@ -11,9 +11,6 @@
 #include <Windows.h>
 #endif // WIN32
 
-#ifdef LINUX64
-#include <sys/time.h>
-#endif // LINUX64
 
 GYUINT32 GYTimeController::GetCupTime()
 {
@@ -41,3 +38,4 @@ GYINT32 GYTimeController::Init( GYINT32 timeZone )
 	m_currentTime = m_startTime;
 	return 0;
 }
+

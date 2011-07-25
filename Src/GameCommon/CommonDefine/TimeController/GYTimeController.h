@@ -9,6 +9,10 @@
 #define __GYTIMECONTROLLER_H__
 #include "GYCommonDefine.h"
 
+#ifdef LINUX64
+#include <sys/time.h>
+#endif // LINUX64
+
 const GYINT32 SECOND_PER_HOUR = 3600;
 
 class GYTimeController
