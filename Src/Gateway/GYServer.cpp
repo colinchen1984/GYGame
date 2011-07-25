@@ -113,13 +113,23 @@ GYINT32 GYServer::Init()
 GYINT32 GYServer::RunOnce()
 {
 	{
+		static GYINT32 count = 0;
 		GYGuard<GYFastMutex> g(m_sessionCloseMutex);
 		GYINT32 freeSessionCount = m_freeClientSession.GetItemCount();
-		wprintf(L"Current free session count is %d \n", freeSessionCount);
+		if (count != freeSessionCount)
+		{
+			count = freeSessionCount;
+			wprintf(L"Current free session count is %d \n", freeSessionCount);
+		}
+		
 	}
 	GYTimeStamp termTime;
 	termTime.m_termTime = 30;
-	return  m_reactor.RunOnce(termTime);
+	GYUINT32 beginTime = GetTickCount();
+	GYINT32 result = m_reactor.RunOnce(termTime);
+	GYUINT32 endTime = GetTickCount();
+	wprintf(L"Frame time is %u\n", endTime - beginTime);
+	return result;
 		
 }
 

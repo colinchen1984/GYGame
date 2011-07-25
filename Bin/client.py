@@ -1,6 +1,6 @@
 import socket
 import time
-G_ClientCount = 1000
+G_ClientCount = 24
 G_ServerAddress = ("127.0.0.1", 5555)
 s = []
 for x in range(G_ClientCount):

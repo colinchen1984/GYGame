@@ -8,7 +8,7 @@ GYINT32 main()
 	InitThread();
 	GYServer* pServer = GYNew GYServer();
 	pServer->Init();
-	for (GYINT32 i = 0; i < 1000; ++i)
+	while(GYTRUE)
 	{
 		pServer->RunOnce();
 	}
