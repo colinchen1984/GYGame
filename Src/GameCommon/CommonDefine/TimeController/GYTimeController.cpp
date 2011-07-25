@@ -33,7 +33,7 @@ GYINT32 GYTimeController::Init( GYINT32 timeZone )
 #endif
 
 #ifdef LINUX64
-	gettimeofday(&m_startTime);
+	gettimeofday(&m_startTime, GYNULL);
 #endif // LINUX64
 	m_currentTime = m_startTime;
 	return 0;
