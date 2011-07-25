@@ -13,20 +13,24 @@
 
 GYUINT32 GYTimeController::GetProcessRunTime()
 {
-	GYUINT32 result = INVALID_VALUD;
+	GYUINT32 result = INVALID_VALUE;
 #ifdef WIN32
-	result = m_currentTime - m_startTime
+	result = m_currentTime - m_startTime;
 #endif
 
 #ifdef LINUX64
 	gettimeofday(&m_currentTime, GYNULL);
 	result = 1000 * (m_currentTime.tv_sec - m_startTime.tv_sec) + (m_currentTime.tv_usec - m_startTime.tv_usec) / 1000;
 #endif
+	return result;
 }
 
 GYUINT32 GYTimeController::GetCupTime()
 {
 	GYUINT32 t= clock();
+#ifdef LINUX64
+	t /= CLOCKS_PER_SEC;
+#endif
 	return t;
 }
 
