@@ -11,6 +11,18 @@
 #include <Windows.h>
 #endif // WIN32
 
+GYUINT32 GYTimeController::GetProcessRunTime()
+{
+	GYUINT32 result = INVALID_VALUD;
+#ifdef WIN32
+	result = m_currentTime - m_startTime
+#endif
+
+#ifdef LINUX64
+	gettimeofday(&m_currentTime, GYNULL);
+	result = 1000 * (m_currentTime.tv_sec - m_startTime.tv_sec) + (m_currentTime.tv_usec - m_startTime.tv_usec) / 1000;
+#endif
+}
 
 GYUINT32 GYTimeController::GetCupTime()
 {
