@@ -20,9 +20,9 @@ GYUINT32 GYTimeController::GetCupTime()
 
 GYUINT32	GYTimeController::GetNowTime()
 {
-	m_currentTime = time(GYNULL);	
-	m_currentTime += m_timeZone;
-	return m_currentTime;
+	m_currentTimeMS = time(GYNULL);	
+	m_currentTimeMS += m_timeZone;
+	return m_currentTimeMS;
 }
 
 GYINT32 GYTimeController::Init( GYINT32 timeZone )
