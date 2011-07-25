@@ -28,9 +28,6 @@ GYUINT32 GYTimeController::GetProcessRunTime()
 GYUINT32 GYTimeController::GetCupTime()
 {
 	GYUINT32 t= clock();
-#ifdef LINUX64
-	t /= CLOCKS_PER_SEC;
-#endif
 	return t;
 }
 
