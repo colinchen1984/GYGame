@@ -104,7 +104,7 @@ public:
 			{
 				GYINT32 err = GetLastNetWorkError();
 				if(GYSOCKEWOULDBLOCK == err || GYEINTR == err
-#ifndef WIN32
+#ifdef LINUX64
 					|| GYEAGAIN == err
 #endif
 					)

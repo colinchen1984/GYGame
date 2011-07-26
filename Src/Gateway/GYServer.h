@@ -28,6 +28,7 @@ class GYServer
 	GYList<GYClientSession>				m_freeClientSession;
 	GYClientSession*					m_wholeClientSession;
 	GYFastMutex							m_sessionCloseMutex;
+	GYBOOL								m_isServering;
 public:
 	GYServer();
 	~GYServer();

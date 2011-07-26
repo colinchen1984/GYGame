@@ -140,7 +140,7 @@ GYVOID GYGatewayThread::_ServeringClientSession()
 		}
 	}
 	static GYTimeStamp termTime;
-	termTime.m_termTime = 30;
+	termTime.m_termTime = 1;
 	m_reactor.RunOnce(termTime);
 }
 

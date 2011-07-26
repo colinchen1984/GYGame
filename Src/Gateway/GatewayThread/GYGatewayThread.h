@@ -16,7 +16,7 @@
 #include "GYHashTable.h"
 
 #ifdef WIN32
-const GYINT32 CLIENT_FOR_PER_THREAD = 32;
+const GYINT32 CLIENT_FOR_PER_THREAD = 60;
 #endif
 #ifdef LINUX64
 const GYINT32 CLIENT_FOR_PER_THREAD = 1024;

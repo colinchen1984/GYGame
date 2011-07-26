@@ -12,12 +12,13 @@
 #include "GYGuard.h"
 #include "GYTimeController.h"
 #include <wchar.h>
-const GYINT32 GatewayThreadCount = 4;
+const GYINT32 GatewayThreadCount = 5;
 const GYINT32 GatewayClientSessionCount = GatewayThreadCount * (CLIENT_FOR_PER_THREAD - 1) ;
 const GYINT32 GateListenReactorMaxCount = CLIENT_FOR_PER_THREAD;
 GYServer::GYServer()
 {
 	m_gateThread = GYNULL;
+	m_isServering = GYFALSE;
 }
 
 GYServer::~GYServer()
@@ -105,7 +106,7 @@ GYINT32 GYServer::Init()
 		{
 			m_freeClientSession.Add(m_wholeClientSession[i]);
 		}
-
+		m_isServering = GYTRUE;
 		result = 0;
 	} while (GYFALSE);
 	return result;	
@@ -140,8 +141,33 @@ GYVOID GYServer::_OnAcceptClient()
 {
 	GYStreamSocket sock;
 	GYNetAddress address;
+	GYINT32 err = INVALID_VALUE;
 	while(0 == m_acceptorSocket.Accept(sock, address))
+	while(GYTRUE)
 	{
+		if(0 != m_acceptorSocket.Accept(sock, address))
+		{
+			err = GetLastNetWorkError();
+				if(GYSOCKEWOULDBLOCK == err || GYEINTR == err
+#ifdef LINUX64
+					|| GYEAGAIN == err
+#endif
+					)
+			{
+				break;
+			}
+			else if(GYEMFILE == err)
+			{
+				m_reactor.DeleteEvent(m_listenEvent);
+				m_reactor.AddEvent(m_listenEvent);
+			}
+			else
+			{
+				//不可修复错误，关闭服务器
+				wprintf(L"Can't handle this error %d\n", err);
+			}
+		}
+		
 		static GYINT32 count = 0;
 		GYClientSession* session = GYNULL;
 		{	
