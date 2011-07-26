@@ -131,7 +131,7 @@ GYINT32 GYServer::RunOnce()
 	termTime.m_termTime = 30;
 	GYINT32 result = m_reactor.RunOnce(termTime);
 	GYUINT32 endTime = GYTimeController::GetCupTime();
-	wprintf(L"Frame time is %u\n", endTime - beginTime);
+	//wprintf(L"Frame time is %u\n", endTime - beginTime);
 	beginTime = endTime;
 	return result;
 		
@@ -142,7 +142,6 @@ GYVOID GYServer::_OnAcceptClient()
 	GYStreamSocket sock;
 	GYNetAddress address;
 	GYINT32 err = INVALID_VALUE;
-	while(0 == m_acceptorSocket.Accept(sock, address))
 	while(GYTRUE)
 	{
 		if(0 != m_acceptorSocket.Accept(sock, address))
@@ -184,6 +183,7 @@ GYVOID GYServer::_OnAcceptClient()
 
 		if(0 != session->Init(sock, address))
 		{
+			sock.Close();
 			m_freeClientSession.Add(*session);
 			continue;
 		}

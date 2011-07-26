@@ -83,12 +83,23 @@ public:
 
 class GYListenSocket : public GYSocket
 {
+#ifdef LINUX64
+	GYINT32 m_dummyFile;
+#endif
 public:
     GYListenSocket()
-    {};
+    {
+#ifdef LINUX64
+		m_dummyFile = ::open("/dev/null", O_RDONLY);
+#endif // LINUX64
+	};
 
     ~GYListenSocket()
-    {};
+    {
+#ifdef LINUX64
+		::close(m_dummyFile);
+#endif // LINUX64
+	};
 
     GYListenSocket(const GYListenSocket& socket)
         : GYSocket(socket)

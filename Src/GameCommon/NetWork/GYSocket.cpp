@@ -80,8 +80,22 @@ GYINT32 GYListenSocket::Accept(GYSocket& s, GYNetAddress& clientAddress)
 #ifdef WIN32
     GYSOCKET sock = ::accept(m_fd, (sockaddr*)&addr, (GYINT32*)&len);
 #endif // WIN32
+
 #ifdef LINUX64
     GYSOCKET sock = ::accept(m_fd, (sockaddr*)&addr, (socklen_t*)&len);
+	if (INVALID_SOCKET == sock)
+	{
+		GYINT32 err = GetLastNetWorkError();
+		if (GYEMFILE == err)
+		{
+			::close(m_dummyFile);
+			m_dummyFile = ::accept(m_fd, NULL, NULL);
+			::close(m_dummyFile);
+			m_dummyFile = ::open("/dev/null", O_RDONLY);
+		}
+		
+	}
+	
 #endif // LINUX64
 
     if(GYTRUE == GYIsValidSocket(sock))
