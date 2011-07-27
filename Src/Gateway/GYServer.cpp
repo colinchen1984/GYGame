@@ -159,6 +159,7 @@ GYVOID GYServer::_OnAcceptClient()
 			{
 				m_reactor.DeleteEvent(m_listenEvent);
 				m_reactor.AddEvent(m_listenEvent);
+				break;
 			}
 			else
 			{
