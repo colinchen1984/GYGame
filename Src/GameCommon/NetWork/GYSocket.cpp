@@ -9,7 +9,11 @@
 #include "GYSocket.h"
 #include <fcntl.h>
 #include "GYNetAddress.h"
-
+#ifdef LINUX64
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#endif
 //using declare
 
 //foward declare
@@ -57,6 +61,20 @@ GYINT32 GYSocket::Bind(const GYNetAddress& addr)
     }
     return ret;
 }
+
+GYListenSocket::GYListenSocket()
+{
+#ifdef LINUX64
+	m_dummyFile = ::open("/dev/null", O_RDONLY);
+#endif // LINUX64
+};
+
+GYListenSocket::~GYListenSocket()
+{
+#ifdef LINUX64
+	::close(m_dummyFile);
+#endif // LINUX64
+};
 
 const GYINT32 listen_num = 500;
 
@@ -107,6 +125,8 @@ GYINT32 GYListenSocket::Accept(GYSocket& s, GYNetAddress& clientAddress)
     }
     return result;
 }
+
+
 
 GYINT32 GYStreamSocket::Open()
 {
