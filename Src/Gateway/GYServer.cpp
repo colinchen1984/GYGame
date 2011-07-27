@@ -144,10 +144,11 @@ GYVOID GYServer::_OnAcceptClient()
 	GYINT32 err = INVALID_VALUE;
 	while(GYTRUE)
 	{
+		static GYINT32 debugCount = 0;
 		if(0 != m_acceptorSocket.Accept(sock, address))
 		{
 			err = GetLastNetWorkError();
-				if(GYSOCKEWOULDBLOCK == err || GYEINTR == err
+			if(GYSOCKEWOULDBLOCK == err || GYEINTR == err
 #ifdef LINUX64
 					|| GYEAGAIN == err
 #endif
@@ -164,7 +165,7 @@ GYVOID GYServer::_OnAcceptClient()
 			else
 			{
 				//不可修复错误，关闭服务器
-				wprintf(L"Can't handle this error %d\n", err);
+				wprintf(L"Can't handle this error %d, current client session count is %d\n", err, debugCount);
 			}
 		}
 		
@@ -200,6 +201,7 @@ GYVOID GYServer::_OnAcceptClient()
 		{
 			count = 0;
 		}
+		debugCount++;
 
 	}
 }

@@ -7,12 +7,13 @@
 
 //include file
 #include "GYSocket.h"
+#include <stdio.h>
 #include <fcntl.h>
 #include "GYNetAddress.h"
+#include "GYNetWorkErrorCode.h"
 #ifdef LINUX64
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <fcntl.h>
 #endif
 //using declare
 
@@ -106,12 +107,16 @@ GYINT32 GYListenSocket::Accept(GYSocket& s, GYNetAddress& clientAddress)
 		GYINT32 err = GetLastNetWorkError();
 		if (GYEMFILE == err)
 		{
+			printf("GYEMFILE happen\n");
 			::close(m_dummyFile);
 			m_dummyFile = ::accept(m_fd, NULL, NULL);
 			::close(m_dummyFile);
 			m_dummyFile = ::open("/dev/null", O_RDONLY);
 		}
-		
+		else
+		{
+			printf("Accept errno is %d\n", err);
+		}	
 	}
 	
 #endif // LINUX64
