@@ -15,6 +15,33 @@
 
 //foward declare
 
+class GYCycleBufferBase
+{
+public:
+	GYCycleBufferBase(){};
+	virtual ~GYCycleBufferBase(){};
+	
+	virtual const GYCHAR* ReadPtr() = 0;
+	
+    virtual GYINT32 GetWriteSize() = 0;
+
+    virtual GYINT32 GetReadSize() = 0;
+
+    virtual GYINT32 CleanUp() = 0;
+
+    virtual const GYCHAR* const GetHead() = 0;
+
+    virtual const GYCHAR* const GetTail() = 0;
+
+    virtual GYINT32 WritePtr(GYINT32 n) = 0;
+
+    virtual GYINT32 Write(const GYCHAR* p, GYINT32 nLen) = 0;
+	
+    virtual GYINT32 ReadPtr(GYINT32 n) = 0;
+
+    virtual GYINT32 Read(GYCHAR* p, GYINT32 len) = 0;
+};
+
 template<GYINT32 MAX_BUFFER_LEN = 1024 * 16>
 class GYCycleBuffer
 {
@@ -37,26 +64,24 @@ public:
     ~GYCycleBuffer()
     {};
 
-    GYCHAR*
-    WritePtr()
+    virtual GYCHAR* WritePtr()
     {
         return m_pWriter;
     }
 
-    const GYCHAR*
-    ReadPtr()
+    virtual const GYCHAR* ReadPtr()
     {
         return m_pReader;
     }
 
-    GYINT32 GetWriteSize()
+    virtual GYINT32 GetWriteSize()
     {
         const GYCHAR* const pWriter = m_pWriter;
         GYINT32 nWriteBufferSize = pWriter >= m_pReader ? m_nBufferLen - (pWriter - m_pReader): m_pReader - pWriter;
         return nWriteBufferSize;
     }
 
-    GYINT32 GetReadSize()
+    virtual GYINT32 GetReadSize()
     {
         const GYCHAR* const pWriter = m_pWriter;
         GYINT32 nReadBufferSize = 0;
@@ -71,24 +96,24 @@ public:
         return nReadBufferSize;
     }
 
-    GYINT32 CleanUp()
+    virtual GYINT32 CleanUp()
     {
         m_pWriter = m_pHeader;
         m_pReader = m_pHeader;
         return 0;
     }
 
-    const GYCHAR* const GetHead()
+    virtual const GYCHAR* const GetHead()
     {
         return m_pHeader;
     }
 
-    const GYCHAR* const GetTail()
+    virtual const GYCHAR* const GetTail()
     {
         return m_pTail;
     }
 
-    GYINT32 WritePtr(GYINT32 n)
+   virtual  GYINT32 WritePtr(GYINT32 n)
     {
         GYINT32 err = INVALID_VALUE;
         if(GetWriteSize() >= n)
@@ -110,7 +135,7 @@ public:
         return err;
     }
 
-    GYINT32 Write(const GYCHAR* p, GYINT32 nLen)
+    virtual GYINT32 Write(const GYCHAR* p, GYINT32 nLen)
     {
         GYINT32 err = INVALID_VALUE;
         if(p && GetWriteSize() >= nLen)
@@ -130,7 +155,7 @@ public:
         return err;
     }
 
-    GYINT32 ReadPtr(GYINT32 n)
+    virtual GYINT32 ReadPtr(GYINT32 n)
     {
         GYINT32 err = INVALID_VALUE;
         if(GetReadSize() >= n)
@@ -152,7 +177,7 @@ public:
         return err;
     }
 
-    GYINT32 Read(GYCHAR* p, GYINT32 len)
+    virtual GYINT32 Read(GYCHAR* p, GYINT32 len)
     {
         GYINT32 err = INVALID_VALUE;
         if(p && GetReadSize() >= len)

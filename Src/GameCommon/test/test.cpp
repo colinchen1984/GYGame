@@ -7,7 +7,7 @@
 
 
 
-/*#include "GYNetAddress.h"
+#include "GYNetAddress.h"
 #include "GYCommonDefine.h"
 #include "GYNetWorkCommonDefine.h"
 #include "GYSocket.h"
@@ -15,6 +15,8 @@
 #include "GYReactor.h"
 #include <list>
 #include <stdio.h>
+#include "GYTimeStamp.h"
+#include "GYTestPacket.h"
 using std::list;
 
 GYReactor reactor;
@@ -49,7 +51,7 @@ GYVOID testHandler(GYNetEvent& event)
 		delete &event;
 	}
 }
-
+char testbuffer[1024] = {0};
 GYVOID acceptHandler(GYNetEvent& event)
 {
 	GYStreamSocket stream;
@@ -61,17 +63,25 @@ GYVOID acceptHandler(GYNetEvent& event)
 	{
 		p = new GYStreamSocket();
 		e = new GYNetEvent();
+
 		*p = stream;
 		e->m_accept = GYFALSE;
 		e->m_eventHandler = testHandler;
 		e->m_fd = p;
 		e->m_eventType = GY_NET_EVENT_TYPE_READ;
+		int err =setsockopt(p->GetFD(), SOL_SOCKET,SO_RCVBUF,testbuffer,1024 );
+		int error = GetLastNetWorkError();
 		reactor.AddEvent(*e);
 	}
 }
 
 GYINT32 main()
 {
+	char b[1024];
+	GYTestPacketWrap w;
+	const char* name = "陈琳";
+	w.Init(b, strlen(name));
+	w.SetUseName(name, strlen(name));
 	InitNetWork();
 	GYNetAddress test;
 	test.SetAddr("127.0.0.1");
@@ -90,11 +100,13 @@ GYINT32 main()
 	reactor.AddEvent(event);
 	while (GYTRUE)
 	{
-		reactor.RunOnce();
+		GYTimeStamp t;
+		t.m_termTime = 30;
+		reactor.RunOnce(t);
 	}
 	return 0;
 }
-*/
+
 
 /*#include <stdio.h>
 #include <stdlib.h>
@@ -124,7 +136,7 @@ int main()
 };
 */
 
-#include "GYList.h"
+/*#include "GYList.h"
 #include "GYArray.h"
 #include "GYStringManger.h"
 #include "GYHashTable.h"
@@ -134,12 +146,13 @@ struct Test
 	Test* m_next;
 	Test* m_this;
 	GYINT32 m_index;
+	GYINT32 testData[1];
 	Test()
 	{
 		memset(this, 0, sizeof(*this));
 		m_this = this;
 	}
-};
+}__attribute__( ( packed, aligned( 1 ) ) );
 const int len = 100;
 Test g[len];
 #include <bitset>
@@ -148,6 +161,12 @@ using std::bitset;
 GYStringManager gM;
 int main()
 {
+	Test t1[1];
+	int lene = sizeof(*t1);
+	t1->m_prev = (Test*)0x0fffffff;
+	t1->m_next = (Test*)0x0fffffff;
+	t1->m_index = 0x0fffffff;
+	t1->testData = (int*)0x0fffffff;
 	gM.Init();
 	GYHashTable<GYINT32> hashTest;
 	hashTest.Init(100, 100);
@@ -186,7 +205,7 @@ int main()
 
 }
 
-/*int main()
+int main()
 {
 	int a = 0;
 	if (a)
