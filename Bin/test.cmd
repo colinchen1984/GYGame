@@ -14,3 +14,7 @@ make
 cd ../Gateway
 cmake ../../Src/Gateway
 make
+
+cd ../Protocol
+cmake ../../Src/Protocol
+make
