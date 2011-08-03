@@ -12,9 +12,11 @@ struct GYTestPacket
 {
 	GYUINT8	m_userNameLen;
 	GYCHAR	m_userName[1];
-	GYTestPacket(GYINT32 userNameLen)
+	
+	GYBOOL Init(GYINT32 userNameLen)
 	{
 		m_userNameLen = static_cast<GYUINT8>(userNameLen);
+		return GYTRUE;
 	}
 
 	EM_PACKET_ID GetPacketID(){return EM_PACKET_ID_TEST_ID;}
@@ -38,7 +40,7 @@ GYBOOL GYTestPacketWrap::Init( GYCHAR* allocatedMemory, GYINT32 userNameLen)
 {
 	GYPacketHead* pHead = reinterpret_cast<GYPacketHead*>(allocatedMemory);
 	m_data =reinterpret_cast<GYTestPacket*>(&pHead[1]);
-	m_data->GYTestPacket::GYTestPacket(userNameLen);
+	m_data->Init(userNameLen);
 	pHead->m_id = m_data->GetPacketID();
 	pHead->m_packetLen = m_data->GetPacketLen(userNameLen);
 	return GYTRUE;
@@ -46,7 +48,7 @@ GYBOOL GYTestPacketWrap::Init( GYCHAR* allocatedMemory, GYINT32 userNameLen)
 
 GYINT32 GYTestPacketWrap::GetPacketLen( GYINT32 userNameLen )
 {
-	GYINT32 result = GYTestPacket::GetPacketLen(userNameLen) + sizeof(GYPacketHead);
+	GYINT32 result = GYTestPacket::GetPacketLen(userNameLen) + PacektHeadLen;
 	return result;
 }
 
