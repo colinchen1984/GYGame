@@ -220,7 +220,7 @@ public:
 		return ret;
 	}
 
-	T* Find(const char* key)
+	T* Find(const GYCHAR* key)
 	{
 		T* ret = GYNULL;
 		GYUINT32 hash_value1 = _HashFunction1(key);
@@ -229,9 +229,7 @@ public:
 		{
 			GYUINT32 hash_value2 = _HashFunction2(key);
 			GYUINT32 pos2 = hash_value2 % m_nBucketSize;
-			if(m_pHashTable[pos1][pos2].HashValue1 == hash_value1 &&
-				m_pHashTable[pos1][pos2].HashValue2 == hash_value2 &&
-				m_pHashTable[pos1][pos2].HashValue3 == _HashFunction3(key)
+			if(m_pHashTable[pos1][pos2].HashValue3 == _HashFunction3(key)
 				&& m_pHashTable[pos1][pos2].bUsed)
 			{
 				ret = &m_pHashTable[pos1][pos2].value;

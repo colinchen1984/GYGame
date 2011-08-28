@@ -26,13 +26,27 @@ struct GYPacketHead
 {
 	GYPACKETID m_id;
 	GYPACKETLEN m_packetLen;
+	GYCHAR		m_flags;
 	GYPacketHead()
 	{
 		m_id = GYMakePacketID(EM_PACKET_ID_INVALID);
 		m_packetLen = 0;
+		m_flags = 0;
 	}
 };
-
- #pragma pack ()
+#pragma pack ()
 const GYINT32 PacektHeadLen = sizeof(GYPacketHead);
+
+class GYPacketInteface
+{
+protected:
+	GYPacketInteface(){};
+	virtual ~GYPacketInteface(){};
+public:
+	virtual GYPACKETID GetPacketID(){return EM_PACKET_ID_INVALID;}
+	virtual GYPACKETLEN GetPacketLength(){return 0;}
+	virtual GYCHAR GetPacketFlags(){return 0;}
+	virtual 
+};
+
 #endif

@@ -220,8 +220,8 @@ GYINT32 GYServer::Release()
 		m_gateThread[i].StopGateThread();
 	}
 	ThreadPool.Release();
-	delete[] m_gateThread;
-	delete[] m_wholeClientSession;
+	GYDelete[] m_gateThread;
+	GYDelete[] m_wholeClientSession;
 	m_usingClientSession.CleanUp();
 	m_freeClientSession.CleanUp();
 	m_reactor.Release();

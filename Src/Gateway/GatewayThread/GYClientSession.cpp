@@ -7,6 +7,7 @@
 #include "GYClientSession.h" 
 #include "GYReactor.h"
 #include "GYGatewayThread.h"
+#include "GYProtocolDefine.h"
 
 GYClientSession::GYClientSession()
 {
@@ -101,11 +102,13 @@ GYVOID GYClientSession::_OnReceiveWithServer()
 	}
 
 	GYINT32 length = INPUTBUFFER.GetReadSize();
-	if (length > 0)
+	if (length > PacektHeadLen)
 	{
-		const GYCHAR* p = INPUTBUFFER.ReadPtr();
-		m_connection.Send(p, length);
-		INPUTBUFFER.ReadPtr(length);
+		const GYPacketHead* pPacketHead = reinterpret_cast<const GYPacketHead*>(INPUTBUFFER.ReadPtr());
+		if (length > pPacketHead->m_packetLen + PacektHeadLen)
+		{
+			
+		}
 	}
 
 }

@@ -19,8 +19,10 @@ typedef unsigned short			GYUINT16;
 typedef int						GYINT32;
 typedef unsigned int			GYUINT32;
 typedef __int64					GYINT64;
+typedef float					GYFLOAT;
 typedef void					GYVOID;
 typedef char					GYBOOL;
+#include <assert.h>
 #endif
 
 #ifdef LINUX64
@@ -33,6 +35,7 @@ typedef unsigned short			GYUINT16;
 typedef int						GYINT32;
 typedef unsigned int			GYUINT32;
 typedef long long				GYINT64;
+typedef float					GYFLOAT;
 typedef void					GYVOID;
 typedef char					GYBOOL;
 #endif
@@ -49,7 +52,7 @@ const GYBOOL GYTRUE = 1;
 const GYBOOL GYFALSE = 0;
 const GYINT32 GYNULL = 0;
 
-#define GYAssert(x)				//assert(x)
+#define GYAssert(x)				assert(x)
 #define GYINLINE				inline
 extern GYVOID	GYSleep(GYINT32 ms);					
 #endif

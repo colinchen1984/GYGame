@@ -15,6 +15,11 @@ GYStringManager::GYStringManager()
 
 GYINT32 GYStringManager::Init()
 {
+	if (0 != m_strHashTable.Init(StringHashTableSize, StringHashTableBucketSize))
+	{
+		return INVALID_VALUE;
+	}
+	
 	for (GYINT32 i = 0; i < BufferCount16; ++i)
 	{
 		m_16poolFree.Add(m_16pooldata[i]);
@@ -44,80 +49,97 @@ GYINT32 GYStringManager::Init()
 	{
 		m_1024poolFree.Add(m_1024pooldata[i]);
 	}
-
+	
 	return 0;
 }
 
-GYWCHAR* GYStringManager::AllocateString( const GYWCHAR* str, GYINT32 strLength )
+GYCHAR* GYStringManager::AllocateString( const GYCHAR* str, GYINT32 strLength )
 {
-	GYWCHAR* pString = GYNULL;
-	++strLength;
-	if (strLength <= 16)
+	GYCHAR** findResult = m_strHashTable.Find(str);
+	GYCHAR* pString = GYNULL;
+	if (GYNULL == findResult)
 	{
-		GYStringBuffer<16>* pStringBuffer = _Allocate16();
-		if (GYNULL != pStringBuffer)
+		GYCHAR* inSertData = GYNULL;
+		if (strLength < 16)
 		{
-			m_16poolUsed.Add(*pStringBuffer);
-			pStringBuffer->m_referenceCount = 1;
-			pString = pStringBuffer->m_buffer;
+			GYStringBuffer<16>* pStringBuffer = _Allocate16();
+			if (GYNULL != pStringBuffer)
+			{
+				inSertData = reinterpret_cast<GYCHAR*>(pStringBuffer);
+				m_16poolUsed.Add(*pStringBuffer);
+				pStringBuffer->m_referenceCount = 1;
+				pString = pStringBuffer->m_buffer;
+			}
+		}
+		else if (strLength >= 16 && strLength <= 32)
+		{
+			GYStringBuffer<32>* pStringBuffer = _Allocate32();
+			if (GYNULL != pStringBuffer)
+			{
+				inSertData = reinterpret_cast<GYCHAR*>(pStringBuffer);
+				m_32poolUsed.Add(*pStringBuffer);
+				pStringBuffer->m_referenceCount = 1;
+				pString = pStringBuffer->m_buffer;
+			}
+		}
+		else if (strLength >= 32 && strLength <= 64)
+		{
+			GYStringBuffer<64>* pStringBuffer = _Allocate64();
+			if (GYNULL != pStringBuffer)
+			{
+				inSertData = reinterpret_cast<GYCHAR*>(pStringBuffer);
+				m_64poolUsed.Add(*pStringBuffer);
+				pStringBuffer->m_referenceCount = 1;
+				pString = pStringBuffer->m_buffer;
+			}
+		}
+		else if (strLength >= 64 && strLength <= 128)
+		{
+			GYStringBuffer<128>* pStringBuffer = _Allocate128();
+			if (GYNULL != pStringBuffer)
+			{
+				inSertData = reinterpret_cast<GYCHAR*>(pStringBuffer);
+				m_128poolUsed.Add(*pStringBuffer);
+				pStringBuffer->m_referenceCount = 1;
+				pString = pStringBuffer->m_buffer;
+			}
+		}
+		else if (strLength >= 128 && strLength <= 512)
+		{
+			GYStringBuffer<512>* pStringBuffer = _Allocate512();
+			if (GYNULL != pStringBuffer)
+			{
+				inSertData = reinterpret_cast<GYCHAR*>(pStringBuffer);
+				m_512poolUsed.Add(*pStringBuffer);
+				pStringBuffer->m_referenceCount = 1;
+				pString = pStringBuffer->m_buffer;
+			}
+		}
+		else if (strLength >= 512 && strLength <= 1024)
+		{
+			GYStringBuffer<1024>* pStringBuffer = _Allocate1024();
+			if (GYNULL != pStringBuffer)
+			{
+				inSertData = reinterpret_cast<GYCHAR*>(pStringBuffer);
+				m_1024poolUsed.Add(*pStringBuffer);
+				pStringBuffer->m_referenceCount = 1;
+				pString = pStringBuffer->m_buffer;
+			}
+		}
+		if (GYNULL != pString && GYNULL != inSertData)
+		{
+			m_strHashTable.Insert(str, inSertData);
+			memcpy(pString, str, sizeof(str[0]) * strLength);
+			pString[strLength] = 0;
 		}
 	}
-	else if (strLength > 16 && strLength <= 32)
+	else
 	{
-		GYStringBuffer<32>* pStringBuffer = _Allocate32();
-		if (GYNULL != pStringBuffer)
-		{
-			m_32poolUsed.Add(*pStringBuffer);
-			pStringBuffer->m_referenceCount = 1;
-			pString = pStringBuffer->m_buffer;
-		}
-	}
-	else if (strLength > 32 && strLength <= 64)
-	{
-		GYStringBuffer<64>* pStringBuffer = _Allocate64();
-		if (GYNULL != pStringBuffer)
-		{
-			m_64poolUsed.Add(*pStringBuffer);
-			pStringBuffer->m_referenceCount = 1;
-			pString = pStringBuffer->m_buffer;
-		}
-	}
-	else if (strLength > 64 && strLength <= 128)
-	{
-		GYStringBuffer<128>* pStringBuffer = _Allocate128();
-		if (GYNULL != pStringBuffer)
-		{
-			m_128poolUsed.Add(*pStringBuffer);
-			pStringBuffer->m_referenceCount = 1;
-			pString = pStringBuffer->m_buffer;
-		}
-	}
-	else if (strLength > 128 && strLength <= 512)
-	{
-		GYStringBuffer<512>* pStringBuffer = _Allocate512();
-		if (GYNULL != pStringBuffer)
-		{
-			m_512poolUsed.Add(*pStringBuffer);
-			pStringBuffer->m_referenceCount = 1;
-			pString = pStringBuffer->m_buffer;
-		}
-	}
-	else if (strLength > 512 && strLength <= 1024)
-	{
-		GYStringBuffer<1024>* pStringBuffer = _Allocate1024();
-		if (GYNULL != pStringBuffer)
-		{
-			m_1024poolUsed.Add(*pStringBuffer);
-			pStringBuffer->m_referenceCount = 1;
-			pString = pStringBuffer->m_buffer;
-		}
+		pString = *findResult;
+		++(*reinterpret_cast<GYINT32*>(pString));
+		pString += sizeof(GYINT32*) + 2 * sizeof(GYVOID*);
 	}
 
-	if (GYNULL != pString)
-	{
-		memcpy(pString, str, sizeof(str[0]) * --strLength);
-		pString[strLength] = 0;
-	}
 	
 	return pString;
 }
@@ -267,45 +289,18 @@ GYStringManager::GYStringBuffer<16>* GYStringManager::_Allocate16()
 	return GYNULL;
 }
 
-GYVOID GYStringManager::AddStringReference( GYWCHAR* str, GYINT32 strLength )
+GYVOID GYStringManager::DeleteStringReference( GYCHAR* str, GYINT32 strLength )
 {
-	++strLength;
-	if (strLength <= 16)
+	GYCHAR** targetStr = m_strHashTable.Find(str);
+	if (GYNULL == targetStr)
 	{
-		GYStringBuffer<16>* pStringBuffer = reinterpret_cast<GYStringBuffer<16>*>(str);
-		++pStringBuffer->m_referenceCount;
+		//该字符串没有注册过
+		//或者hash表有bug？
+		GYAssert(GYFALSE);
+		return;
 	}
-	else if (strLength > 16 && strLength <= 32)
-	{
-		GYStringBuffer<32>* pStringBuffer = reinterpret_cast<GYStringBuffer<32>*>(str);
-		++pStringBuffer->m_referenceCount;
-	}
-	else if (strLength > 32 && strLength <= 64)
-	{
-		GYStringBuffer<64>* pStringBuffer = reinterpret_cast<GYStringBuffer<64>*>(64);
-		++pStringBuffer->m_referenceCount;
-	}
-	else if (strLength > 64 && strLength <= 128)
-	{
-		GYStringBuffer<128>* pStringBuffer = reinterpret_cast<GYStringBuffer<128>*>(str);
-		++pStringBuffer->m_referenceCount;
-	}
-	else if (strLength > 128 && strLength <= 512)
-	{
-		GYStringBuffer<512>* pStringBuffer = reinterpret_cast<GYStringBuffer<512>*>(str);
-		++pStringBuffer->m_referenceCount;
-	}
-	else if (strLength > 512 && strLength <= 1024)
-	{
-		GYStringBuffer<1024>* pStringBuffer = reinterpret_cast<GYStringBuffer<1024>*>(str);
-		++pStringBuffer->m_referenceCount;
-	}
-}
-
-GYVOID GYStringManager::DeleteStringReference( GYWCHAR* str, GYINT32 strLength )
-{
-	++strLength;
-	if (strLength <= 16)
+	str -= sizeof(GYINT32*) + 2 * sizeof(GYVOID*);
+	if (strLength < 16)
 	{
 		GYStringBuffer<16>* pStringBuffer = reinterpret_cast<GYStringBuffer<16>*>(str);
 		--pStringBuffer->m_referenceCount;
@@ -316,7 +311,7 @@ GYVOID GYStringManager::DeleteStringReference( GYWCHAR* str, GYINT32 strLength )
 		}
 		
 	}
-	else if (strLength > 16 && strLength <= 32)
+	else if (strLength >= 16 && strLength < 32)
 	{
 		GYStringBuffer<32>* pStringBuffer = reinterpret_cast<GYStringBuffer<32>*>(str);
 		--pStringBuffer->m_referenceCount;
@@ -326,7 +321,7 @@ GYVOID GYStringManager::DeleteStringReference( GYWCHAR* str, GYINT32 strLength )
 			m_32poolFree.Add(*pStringBuffer);
 		}
 	}
-	else if (strLength > 32 && strLength <= 64)
+	else if (strLength >= 32 && strLength < 64)
 	{
 		GYStringBuffer<64>* pStringBuffer = reinterpret_cast<GYStringBuffer<64>*>(64);
 		--pStringBuffer->m_referenceCount;
@@ -336,7 +331,7 @@ GYVOID GYStringManager::DeleteStringReference( GYWCHAR* str, GYINT32 strLength )
 			m_64poolFree.Add(*pStringBuffer);
 		}
 	}
-	else if (strLength > 64 && strLength <= 128)
+	else if (strLength >= 64 && strLength < 128)
 	{
 		GYStringBuffer<128>* pStringBuffer = reinterpret_cast<GYStringBuffer<128>*>(str);
 		--pStringBuffer->m_referenceCount;
@@ -346,7 +341,7 @@ GYVOID GYStringManager::DeleteStringReference( GYWCHAR* str, GYINT32 strLength )
 			m_128poolFree.Add(*pStringBuffer);
 		}
 	}
-	else if (strLength > 128 && strLength <= 512)
+	else if (strLength >= 128 && strLength < 512)
 	{
 		GYStringBuffer<512>* pStringBuffer = reinterpret_cast<GYStringBuffer<512>*>(str);
 		--pStringBuffer->m_referenceCount;
@@ -356,7 +351,7 @@ GYVOID GYStringManager::DeleteStringReference( GYWCHAR* str, GYINT32 strLength )
 			m_512poolFree.Add(*pStringBuffer);
 		}
 	}
-	else if (strLength > 512 && strLength <= 1024)
+	else if (strLength >= 512 && strLength < 1024)
 	{
 		GYStringBuffer<1024>* pStringBuffer = reinterpret_cast<GYStringBuffer<1024>*>(str);
 		--pStringBuffer->m_referenceCount;

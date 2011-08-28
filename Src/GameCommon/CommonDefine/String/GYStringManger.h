@@ -10,29 +10,31 @@
 
 #include "GYCommonDefine.h"
 #include "GYList.h"
+#include "GYHashTable.h"
 
-const GYINT32 BufferCount16 = 1024 * 1024;
-const GYINT32 BufferCount32 = 1024 * 1024;
-const GYINT32 BufferCount64 = 512 * 1024;
-const GYINT32 BufferCount128 = 256*1024;
-const GYINT32 BufferCount512 = 128*1024;
-const GYINT32 BufferCount1024 = 128*1024;
-
+const GYINT32 BufferCount16 = 1024 ;
+const GYINT32 BufferCount32 = 1024;
+const GYINT32 BufferCount64 = 512;
+const GYINT32 BufferCount128 = 256;
+const GYINT32 BufferCount512 = 128;
+const GYINT32 BufferCount1024 = 128;
+const GYINT32 StringHashTableSize = 128;
+const GYINT32 StringHashTableBucketSize = 128;
 class GYStringManager
 {
 	template<int bufferSize>
 	struct GYStringBuffer
 	{
-		GYWCHAR m_buffer[bufferSize];
 		GYINT32	m_referenceCount;
 		GYStringBuffer<bufferSize>*		m_prev;
 		GYStringBuffer<bufferSize>*		m_next;
+		GYCHAR m_buffer[bufferSize];
 		GYStringBuffer()
 		{
-			memset(m_buffer, 0, sizeof(m_buffer));
 			m_referenceCount = 0;
 			m_prev = GYNULL;
 			m_next = GYNULL;
+			memset(m_buffer, 0, sizeof(m_buffer));
 		}
 	};
 
@@ -45,26 +47,26 @@ class GYStringManager
 	GYList<GYStringBuffer<64> >		m_64poolFree;
 	GYList<GYStringBuffer<64> >		m_64poolUsed;
 	GYStringBuffer<64>				m_64pooldata[BufferCount64];
-	GYList<GYStringBuffer<128> >		m_128poolFree;
-	GYList<GYStringBuffer<128> >		m_128poolUsed;
+	GYList<GYStringBuffer<128> >	m_128poolFree;
+	GYList<GYStringBuffer<128> >	m_128poolUsed;
 	GYStringBuffer<128>				m_128pooldata[BufferCount128];
-	GYList<GYStringBuffer<512> >		m_512poolFree;
-	GYList<GYStringBuffer<512> >		m_512poolUsed;
+	GYList<GYStringBuffer<512> >	m_512poolFree;
+	GYList<GYStringBuffer<512> >	m_512poolUsed;
 	GYStringBuffer<512>				m_512pooldata[BufferCount512];
 	GYList<GYStringBuffer<1024> >	m_1024poolFree;
 	GYList<GYStringBuffer<1024> >	m_1024poolUsed;
 	GYStringBuffer<1024>			m_1024pooldata[BufferCount1024];
-	
+	GYHashTable<GYCHAR*>			m_strHashTable;
+
 public:
 	GYStringManager();
 	~GYStringManager(){};
 
 	GYINT32		Init();
 
-	GYWCHAR*	AllocateString(const GYWCHAR* str, GYINT32 strLength);
+	GYCHAR*		AllocateString(const GYCHAR* str, GYINT32 strLength);
 
-	GYVOID		AddStringReference(GYWCHAR* str, GYINT32 strLength);
-	GYVOID		DeleteStringReference(GYWCHAR* str, GYINT32 strLength);
+	GYVOID		DeleteStringReference(GYCHAR* str, GYINT32 strLength);
 
 private:
 	GYStringBuffer<16>*		_Allocate16();

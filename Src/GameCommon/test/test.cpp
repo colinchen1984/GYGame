@@ -17,6 +17,11 @@
 #include <stdio.h>
 #include "GYTimeStamp.h"
 #include "GYTestPacket.h"
+#include "GYStringManger.h"
+#include "GYString.h"
+#include "GYStreamSerialization.h"
+
+
 using std::list;
 
 GYReactor reactor;
@@ -80,6 +85,20 @@ GYINT32 main()
 	char b[1024];
 	GYTestPacketWrap w;
 	const char* name = "陈琳";
+	GYStringManager* strManager = new GYStringManager();
+	strManager->Init();
+	GYString testString1(name, strlen(name), *strManager);
+	GYString testString2(name, strlen(name), *strManager);
+	GYCycleBuffer<1024> cycle;
+	GYStreamSerialization<1024> testRead(cycle, EM_SERIALIZAION_MODE_WRITE);
+	testRead << 4;
+	testRead << testString1;
+	int writeByte = testRead.GetSerializDataSize();
+	GYStreamSerialization<1024> testWrite(cycle, EM_SERIALIZAION_MODE_READ);
+	GYString testString3(*strManager);
+	testWrite << writeByte;
+	testWrite << testString3;
+	return 1;
 	w.Init(b, strlen(name));
 	w.SetUseName(name, strlen(name));
 	InitNetWork();
