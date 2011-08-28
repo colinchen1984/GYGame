@@ -217,6 +217,10 @@
 			>
 		</File>
 		<File
+			RelativePath="..\..\Src\GameCommon\CommonDefine\GYSerialization.h"
+			>
+		</File>
+		<File
 			RelativePath="..\..\Src\GameCommon\CommonDefine\GYTimeStamp.h"
 			>
 		</File>

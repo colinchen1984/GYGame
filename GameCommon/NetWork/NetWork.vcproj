@@ -197,6 +197,10 @@
 			>
 		</File>
 		<File
+			RelativePath="..\..\Src\GameCommon\NetWork\GYStreamSerialization.h"
+			>
+		</File>
+		<File
 			RelativePath="..\..\Src\GameCommon\NetWork\GYWin32Select.cpp"
 			>
 		</File>
