@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../Src/GameCommon/Thread;../../Src/GameCommon/NetWork;../../Src/GameCommon/String;../../Src/GameCommon/CommonDefine/TimeController;../../Src/GameCommon/CommonDefine;../../Src/Gateway/ListenThread;../../Src/Gateway;../../Src/Gateway/GatewayThread"
+				AdditionalIncludeDirectories="../../Src/GameCommon/Thread;../../Src/GameCommon/NetWork;../../Src/GameCommon/String;../../Src/GameCommon/CommonDefine/TimeController;../../Src/GameCommon/CommonDefine;../../Src/Gateway/ListenThread;../../Src/Protocol;../../Src/Gateway;../../Src/Gateway/GatewayThread"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -61,9 +61,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Thread.lib NetWork.lib GameCommon.lib"
+				AdditionalDependencies="Thread.lib NetWork.lib GameCommon.lib Protocol.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="../../Bin/NetWork;../../Bin/Thread;../../Bin/GameCommon"
+				AdditionalLibraryDirectories="../../Bin/NetWork;../../Bin/Protocol;../../Bin/Thread;../../Bin/GameCommon"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -185,6 +185,18 @@
 			</File>
 			<File
 				RelativePath="..\..\Src\Gateway\GatewayThread\GYGatewayThread.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Packet"
+			>
+			<File
+				RelativePath="..\..\Src\Gateway\Packet\GYPacketFactoryManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Src\Gateway\Packet\GYPacketFactoryManager.h"
 				>
 			</File>
 		</Filter>
