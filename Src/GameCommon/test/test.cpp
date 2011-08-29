@@ -20,7 +20,7 @@
 #include "GYStringManger.h"
 #include "GYString.h"
 #include "GYStreamSerialization.h"
-
+#include "GYTestPacket.h"
 
 using std::list;
 
@@ -83,24 +83,29 @@ GYVOID acceptHandler(GYNetEvent& event)
 GYINT32 main()
 {
 	char b[1024];
-	GYTestPacketWrap w;
 	const char* name = "陈琳";
 	GYStringManager* strManager = new GYStringManager();
 	strManager->Init();
 	GYString testString1(name, strlen(name), *strManager);
 	GYString testString2(name, strlen(name), *strManager);
+	testString2 = testString1;
+	testString2 = "test";
+	testString2 = testString1;
 	GYCycleBuffer<1024> cycle;
+	GYTestPacket* packet = new GYTestPacket(*strManager);
+	packet->SetUseName(testString1);
 	GYStreamSerialization<1024> testRead(cycle, EM_SERIALIZAION_MODE_WRITE);
-	testRead << 4;
-	testRead << testString1;
+	int testInt = 4;
+	testRead << testInt;
+	testRead<< *packet;
+	delete packet;
+	packet = new GYTestPacket(*strManager);
 	int writeByte = testRead.GetSerializDataSize();
 	GYStreamSerialization<1024> testWrite(cycle, EM_SERIALIZAION_MODE_READ);
 	GYString testString3(*strManager);
 	testWrite << writeByte;
-	testWrite << testString3;
+	testWrite << *packet;
 	return 1;
-	w.Init(b, strlen(name));
-	w.SetUseName(name, strlen(name));
 	InitNetWork();
 	GYNetAddress test;
 	test.SetAddr("127.0.0.1");

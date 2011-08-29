@@ -21,8 +21,13 @@ GYString::GYString(const GYString& str):m_strManager(str.m_strManager)
 
 GYString::GYString(const GYCHAR* pString, GYINT32 stringLength, GYStringManager& stringManger):m_strManager(stringManger)
 {
-	m_stringBuffer = stringManger.AllocateString(pString, stringLength);
 	m_stringLength = stringLength;
+	m_stringBuffer = stringManger.AllocateString(pString, m_stringLength);
+	if (GYNULL == m_stringBuffer)
+	{
+		m_stringLength = 0;
+	}
+	
 }
 
 GYString::~GYString()
@@ -32,20 +37,13 @@ GYString::~GYString()
 
 GYBOOL GYString::operator==( const GYString& str ) const
 {
-	if(str.m_stringBuffer == m_stringBuffer)
+	GYBOOL result = GYFALSE;
+	if (str.m_stringBuffer == m_stringBuffer)
 	{
-		GYAssert(str.m_stringLength == m_stringLength);
-		return GYTRUE;
+		result = GYTRUE;
 	}
-	else if(str.m_stringLength != m_stringLength)
-	{
-		return GYFALSE;
-	}
-	else
-	{
-		return 0 == strcmp(str.m_stringBuffer, m_stringBuffer) ? GYTRUE : GYFALSE;
-	}
-	return GYFALSE;
+	
+	return result;
 }
 
 GYBOOL GYString::operator==( const GYCHAR* str ) const
@@ -54,18 +52,42 @@ GYBOOL GYString::operator==( const GYCHAR* str ) const
 }
 
 
-GYVOID GYString::operator=( const GYString& str )
-{
-	m_stringBuffer = str.m_stringBuffer;
-	m_stringLength = str.m_stringLength;
-	m_strManager = str.m_strManager;
-	m_strManager.AllocateString(str.c_str(), m_stringLength);
+GYString& GYString::operator=( const GYString& str )
+{	
+	if (m_stringBuffer != str.m_stringBuffer)
+	{
+		if (GYNULL != m_stringBuffer)
+		{
+			m_strManager.DeleteStringReference(m_stringBuffer, m_stringLength);
+			m_stringLength = 0;
+		}
+
+		m_stringLength = str.m_stringLength;
+		m_strManager = str.m_strManager;
+		m_stringBuffer = m_strManager.AllocateString(str.m_stringBuffer, str.m_stringLength);
+		if (GYNULL == m_stringBuffer)
+		{
+			m_stringLength = 0;
+		}
+	}
+	return *this;
 }
 
-GYVOID GYString::operator=( const GYCHAR* str )
+GYString& GYString::operator=( const GYCHAR* str )
 {
+	if (GYNULL != m_stringBuffer)
+	{
+		m_strManager.DeleteStringReference(m_stringBuffer, m_stringLength);
+		m_stringLength = 0;
+	}
+
 	m_stringLength = strlen(str);
 	m_stringBuffer = m_strManager.AllocateString(str, m_stringLength);
+	if (GYNULL == m_stringBuffer)
+	{
+		m_stringLength = 0;
+	}
+	return *this;
 }
 
 

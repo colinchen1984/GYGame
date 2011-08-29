@@ -6,58 +6,19 @@
 ////////////////////////////////////////////
 #include "GYTestPacket.h"
 #include "GYProtocolDefine.h"
+#include "GYSerialization.h"
 
-#pragma pack (1)
-struct GYTestPacket
+GYVOID GYTestPacket::SetUseName( const GYString& name )
 {
-	GYUINT8	m_userNameLen;
-	GYCHAR	m_userName[1];
-	
-	GYBOOL Init(GYINT32 userNameLen)
-	{
-		m_userNameLen = static_cast<GYUINT8>(userNameLen);
-		return GYTRUE;
-	}
-
-	EM_PACKET_ID GetPacketID(){return EM_PACKET_ID_TEST_ID;}
-
-	static GYPACKETLEN GetPacketLen(GYINT32 userNameLen)
-	{	
-		GYPACKETLEN len = sizeof(GYTestPacket);
-		len += sizeof(GYCHAR) * (userNameLen);
-		return len;
-	}
-};
-#pragma pack ()
-
-GYVOID GYTestPacketWrap::SetUseName( const GYCHAR* userName, GYINT32 userNameLen )
-{
-	memcpy(m_data->m_userName, userName, sizeof(m_data->m_userName[0]) * userNameLen);
-	m_data->m_userName[userNameLen] = 0;
+	m_name = name;
 }
 
-GYBOOL GYTestPacketWrap::Init( GYCHAR* allocatedMemory, GYINT32 userNameLen)
+const GYString& GYTestPacket::GetUseName()
 {
-	GYPacketHead* pHead = reinterpret_cast<GYPacketHead*>(allocatedMemory);
-	m_data =reinterpret_cast<GYTestPacket*>(&pHead[1]);
-	m_data->Init(userNameLen);
-	pHead->m_id = m_data->GetPacketID();
-	pHead->m_packetLen = m_data->GetPacketLen(userNameLen);
-	return GYTRUE;
+	return m_name;
 }
 
-GYINT32 GYTestPacketWrap::GetPacketLen( GYINT32 userNameLen )
+GYVOID GYTestPacket::Serializ( GYSerializationInteface& serializer )
 {
-	GYINT32 result = GYTestPacket::GetPacketLen(userNameLen) + PacektHeadLen;
-	return result;
-}
-
-GYTestPacketWrap::GYTestPacketWrap()
-{
-
-}
-
-GYTestPacketWrap::~GYTestPacketWrap()
-{
-
+	serializer << m_name;
 }

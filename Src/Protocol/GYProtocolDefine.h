@@ -8,6 +8,7 @@
 #ifndef __GYPROTOCOLDEFINE_H__
 #define __GYPROTOCOLDEFINE_H__
 #include "GYCommonDefine.h"
+class GYSerializationInteface;
 
 typedef GYUINT16 GYPACKETID;
 typedef GYUINT16 GYPACKETLEN;
@@ -44,9 +45,8 @@ protected:
 	virtual ~GYPacketInteface(){};
 public:
 	virtual GYPACKETID GetPacketID(){return EM_PACKET_ID_INVALID;}
-	virtual GYPACKETLEN GetPacketLength(){return 0;}
 	virtual GYCHAR GetPacketFlags(){return 0;}
-	virtual 
+	virtual GYVOID Serializ(GYSerializationInteface& serializer) = 0;
 };
 
 #endif

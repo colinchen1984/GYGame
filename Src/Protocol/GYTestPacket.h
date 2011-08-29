@@ -8,18 +8,28 @@
 #ifndef __GYTESTPACKET_H__
 #define __GYTESTPACKET_H__
 #include "GYCommonDefine.h"
-struct GYTestPacket;
-class GYTestPacketWrap
+#include "GYString.h"
+#include "GYProtocolDefine.h"
+
+class GYStringManager;
+class GYSerializationInteface;
+
+class GYTestPacket : public GYPacketInteface
 {
-	GYTestPacket* m_data;
+	GYString m_name;
 public:
-	GYTestPacketWrap();
-	~GYTestPacketWrap();
+	GYTestPacket(GYStringManager& stringManager):m_name(stringManager)
+	{
+	};
+	~GYTestPacket(){};
 
-	GYBOOL Init(GYCHAR* allocatedMemory, GYINT32 userNameLen);
-	GYINT32 GetPacketLen(GYINT32 userNameLen);
+	virtual GYPACKETID GetPacketID(){return EM_PACKET_ID_TEST_ID;}
+	virtual GYCHAR GetPacketFlags(){return 0;}
 
-	GYVOID SetUseName(const GYCHAR* userName, GYINT32 userNameLen);
+	GYVOID SetUseName(const GYString& name);
+	const GYString& GetUseName();
+
+	virtual GYVOID Serializ(GYSerializationInteface& serializer);
 
 };
 #endif

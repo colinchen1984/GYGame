@@ -139,8 +139,6 @@ GYCHAR* GYStringManager::AllocateString( const GYCHAR* str, GYINT32 strLength )
 		++(*reinterpret_cast<GYINT32*>(pString));
 		pString += sizeof(GYINT32*) + 2 * sizeof(GYVOID*);
 	}
-
-	
 	return pString;
 }
 
@@ -299,13 +297,13 @@ GYVOID GYStringManager::DeleteStringReference( GYCHAR* str, GYINT32 strLength )
 		GYAssert(GYFALSE);
 		return;
 	}
-	str -= sizeof(GYINT32*) + 2 * sizeof(GYVOID*);
 	if (strLength < 16)
 	{
-		GYStringBuffer<16>* pStringBuffer = reinterpret_cast<GYStringBuffer<16>*>(str);
+		GYStringBuffer<16>* pStringBuffer = reinterpret_cast<GYStringBuffer<16>*>(*targetStr);
 		--pStringBuffer->m_referenceCount;
 		if (pStringBuffer->m_referenceCount <= 0)
 		{
+			m_strHashTable.Remove(str);
 			m_16poolUsed.Delete(*pStringBuffer);
 			m_16poolFree.Add(*pStringBuffer);
 		}
@@ -313,50 +311,55 @@ GYVOID GYStringManager::DeleteStringReference( GYCHAR* str, GYINT32 strLength )
 	}
 	else if (strLength >= 16 && strLength < 32)
 	{
-		GYStringBuffer<32>* pStringBuffer = reinterpret_cast<GYStringBuffer<32>*>(str);
+		GYStringBuffer<32>* pStringBuffer = reinterpret_cast<GYStringBuffer<32>*>(*targetStr);
 		--pStringBuffer->m_referenceCount;
 		if (pStringBuffer->m_referenceCount <= 0)
 		{
+			m_strHashTable.Remove(str);
 			m_32poolUsed.Delete(*pStringBuffer);
 			m_32poolFree.Add(*pStringBuffer);
 		}
 	}
 	else if (strLength >= 32 && strLength < 64)
 	{
-		GYStringBuffer<64>* pStringBuffer = reinterpret_cast<GYStringBuffer<64>*>(64);
+		GYStringBuffer<64>* pStringBuffer = reinterpret_cast<GYStringBuffer<64>*>(*targetStr);
 		--pStringBuffer->m_referenceCount;
 		if (pStringBuffer->m_referenceCount <= 0)
 		{
+			m_strHashTable.Remove(str);
 			m_64poolUsed.Delete(*pStringBuffer);
 			m_64poolFree.Add(*pStringBuffer);
 		}
 	}
 	else if (strLength >= 64 && strLength < 128)
 	{
-		GYStringBuffer<128>* pStringBuffer = reinterpret_cast<GYStringBuffer<128>*>(str);
+		GYStringBuffer<128>* pStringBuffer = reinterpret_cast<GYStringBuffer<128>*>(*targetStr);
 		--pStringBuffer->m_referenceCount;
 		if (pStringBuffer->m_referenceCount <= 0)
 		{
+			m_strHashTable.Remove(str);
 			m_128poolUsed.Delete(*pStringBuffer);
 			m_128poolFree.Add(*pStringBuffer);
 		}
 	}
 	else if (strLength >= 128 && strLength < 512)
 	{
-		GYStringBuffer<512>* pStringBuffer = reinterpret_cast<GYStringBuffer<512>*>(str);
+		GYStringBuffer<512>* pStringBuffer = reinterpret_cast<GYStringBuffer<512>*>(*targetStr);
 		--pStringBuffer->m_referenceCount;
 		if (pStringBuffer->m_referenceCount <= 0)
 		{
+			m_strHashTable.Remove(str);
 			m_512poolUsed.Delete(*pStringBuffer);
 			m_512poolFree.Add(*pStringBuffer);
 		}
 	}
 	else if (strLength >= 512 && strLength < 1024)
 	{
-		GYStringBuffer<1024>* pStringBuffer = reinterpret_cast<GYStringBuffer<1024>*>(str);
+		GYStringBuffer<1024>* pStringBuffer = reinterpret_cast<GYStringBuffer<1024>*>(*targetStr);
 		--pStringBuffer->m_referenceCount;
 		if (pStringBuffer->m_referenceCount <= 0)
 		{
+			m_strHashTable.Remove(str);
 			m_1024poolUsed.Delete(*pStringBuffer);
 			m_1024poolFree.Add(*pStringBuffer);
 		}

@@ -10,7 +10,7 @@
 #include "GYSerialization.h"
 #include "GYString.h"
 #include "GYCycleBuffer.h"
-
+#include "GYProtocolDefine.h"
 enum EM_SERIALIZAION_MODE
 {
 	EM_SERIALIZAION_MODE_INVALID = -1,
@@ -38,7 +38,7 @@ public:
 		return m_serializDataSize;
 	}
 
-	virtual GYSerializationInteface& operator<<(GYCHAR value)
+	virtual GYSerializationInteface& operator<<(GYCHAR& value)
 	{
 		switch(m_mode)
 		{
@@ -57,7 +57,7 @@ public:
 		return *this;
 	}
 
-	virtual GYSerializationInteface& operator<<(GYUINT8 value)
+	virtual GYSerializationInteface& operator<<(GYUINT8& value)
 	{
 		switch(m_mode)
 		{
@@ -76,7 +76,7 @@ public:
 		return *this;
 	}
 
-	virtual GYSerializationInteface& operator<<(GYINT16 value)
+	virtual GYSerializationInteface& operator<<(GYINT16& value)
 	{
 		switch(m_mode)
 		{
@@ -95,7 +95,7 @@ public:
 		return *this;
 	}
 
-	virtual GYSerializationInteface& operator<<(GYUINT16 value)
+	virtual GYSerializationInteface& operator<<(GYUINT16& value)
 	{
 		switch(m_mode)
 		{
@@ -114,7 +114,7 @@ public:
 		return *this;
 	}
 
-	virtual GYSerializationInteface& operator<<(GYINT32 value)
+	virtual GYSerializationInteface& operator<<(GYINT32& value)
 	{
 		switch(m_mode)
 		{
@@ -133,7 +133,7 @@ public:
 		return *this;
 	}
 
-	virtual GYSerializationInteface& operator<<(GYUINT32 value)
+	virtual GYSerializationInteface& operator<<(GYUINT32& value)
 	{
 		switch(m_mode)
 		{
@@ -152,7 +152,7 @@ public:
 		return *this;
 	}
 
-	virtual GYSerializationInteface& operator<<(GYINT64 value)
+	virtual GYSerializationInteface& operator<<(GYINT64& value)
 	{
 		switch(m_mode)
 		{
@@ -171,7 +171,7 @@ public:
 		return *this;
 	}
 
-	virtual GYSerializationInteface& operator<<(GYFLOAT value)
+	virtual GYSerializationInteface& operator<<(GYFLOAT& value)
 	{
 		switch(m_mode)
 		{
@@ -213,6 +213,12 @@ public:
 			break;
 		}
 		m_serializDataSize += sizeof(strlen) + strlen;
+		return *this;
+	}
+
+	GYSerializationInteface& operator<<(GYPacketInteface& packet)
+	{
+		packet.Serializ(*this);
 		return *this;
 	}
 };

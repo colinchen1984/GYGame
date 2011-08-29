@@ -16,14 +16,14 @@ protected:
 	virtual ~GYSerializationInteface(){};
 
 public:
-	virtual GYSerializationInteface& operator<<(GYCHAR value)=0;
-	virtual GYSerializationInteface& operator<<(GYUINT8 value)=0;
-	virtual GYSerializationInteface& operator<<(GYINT16 value)=0;
-	virtual GYSerializationInteface& operator<<(GYUINT16 value)=0;
-	virtual GYSerializationInteface& operator<<(GYINT32 value)=0;
-	virtual GYSerializationInteface& operator<<(GYUINT32 value)=0;
-	virtual GYSerializationInteface& operator<<(GYINT64 value)=0;
-	virtual GYSerializationInteface& operator<<(GYFLOAT value)=0;
+	virtual GYSerializationInteface& operator<<(GYCHAR& value)=0;
+	virtual GYSerializationInteface& operator<<(GYUINT8& value)=0;
+	virtual GYSerializationInteface& operator<<(GYINT16& value)=0;
+	virtual GYSerializationInteface& operator<<(GYUINT16& value)=0;
+	virtual GYSerializationInteface& operator<<(GYINT32& value)=0;
+	virtual GYSerializationInteface& operator<<(GYUINT32& value)=0;
+	virtual GYSerializationInteface& operator<<(GYINT64& value)=0;
+	virtual GYSerializationInteface& operator<<(GYFLOAT& value)=0;
 	virtual GYSerializationInteface& operator<<(GYString& value)=0;
 };
 

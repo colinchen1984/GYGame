@@ -29,8 +29,8 @@ public:
 
 	GYBOOL	operator==(const GYString& str)const;
 	GYBOOL	operator==(const GYCHAR* str)const;
-	GYVOID	operator=(const GYString& str);
-	GYVOID	operator=(const GYCHAR* str);
+	GYString&	operator=(const GYString& str);
+	GYString&	operator=(const GYCHAR* str);
 	//GYVOID	operator=(const GYWCHAR* str);
 };
 #endif
