@@ -31,7 +31,7 @@ public:
         return 0;
     }
 
-    GY_SOCKET_OPERATION_ERROR_CODE _Send()
+    GY_SOCKET_OPERATION_ERROR_CODE Send()
     {
 			GYINT32 bufferLength = m_outputBuffer.GetReadSize();
 			if(0 == bufferLength)

@@ -25,6 +25,7 @@ const GYINT32 CLIENT_FOR_PER_THREAD = 1024;
 const GYINT32 LOGIC_SESSION_RECV_BUFFER_LEN = 1024 * 1024;
 const GYINT32 LOGIC_SESSION_SEND_BUFFER_LEN = 1024 * 1024;
 class GYServer;
+
 enum EM_GATE_WAY_THREAD_STATUS
 {
 	EM_GATE_WAY_THREAD_STATUS_INVALID = -1,
@@ -33,6 +34,7 @@ enum EM_GATE_WAY_THREAD_STATUS
 	EM_GATE_WAY_THREAD_STATUS_EXIT,
 	EM_GATE_WAY_THREAD_STATUS_COUNT,
 };
+
 class GYGatewayThread
 {
 	//连接logic server
@@ -92,6 +94,7 @@ private:
 	GYINLINE GYVOID	_SetThreadStatus(EM_GATE_WAY_THREAD_STATUS status){m_status = status;}
 
 	GYVOID _StopCurrentService();
+
 };
 
 #endif

@@ -12,9 +12,12 @@
 #include "GYBufferStreamSocket.h"
 #include "GYEvent.h"
 #include "GYObject.h"
+
 const GYINT32 CLIENT_SESSION_RECV_BUFFER_LEN = 16 * 1024;
 const GYINT32 CLIENT_SESSION_SEND_BUFFER_LEN = 16 * 1024;
+
 class GYReactor;
+class GYPacketInteface;
 enum EM_CLIENT_SESSION_STATUS
 {
 	EM_CLIENT_SESSION_STATUS_INVALID = -1,
@@ -36,16 +39,23 @@ class GYClientSession : public GYObject
 public:
 	GYClientSession();
 	~GYClientSession();
-	GYVOID CleanUp();
-	GYINT32 Init(const GYSocket& sock, const GYNetAddress& clientAddress);
-	GYINT32 Regeist2Reactor(GYReactor& reactor, GYVOID* Onwer, EM_CLIENT_SESSION_STATUS status);
+	GYVOID	CleanUp();
+
+	GYINT32	Init(const GYSocket& sock, const GYNetAddress& clientAddress);
+
+	GYINT32	Regeist2Reactor(GYReactor& reactor, GYVOID* Onwer, EM_CLIENT_SESSION_STATUS status);
+
 	GYINLINE EM_CLIENT_SESSION_STATUS GetStatus(){return m_status;}
 
+	GYVOID	SendPacket(GYPacketInteface& packet);
+
+	GYVOID	Tick();
+
 private:
-	GYVOID _OnReceiveWithServer();
-	GYVOID _OnReceiveWithNoServer();
-	GYVOID _OnClientCloseWithServer();
-	GYVOID _OnClientCloseWithNoServer();
+	GYVOID	_OnReceiveWithServer();
+	GYVOID	_OnReceiveWithNoServer();
+	GYVOID	_OnClientCloseWithServer();
+	GYVOID	_OnClientCloseWithNoServer();
 };
 
 #endif

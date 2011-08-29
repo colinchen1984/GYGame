@@ -8,6 +8,7 @@
 #include "GYReactor.h"
 #include "GYGatewayThread.h"
 #include "GYProtocolDefine.h"
+#include "GYStreamSerialization.h"
 
 GYClientSession::GYClientSession()
 {
@@ -134,4 +135,38 @@ GYVOID GYClientSession::_OnClientCloseWithNoServer()
 {
 
 }
+
+GYVOID GYClientSession::SendPacket(GYPacketInteface& packet)
+{
+	GYStreamSerialization<CLIENT_SESSION_SEND_BUFFER_LEN> packetSender(OUTPUTBUFFER, EM_SERIALIZAION_MODE_WRITE);
+	packetSender << packet;
+}
+
+GYVOID GYClientSession::Tick()
+{
+	if (GY_SOCKET_OPERATION_ERROR_CODE_SUCESS != m_connection.Send())
+	{
+		switch(m_status)
+		{
+		case EM_CLIENT_SESSION_STATUS_WITH_SERVER:
+			{
+				_OnClientCloseWithServer();
+			}
+			break;
+		case EM_CLIENT_SESSION_STATUS_IN_SERVER_WITH_NO_SERVER:
+			{
+				_OnClientCloseWithNoServer();
+			}
+			break;
+		default:
+			{
+				GYAssert(GYFALSE);
+			}
+			break;
+		}
+	}
+	
+}
+
+
 

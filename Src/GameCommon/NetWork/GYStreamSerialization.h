@@ -52,6 +52,11 @@ public:
 				GYAssert(0 == m_buffer.Write(&value, sizeof(value)));
 			}
 			break;
+		default:
+			{
+				GYAssert(GYFALSE);
+			}
+			break;
 		}
 		m_serializDataSize += sizeof(value);
 		return *this;
@@ -90,6 +95,11 @@ public:
 				GYAssert(0 == m_buffer.Write(reinterpret_cast<GYCHAR*>(&value), sizeof(value)));
 			}
 			break;
+		default:
+			{
+				GYAssert(GYFALSE);
+			}
+			break;
 		}
 		m_serializDataSize += sizeof(value);
 		return *this;
@@ -107,6 +117,11 @@ public:
 		case EM_SERIALIZAION_MODE_WRITE:
 			{
 				GYAssert(0 == m_buffer.Write(reinterpret_cast<GYCHAR*>(&value), sizeof(value)));
+			}
+			break;		
+		default:
+			{
+				GYAssert(GYFALSE);
 			}
 			break;
 		}
@@ -128,6 +143,11 @@ public:
 				GYAssert(0 == m_buffer.Write(reinterpret_cast<GYCHAR*>(&value), sizeof(value)));
 			}
 			break;
+		default:
+			{
+				GYAssert(GYFALSE);
+			}
+			break;
 		}
 		m_serializDataSize += sizeof(value);
 		return *this;
@@ -145,6 +165,11 @@ public:
 		case EM_SERIALIZAION_MODE_WRITE:
 			{
 				GYAssert(0 == m_buffer.Write(reinterpret_cast<GYCHAR*>(&value), sizeof(value)));
+			}
+			break;
+		default:
+			{
+				GYAssert(GYFALSE);
 			}
 			break;
 		}
@@ -166,6 +191,11 @@ public:
 				GYAssert(0 == m_buffer.Write(reinterpret_cast<GYCHAR*>(&value), sizeof(value)));
 			}
 			break;
+		default:
+			{
+				GYAssert(GYFALSE);
+			}
+			break;
 		}
 		m_serializDataSize += sizeof(value);
 		return *this;
@@ -183,6 +213,11 @@ public:
 		case EM_SERIALIZAION_MODE_WRITE:
 			{
 				GYAssert(0 == m_buffer.Write(reinterpret_cast<GYCHAR*>(&value), sizeof(value)));
+			}
+			break;
+		default:
+			{
+				GYAssert(GYFALSE);
 			}
 			break;
 		}
@@ -209,6 +244,11 @@ public:
 			{
 				GYAssert(0 == m_buffer.Write(reinterpret_cast<GYCHAR*>(&strlen), sizeof(strlen)));
 				GYAssert(0 == m_buffer.Write(str, strlen));
+			}
+			break;
+		default:
+			{
+				GYAssert(GYFALSE);
 			}
 			break;
 		}

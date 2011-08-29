@@ -59,14 +59,23 @@ static GYVOID LogicServerConnectionEventHandler(GYNetEvent& event)
 	pThrad->ProcessLogicServerData();
 }
 
-#define _GetThreadStatus() m_status
+
 GYVOID GYGatewayThread::Run()
 {
 	while(GYTRUE)
 	{
-		if (EM_GATE_WAY_THREAD_STATUS_EXIT != _GetThreadStatus())
+		if (EM_GATE_WAY_THREAD_STATUS_EXIT != m_status)
 		{
-			(this->*handler[_GetThreadStatus()])();
+			(this->*handler[m_status])();
+			;
+			GYClientSession* pSession;
+			GYList<GYClientSession> tempSessionList;
+			while(GYNULL != (pSession = m_workSession.PickUpFirstItem()))
+			{
+				pSession->Tick();
+				tempSessionList.Add(*pSession);
+			}
+			m_workSession = tempSessionList;
 		} 
 		else
 		{
