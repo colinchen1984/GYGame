@@ -142,8 +142,8 @@ public:
 
 	GYINT32 Insert(const GYGUID& guid, const T& value)
 	{
-		char key__[16] = {0};
-		memset(key__, &guid, sizeof(guid));
+		char key__[GYGUIDLEN+1] = {0};
+		*(reinterpret_cast<GYGUID*>(key__)) = guid;
 		GYINT32 err = Insert(key__, value);
 		return err;
 	}
@@ -179,8 +179,8 @@ public:
 
 	GYINT32 Remove(const GYGUID& guid)
 	{
-		char key__[16] = {0};
-		memset(key__, &guid, sizeof(guid));
+		char key__[GYGUIDLEN+1] = {0};
+		*(reinterpret_cast<GYGUID*>(key__)) = guid;
 		GYINT32 err = Remove(key__);
 		return err;
 	}
@@ -214,8 +214,8 @@ public:
 
 	T* Find(const GYGUID& guid)
 	{
-		char key__[16] = {0};
-		memset(key__, &guid, sizeof(guid));
+		char key__[GYGUIDLEN+1] = {0};
+		*(reinterpret_cast<GYGUID*>(key__)) = guid;
 		T* ret = Find(key__);
 		return ret;
 	}

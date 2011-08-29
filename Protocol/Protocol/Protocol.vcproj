@@ -145,7 +145,15 @@
 	</References>
 	<Files>
 		<File
+			RelativePath="..\..\Src\Protocol\GYProtocolDefine.cpp"
+			>
+		</File>
+		<File
 			RelativePath="..\..\Src\Protocol\GYProtocolDefine.h"
+			>
+		</File>
+		<File
+			RelativePath="..\..\Src\Protocol\GYProtocolID.h"
 			>
 		</File>
 		<File

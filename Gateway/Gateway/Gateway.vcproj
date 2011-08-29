@@ -172,6 +172,10 @@
 			Name="GatewayThread"
 			>
 			<File
+				RelativePath="..\..\Src\Gateway\GatewayThread\GYClientProcessData.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Src\Gateway\GatewayThread\GYClientSession.cpp"
 				>
 			</File>
@@ -197,6 +201,10 @@
 			</File>
 			<File
 				RelativePath="..\..\Src\Gateway\Packet\GYPacketFactoryManager.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Src\Gateway\Packet\GYPacketFactoryRegister.cpp"
 				>
 			</File>
 		</Filter>

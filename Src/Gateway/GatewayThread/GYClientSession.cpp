@@ -9,6 +9,7 @@
 #include "GYGatewayThread.h"
 #include "GYProtocolDefine.h"
 #include "GYStreamSerialization.h"
+#include "GYServer.h"
 
 GYClientSession::GYClientSession()
 {
@@ -86,18 +87,44 @@ GYINT32 GYClientSession::Regeist2Reactor(GYReactor& reactor,  GYVOID* Onwer, EM_
 
 #define  INPUTBUFFER m_connection.m_inputBuffer
 #define  OUTPUTBUFFER m_connection.m_outputBuffer
-
 GYVOID GYClientSession::_OnReceiveWithServer()
 {
 	GY_SOCKET_OPERATION_ERROR_CODE result = m_connection.Recv();
 	if (GY_SOCKET_OPERATION_ERROR_CODE_CONNECTION_CLOSED == result 
 		|| GY_SOCKET_OPERATION_ERROR_CODE_FAIL_TO_CHECK_SOCKET_CORE_BUFFER == result
-		|| GY_SOCKET_OPERATION_ERROR_CODE_FAIL_TO_CHECK_SOCKET_CORE_BUFFER == result)
+		|| GY_SOCKET_OPERATION_ERROR_CODE_CONNECTION_CLOSED == result)
 	{
 		_OnClientCloseWithServer();
 		return;
 	}
-	if (GY_SOCKET_OPERATION_ERROR_CODE_SOCKET_CORE_BUFFER_EMPTY == result)
+	if (GY_SOCKET_OPERATION_ERROR_CODE_SUCESS == result)
+	{
+		return;
+	}
+
+	GYINT32 length = INPUTBUFFER.GetReadSize();
+	if (length > PacektHeadLen)
+	{
+		const GYPacketHead* const pPacketHead = reinterpret_cast<const GYPacketHead* const>(INPUTBUFFER.ReadPtr());
+		GYAssert(PacketMaxLen > pPacketHead->m_packetLen);
+		if (length > pPacketHead->m_packetLen + PacektHeadLen)
+		{
+			_ProcessInputData(*pPacketHead);
+		}
+	}
+}
+
+GYVOID GYClientSession::_OnReceiveWithNoServer()
+{
+	GY_SOCKET_OPERATION_ERROR_CODE result = m_connection.Recv();
+	if (GY_SOCKET_OPERATION_ERROR_CODE_CONNECTION_CLOSED == result 
+		|| GY_SOCKET_OPERATION_ERROR_CODE_FAIL_TO_CHECK_SOCKET_CORE_BUFFER == result
+		|| GY_SOCKET_OPERATION_ERROR_CODE_CONNECTION_CLOSED == result)
+	{
+		_OnClientCloseWithNoServer();
+		return;
+	}
+	if (GY_SOCKET_OPERATION_ERROR_CODE_SUCESS != result)
 	{
 		return;
 	}
@@ -106,12 +133,12 @@ GYVOID GYClientSession::_OnReceiveWithServer()
 	if (length > PacektHeadLen)
 	{
 		const GYPacketHead* pPacketHead = reinterpret_cast<const GYPacketHead*>(INPUTBUFFER.ReadPtr());
+		GYAssert(PacketMaxLen > pPacketHead->m_packetLen);
 		if (length > pPacketHead->m_packetLen + PacektHeadLen)
 		{
-			
+			_ProcessInputData(*pPacketHead);
 		}
 	}
-
 }
 
 GYVOID GYClientSession::_OnClientCloseWithServer()
@@ -126,14 +153,16 @@ GYVOID GYClientSession::_OnClientCloseWithServer()
 	return;
 }
 
-GYVOID GYClientSession::_OnReceiveWithNoServer()
-{
-
-}
-
 GYVOID GYClientSession::_OnClientCloseWithNoServer()
 {
-
+	if(GYNULL != m_reactor)
+	{
+		m_reactor->DeleteEvent(m_clientNetEvnet);
+		m_reactor = GYNULL;
+	}
+	m_connection.Close();
+	static_cast<GYServer*>(m_server)->OnClientSessionClose(*this);
+	return;
 }
 
 GYVOID GYClientSession::SendPacket(GYPacketInteface& packet)
@@ -165,7 +194,6 @@ GYVOID GYClientSession::Tick()
 			break;
 		}
 	}
-	
 }
 
 

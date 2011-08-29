@@ -8,6 +8,8 @@
 #ifndef __GYPROTOCOLDEFINE_H__
 #define __GYPROTOCOLDEFINE_H__
 #include "GYCommonDefine.h"
+#include "GYProtocolID.h"
+
 class GYSerializationInteface;
 
 typedef GYUINT16 GYPACKETID;
@@ -15,12 +17,6 @@ typedef GYUINT16 GYPACKETLEN;
 #define GYMakePacketID(packetID) static_cast<GYPACKETID>(packetID)
 #define GYGetPacketID(packetID) static_cast<EM_PACKET_ID>(packetID)
 
-enum EM_PACKET_ID
-{
-	EM_PACKET_ID_INVALID = -1,
-	EM_PACKET_ID_TEST_ID,
-	EM_PACKET_ID_COUNT,
-};
 
 #pragma pack (1)
 struct GYPacketHead 
@@ -34,16 +30,17 @@ struct GYPacketHead
 		m_packetLen = 0;
 		m_flags = 0;
 	}
+	GYVOID Serializ(GYSerializationInteface& serializer);
 };
 #pragma pack ()
 const GYINT32 PacektHeadLen = sizeof(GYPacketHead);
-
+const GYINT32 PacketMaxLen = (static_cast<GYPACKETLEN>(INVALID_VALUE) / 2);
 class GYPacketInteface
 {
 protected:
 	GYPacketInteface(){};
-	virtual ~GYPacketInteface(){};
 public:
+	virtual ~GYPacketInteface(){};
 	virtual GYPACKETID GetPacketID(){return EM_PACKET_ID_INVALID;}
 	virtual GYCHAR GetPacketFlags(){return 0;}
 	virtual GYVOID Serializ(GYSerializationInteface& serializer) = 0;

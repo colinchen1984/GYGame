@@ -47,7 +47,7 @@ typedef char					GYBOOL;
 #define GYStrncpy				strncpy
 #define GYNew					new
 #define GYDelete				delete
-
+const GYINT32 GYGUIDLEN = sizeof(GYGUID);
 const GYBOOL GYTRUE = 1;
 const GYBOOL GYFALSE = 0;
 const GYINT32 GYNULL = 0;

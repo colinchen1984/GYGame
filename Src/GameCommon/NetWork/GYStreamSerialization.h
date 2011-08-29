@@ -258,7 +258,31 @@ public:
 
 	GYSerializationInteface& operator<<(GYPacketInteface& packet)
 	{
-		packet.Serializ(*this);
+		const GYINT32 beforSerializDataSize = m_serializDataSize;
+		GYPACKETID packetID = packet.GetPacketID();
+		GYCHAR packetFlags = packet.GetPacketFlags();
+		if(EM_SERIALIZAION_MODE_READ == m_mode)
+		{
+			GYPacketHead head;
+			head.Serializ(*this);
+			GYAssert(head.m_id == packetID);
+			packet.Serializ(*this);
+			GYAssert(m_serializDataSize - beforSerializDataSize == head.m_packetLen + PacektHeadLen);
+		}
+		else if(EM_SERIALIZAION_MODE_WRITE == m_mode)
+		{
+			GYPacketHead* pHead = reinterpret_cast<GYPacketHead*>(m_buffer.WritePtr());
+			GYAssert(0 == m_buffer.WritePtr(PacektHeadLen));
+			packet.Serializ(*this);
+			pHead->m_id = packetID;
+			pHead->m_packetLen = m_serializDataSize - beforSerializDataSize;
+			pHead->m_flags = packetFlags;
+			m_serializDataSize += PacektHeadLen;
+		}
+		else
+		{
+			GYAssert(GYFALSE);
+		}
 		return *this;
 	}
 };
