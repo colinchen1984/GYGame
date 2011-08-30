@@ -12,11 +12,12 @@ GYVOID GYPacketFactoryManager::CleanUp()
 	GYMemset(m_packetFactory, 0, sizeof(m_packetFactory));
 }
 
-GYBOOL GYPacketFactoryManager::Init()
+GYINT32 GYPacketFactoryManager::Init(GYStringManager& stringManager)
 {
 	CleanUp();
 	_RegisterPacket();
-	return GYTRUE;
+	m_stringManager = &stringManager; 
+	return 0;
 }
 
 GYVOID GYPacketFactoryManager::Release()
@@ -31,8 +32,18 @@ GYVOID GYPacketFactoryManager::Release()
 	CleanUp();
 }
 
-GYPacketInteface* GYPacketFactoryManager::GetPacketbyID(EM_PACKET_ID packetID)
+GYPacketInteface* GYPacketFactoryManager::GetPacketByID(EM_PACKET_ID packetID)
 {
 	GYAssert(packetID >=0 && packetID < EM_PACKET_ID_COUNT);
-	return m_packetFactory[packetID];
+	GYPacketInteface* packet = m_packetFactory[packetID];
+	m_packetFactory[packetID] = GYNULL;
+	return packet;
+}
+
+GYVOID GYPacketFactoryManager::ReleasePacketByID( GYPacketInteface& packet )
+{
+	EM_PACKET_ID packetID = GYGetPacketID(packet.GetPacketID());
+	GYAssert(packetID >=0 && packetID < EM_PACKET_ID_COUNT);
+	GYAssert(GYNULL == m_packetFactory[packetID]);
+	m_packetFactory[packetID] = &packet;
 }

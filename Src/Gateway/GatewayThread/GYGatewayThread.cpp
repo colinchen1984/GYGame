@@ -48,9 +48,18 @@ GYINT32 GYGatewayThread::Init(const GYNetAddress& targetServerAddress, GYServer*
 		handler[EM_GATE_WAY_THREAD_STATUS_CONNECTING_LOGIC_SERVER] = &GYGatewayThread::_ConnectLogicServer;
 		handler[EM_GATE_WAY_THREAD_STATUS_SERVERING_CLIENT_SESSION] = &GYGatewayThread::_ServeringClientSession;
 		_SetThreadStatus(EM_GATE_WAY_THREAD_STATUS_CONNECTING_LOGIC_SERVER);
+		m_stringManager.Init();
+		m_packetFactory.Init(m_stringManager);
 		result = 0;
 	} while (GYFALSE);
 	return result;
+}
+
+GYVOID GYGatewayThread::Release()
+{
+	_StopCurrentService();
+	m_reactor.Release();
+	m_packetFactory.Release();
 }
 
 static GYVOID LogicServerConnectionEventHandler(GYNetEvent& event)
@@ -198,3 +207,4 @@ GYVOID GYGatewayThread::_StopCurrentService()
 	//清楚Hash表
 	m_workSessionHash.CleanUp();
 }
+

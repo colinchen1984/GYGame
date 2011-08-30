@@ -16,7 +16,8 @@ class GYSerializationInteface;
 
 class GYTestPacket : public GYPacketInteface
 {
-	GYString m_name;
+	GYINT32		m_userID;
+	GYString	m_name;
 public:
 	GYTestPacket(GYStringManager& stringManager):m_name(stringManager)
 	{
@@ -26,8 +27,11 @@ public:
 	virtual GYPACKETID GetPacketID(){return EM_PACKET_ID_TEST_ID;}
 	virtual GYCHAR GetPacketFlags(){return 0;}
 
-	GYVOID SetUseName(const GYString& name);
-	const GYString& GetUseName();
+	GYVOID SetUserName(const GYString& name);
+	const GYString& GetUserName();
+
+	GYVOID SetUserID(GYINT32 userID);
+	GYINT32 GetUserID();
 
 	virtual GYVOID Serializ(GYSerializationInteface& serializer);
 

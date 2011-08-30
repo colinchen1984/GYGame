@@ -33,8 +33,10 @@ struct GYPacketHead
 	GYVOID Serializ(GYSerializationInteface& serializer);
 };
 #pragma pack ()
+
 const GYINT32 PacektHeadLen = sizeof(GYPacketHead);
 const GYINT32 PacketMaxLen = (static_cast<GYPACKETLEN>(INVALID_VALUE) / 2);
+
 class GYPacketInteface
 {
 protected:

@@ -8,6 +8,8 @@
 #include "GYTestPacket.h"
 GYVOID GYPacketFactoryManager::_RegisterPacket()
 {
-	GYPacketInteface* pPacket = GYNew GYTestPacket();
+	GYPacketInteface* pPacket =GYNULL;
+
+	pPacket = GYNew GYTestPacket(*m_stringManager);
 	m_packetFactory[pPacket->GetPacketID()] = pPacket;
 }

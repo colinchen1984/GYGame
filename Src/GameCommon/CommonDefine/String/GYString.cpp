@@ -16,6 +16,8 @@ GYString::GYString(GYStringManager& stringManager):m_strManager(stringManager)
 
 GYString::GYString(const GYString& str):m_strManager(str.m_strManager)
 {
+	m_stringBuffer = GYNULL;
+	m_stringLength = 0;
 	*this = str;
 }
 
@@ -32,7 +34,10 @@ GYString::GYString(const GYCHAR* pString, GYINT32 stringLength, GYStringManager&
 
 GYString::~GYString()
 {
-	m_strManager.DeleteStringReference(m_stringBuffer, m_stringLength);
+	if (GYNULL != m_stringBuffer)
+	{
+		m_strManager.DeleteStringReference(m_stringBuffer, m_stringLength);
+	}
 }
 
 GYBOOL GYString::operator==( const GYString& str ) const
@@ -63,7 +68,6 @@ GYString& GYString::operator=( const GYString& str )
 		}
 
 		m_stringLength = str.m_stringLength;
-		m_strManager = str.m_strManager;
 		m_stringBuffer = m_strManager.AllocateString(str.m_stringBuffer, str.m_stringLength);
 		if (GYNULL == m_stringBuffer)
 		{

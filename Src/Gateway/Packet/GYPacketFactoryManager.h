@@ -11,19 +11,21 @@
 #include "GYProtocolID.h"
 
 class GYPacketInteface;
+class GYStringManager;
 
 class GYPacketFactoryManager
 {
-	GYPacketInteface* m_packetFactory[EM_PACKET_ID_COUNT];
-
+	GYPacketInteface*	m_packetFactory[EM_PACKET_ID_COUNT];
+	GYStringManager*	m_stringManager;
 public:
 	GYPacketFactoryManager(){CleanUp();};
 	~GYPacketFactoryManager(){};
 
-	GYBOOL Init();
+	GYINT32 Init(GYStringManager& stringManager);
 	GYVOID Release();
 	GYVOID CleanUp();
-	GYPacketInteface* GetPacketbyID(EM_PACKET_ID packetID);
+	GYPacketInteface* GetPacketByID(EM_PACKET_ID packetID);
+	GYVOID ReleasePacketByID(GYPacketInteface& packet);
 private:
 	GYVOID _RegisterPacket();
 };

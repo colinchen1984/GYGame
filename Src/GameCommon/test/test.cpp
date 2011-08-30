@@ -14,6 +14,7 @@
 #include "GYEvent.h"
 #include "GYReactor.h"
 #include <list>
+#include <set>
 #include <stdio.h>
 #include "GYTimeStamp.h"
 #include "GYTestPacket.h"
@@ -23,6 +24,7 @@
 #include "GYTestPacket.h"
 
 using std::list;
+using std::set;
 
 GYReactor reactor;
 GYVOID testHandler(GYNetEvent& event)
@@ -83,6 +85,14 @@ GYVOID acceptHandler(GYNetEvent& event)
 GYINT32 main()
 {
 	char b[1024];
+	set<int> itTest;
+	for (int i = 0; i < 100; ++i)
+	{
+		itTest.insert(i);
+	}
+	set<int>::iterator itTestit = itTest.begin();
+	advance(itTestit, 10);
+	int btes = *itTestit;
 	const char* name = "陈琳";
 	GYStringManager* strManager = new GYStringManager();
 	strManager->Init();
@@ -93,7 +103,7 @@ GYINT32 main()
 	testString2 = testString1;
 	GYCycleBuffer<1024> cycle;
 	GYTestPacket* packet = new GYTestPacket(*strManager);
-	packet->SetUseName(testString1);
+	packet->SetUserName(testString1);
 	GYStreamSerialization<1024> testRead(cycle, EM_SERIALIZAION_MODE_WRITE);
 	int testInt = 4;
 	testRead << testInt;
@@ -102,7 +112,8 @@ GYINT32 main()
 	packet = new GYTestPacket(*strManager);
 	int writeByte = testRead.GetSerializDataSize();
 	GYStreamSerialization<1024> testWrite(cycle, EM_SERIALIZAION_MODE_READ);
-	GYString testString3(*strManager);
+	GYString testString3(testString2);
+	testString3 = testString1;
 	testWrite << writeByte;
 	testWrite << *packet;
 	return 1;

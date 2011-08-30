@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../Src/GameCommon/Thread;../../Src/GameCommon/NetWork;../../Src/GameCommon/CommonDefine;../../Src/GameCommon/CommonDefine/String;../../Src/GameCommon/CommonDefine/TimeController;../../Src/Protocol;../../Src/Gateway;../../Src/Gateway/GatewayThread;../../Src/Gateway/ListenThread"
+				AdditionalIncludeDirectories="../../Src/GameCommon/Thread;../../Src/GameCommon/NetWork;../../Src/GameCommon/CommonDefine;../../Src/GameCommon/CommonDefine/String;../../Src/GameCommon/CommonDefine/TimeController;../../Src/Protocol;../../Src/Gateway;../../Src/Gateway/Packet;../../Src/Gateway/GatewayThread;../../Src/Gateway/ListenThread"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"

@@ -8,17 +8,27 @@
 #include "GYProtocolDefine.h"
 #include "GYSerialization.h"
 
-GYVOID GYTestPacket::SetUseName( const GYString& name )
+GYVOID GYTestPacket::SetUserName( const GYString& name )
 {
 	m_name = name;
 }
 
-const GYString& GYTestPacket::GetUseName()
+const GYString& GYTestPacket::GetUserName()
 {
 	return m_name;
 }
 
 GYVOID GYTestPacket::Serializ( GYSerializationInteface& serializer )
 {
-	serializer << m_name;
+	serializer << m_userID << m_name;
+}
+
+GYVOID GYTestPacket::SetUserID( GYINT32 userID )
+{
+	m_userID = userID;
+}
+
+GYINT32 GYTestPacket::GetUserID()
+{
+	return m_userID;
 }

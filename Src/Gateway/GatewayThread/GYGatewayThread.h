@@ -14,6 +14,8 @@
 #include "GYFastMutex.h"
 #include "GYList.h"
 #include "GYHashTable.h"
+#include "GYPacketFactoryManager.h"
+#include "GYStringManger.h"
 
 #ifdef WIN32
 const GYINT32 CLIENT_FOR_PER_THREAD = 60;
@@ -65,6 +67,10 @@ class GYGatewayThread
 	//当前线程的状态
 	EM_GATE_WAY_THREAD_STATUS		m_status;
 
+	//下面的是每个线程需要的一些基础组件
+	GYPacketFactoryManager			m_packetFactory;	//包工厂
+	GYStringManager					m_stringManager;	//字符串管理器
+
 public:
 	GYGatewayThread();
 
@@ -72,6 +78,8 @@ public:
 
 	GYINT32 Init(const GYNetAddress& targetServerAddress, GYServer* server);
 	
+	GYVOID	Release();
+
 	GYVOID	Run();
 
 	GYVOID	AddSession(GYClientSession& session);
