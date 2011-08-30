@@ -32,3 +32,9 @@ GYINT32 GYTestPacket::GetUserID()
 {
 	return m_userID;
 }
+
+GYVOID GYTestPacket::CleanUp()
+{
+	m_userID = INVALID_VALUE;
+	m_name.CleanUp();
+}

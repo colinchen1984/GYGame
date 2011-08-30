@@ -85,7 +85,7 @@ public:
     {
         const GYCHAR* const pWriter = m_pWriter;
         GYINT32 nReadBufferSize = 0;
-        if(m_pReader >= pWriter)
+        if(m_pReader > pWriter)
 		{
 			nReadBufferSize = m_nBufferLen - (m_pReader - pWriter);
 		}

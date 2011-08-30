@@ -12,4 +12,5 @@ GYVOID GYPacketFactoryManager::_RegisterPacket()
 
 	pPacket = GYNew GYTestPacket(*m_stringManager);
 	m_packetFactory[pPacket->GetPacketID()] = pPacket;
+	m_packetFactoryBit[pPacket->GetPacketID()] = GYTRUE;
 }

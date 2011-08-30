@@ -72,7 +72,8 @@ GYINT32 GYServer::Init()
 		{
 			break;
 		}
-
+		m_stringManager.Init();
+		m_packetFactory.Init(m_stringManager);
 		//设置gatewany工作线程
 		m_gateThread = GYNew GYGatewayThread[GatewayThreadCount];
 		m_gateThreadCount = GatewayThreadCount;
@@ -173,13 +174,13 @@ GYVOID GYServer::_OnAcceptClient()
 		GYClientSession* session = GYNULL;
 		{	
 			GYGuard<GYFastMutex> g(m_sessionCloseMutex);
-			if (m_freeClientSession.GetItemCount() <= 0)
+			if (GYNULL == (session = m_freeClientSession.PickUpFirstItem()))
 			{
 				//TODO: 通知客户端不能稍后再试
 				sock.Close();
 				continue;
 			}
-			session = m_freeClientSession.PickUpFirstItem();
+			;
 		}
 
 
@@ -225,6 +226,7 @@ GYINT32 GYServer::Release()
 	m_usingClientSession.CleanUp();
 	m_freeClientSession.CleanUp();
 	m_reactor.Release();
+	m_packetFactory.Release();
 	return 0;
 }
 

@@ -10,6 +10,7 @@
 #include <wchar.h>
 #include "GYTimeStamp.h"
 #include "GYServer.h"
+#include "GYProtocolDefine.h"
 
 GYGatewayThread::GYGatewayThread()
 {
@@ -81,8 +82,10 @@ GYVOID GYGatewayThread::Run()
 			GYList<GYClientSession> tempSessionList;
 			while(GYNULL != (pSession = m_workSession.PickUpFirstItem()))
 			{
-				pSession->Tick();
-				tempSessionList.Add(*pSession);
+				if (GYTRUE == pSession->Tick())
+				{
+					tempSessionList.Add(*pSession);
+				}
 			}
 			m_workSession = tempSessionList;
 		} 
@@ -206,5 +209,32 @@ GYVOID GYGatewayThread::_StopCurrentService()
 	}
 	//清楚Hash表
 	m_workSessionHash.CleanUp();
+}
+
+GYINT32 GYGatewayThread::SendDataToServer( GYClientSession& session, const GYCSPacketHead& packetHead, const GYCHAR* pData)
+{
+	//这里插入玩家的GUID在数据包前面
+	const GYGUID& clientGUID = session.GetGUID();
+	GYINT32 writeSpaceSize = m_connection2Logic.m_outputBuffer.GetWriteSize();
+	const GYINT32 needSpaceSize = GYGUIDLEN + CSPacektHeadLen + packetHead.m_packetLen;
+	if (writeSpaceSize < needSpaceSize)
+	{
+		m_connection2Logic.Send();
+		writeSpaceSize = m_connection2Logic.m_outputBuffer.GetWriteSize();
+		if (writeSpaceSize < needSpaceSize)
+		{
+			//实在是没有地方了，等等吧
+			return INVALID_VALUE;
+		}
+	}
+	if (0 != m_connection2Logic.m_outputBuffer.Write(reinterpret_cast<const GYCHAR*>(&clientGUID), GYGUIDLEN))
+	{
+		return INVALID_VALUE;
+	}
+	if (0 != m_connection2Logic.m_outputBuffer.Write(pData, CSPacektHeadLen + packetHead.m_packetLen))
+	{
+		return INVALID_VALUE;
+	}
+	return 0;
 }
 

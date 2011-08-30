@@ -61,11 +61,7 @@ GYString& GYString::operator=( const GYString& str )
 {	
 	if (m_stringBuffer != str.m_stringBuffer)
 	{
-		if (GYNULL != m_stringBuffer)
-		{
-			m_strManager.DeleteStringReference(m_stringBuffer, m_stringLength);
-			m_stringLength = 0;
-		}
+		CleanUp();
 
 		m_stringLength = str.m_stringLength;
 		m_stringBuffer = m_strManager.AllocateString(str.m_stringBuffer, str.m_stringLength);
@@ -79,11 +75,7 @@ GYString& GYString::operator=( const GYString& str )
 
 GYString& GYString::operator=( const GYCHAR* str )
 {
-	if (GYNULL != m_stringBuffer)
-	{
-		m_strManager.DeleteStringReference(m_stringBuffer, m_stringLength);
-		m_stringLength = 0;
-	}
+	CleanUp();
 
 	m_stringLength = strlen(str);
 	m_stringBuffer = m_strManager.AllocateString(str, m_stringLength);
@@ -92,6 +84,16 @@ GYString& GYString::operator=( const GYCHAR* str )
 		m_stringLength = 0;
 	}
 	return *this;
+}
+
+GYVOID GYString::CleanUp()
+{
+	if (GYNULL != m_stringBuffer)
+	{
+		m_strManager.DeleteStringReference(m_stringBuffer, m_stringLength);
+		m_stringLength = 0;
+		m_stringBuffer = GYNULL;
+	}
 }
 
 

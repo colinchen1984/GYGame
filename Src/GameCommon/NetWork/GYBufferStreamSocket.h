@@ -23,11 +23,15 @@ public:
 
     ~GYBufferStreamSocket() {}
 
+	GYVOID	CleanUp()
+	{
+		m_inputBuffer.CleanUp();
+		m_outputBuffer.CleanUp();
+	}
     GYINT32 Close()
     {
+		CleanUp();
         GYStreamSocket::Close();
-        m_inputBuffer.CleanUp();
-        m_outputBuffer.CleanUp();
         return 0;
     }
 

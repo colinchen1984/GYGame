@@ -35,5 +35,7 @@ public:
 
 	virtual GYVOID Serializ(GYSerializationInteface& serializer);
 
+	virtual GYVOID CleanUp();
+
 };
 #endif

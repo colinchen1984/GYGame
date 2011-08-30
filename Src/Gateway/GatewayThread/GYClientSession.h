@@ -18,7 +18,8 @@ const GYINT32 CLIENT_SESSION_SEND_BUFFER_LEN = 16 * 1024;
 
 class GYReactor;
 class GYPacketInteface;
-struct GYPacketHead;
+class GYPacketFactoryManager;
+struct GYCSPacketHead;
 enum EM_CLIENT_SESSION_STATUS
 {
 	EM_CLIENT_SESSION_STATUS_INVALID = -1,
@@ -37,6 +38,9 @@ class GYClientSession : public GYObject
 	GYVOID*			m_server;
 	GYReactor*		m_reactor;
 	EM_CLIENT_SESSION_STATUS m_status;
+	GYINT64			m_allSendDataSize;
+	GYINT64			m_allRecvDataSize;
+	GYGUID			m_clientGUID;
 public:
 	GYClientSession();
 	~GYClientSession();
@@ -50,14 +54,14 @@ public:
 
 	GYVOID	SendPacket(GYPacketInteface& packet);
 
-	GYVOID	Tick();
-
+	GYBOOL	Tick();
+	GYINLINE const GYGUID& GetGUID(){return m_clientGUID;}
 private:
 	GYVOID	_OnReceiveWithServer();
 	GYVOID	_OnReceiveWithNoServer();
 	GYVOID	_OnClientCloseWithServer();
 	GYVOID	_OnClientCloseWithNoServer();
-	GYVOID	_ProcessInputData(const GYPacketHead& packetHead);
+	GYVOID	_ProcessInputData(GYPacketFactoryManager& packetFactory, const GYCSPacketHead& packetHead);
 };
 
 #endif

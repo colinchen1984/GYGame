@@ -263,21 +263,21 @@ public:
 		GYCHAR packetFlags = packet.GetPacketFlags();
 		if(EM_SERIALIZAION_MODE_READ == m_mode)
 		{
-			GYPacketHead head;
+			GYCSPacketHead head;
 			head.Serializ(*this);
 			GYAssert(head.m_id == packetID);
 			packet.Serializ(*this);
-			GYAssert(m_serializDataSize - beforSerializDataSize == head.m_packetLen + PacektHeadLen);
+			GYAssert(m_serializDataSize - beforSerializDataSize == head.m_packetLen + CSPacektHeadLen);
 		}
 		else if(EM_SERIALIZAION_MODE_WRITE == m_mode)
 		{
-			GYPacketHead* pHead = reinterpret_cast<GYPacketHead*>(m_buffer.WritePtr());
-			GYAssert(0 == m_buffer.WritePtr(PacektHeadLen));
+			GYCSPacketHead* pHead = reinterpret_cast<GYCSPacketHead*>(m_buffer.WritePtr());
+			GYAssert(0 == m_buffer.WritePtr(CSPacektHeadLen));
 			packet.Serializ(*this);
 			pHead->m_id = packetID;
 			pHead->m_packetLen = m_serializDataSize - beforSerializDataSize;
 			pHead->m_flags = packetFlags;
-			m_serializDataSize += PacektHeadLen;
+			m_serializDataSize += CSPacektHeadLen;
 		}
 		else
 		{

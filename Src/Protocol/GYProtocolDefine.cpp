@@ -7,7 +7,7 @@
 #include "GYProtocolDefine.h"
 #include "GYSerialization.h"
 
-GYVOID GYPacketHead::Serializ( GYSerializationInteface& serializer )
+GYVOID GYCSPacketHead::Serializ( GYSerializationInteface& serializer )
 {
 	serializer << m_id;
 	serializer << m_packetLen;

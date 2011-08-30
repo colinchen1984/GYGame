@@ -16,6 +16,7 @@ class GYStringManager;
 class GYPacketFactoryManager
 {
 	GYPacketInteface*	m_packetFactory[EM_PACKET_ID_COUNT];
+	GYBOOL				m_packetFactoryBit[EM_PACKET_ID_COUNT];
 	GYStringManager*	m_stringManager;
 public:
 	GYPacketFactoryManager(){CleanUp();};

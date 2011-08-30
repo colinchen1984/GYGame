@@ -19,17 +19,27 @@ class GYString
 
 public:
 	explicit GYString(GYStringManager& stringManager);
+	
 	explicit GYString(const GYString& str);
+	
 	explicit GYString(const GYCHAR* pString, GYINT32 stringLength, GYStringManager& stringManger);
+	
 	~GYString();
 
 	GYINLINE const GYCHAR* c_str()const{return m_stringBuffer;}
+	
 	GYINLINE GYINT32 length(){return m_stringLength;}
+	
 	GYINLINE GYBOOL empty(){return m_stringLength > 0 ? GYFALSE : GYTRUE;}
+	
+	GYVOID	CleanUp();
 
 	GYBOOL	operator==(const GYString& str)const;
+	
 	GYBOOL	operator==(const GYCHAR* str)const;
+	
 	GYString&	operator=(const GYString& str);
+	
 	GYString&	operator=(const GYCHAR* str);
 	//GYVOID	operator=(const GYWCHAR* str);
 };
