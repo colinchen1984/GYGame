@@ -1,7 +1,7 @@
 import socket
 import time
-G_LoopCount = 29
-G_ClientCount = 32
+G_LoopCount = 1
+G_ClientCount = 1
 G_ServerAddress = ("127.0.0.1", 5555)
 s = []
 for i in range(G_LoopCount):
@@ -11,6 +11,7 @@ for i in range(G_LoopCount):
 			t.connect(G_ServerAddress)	
 			time.sleep(0.0001)
 			s.append((x, t))
+			t.send("Test321312312")
 		except :
 			print x
 	print i
