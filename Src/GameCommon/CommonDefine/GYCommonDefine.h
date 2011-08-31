@@ -22,7 +22,6 @@ typedef __int64					GYINT64;
 typedef float					GYFLOAT;
 typedef void					GYVOID;
 typedef char					GYBOOL;
-#include <assert.h>
 #endif
 
 #ifdef LINUX64
@@ -52,6 +51,7 @@ const GYBOOL GYTRUE = 1;
 const GYBOOL GYFALSE = 0;
 const GYINT32 GYNULL = 0;
 
+#include <assert.h>
 #define GYAssert(x)				assert(x)
 #define GYINLINE				inline
 extern GYVOID	GYSleep(GYINT32 ms);					
