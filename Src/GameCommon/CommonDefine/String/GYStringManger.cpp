@@ -129,7 +129,7 @@ GYCHAR* GYStringManager::AllocateString( const GYCHAR* str, GYINT32 strLength )
 		if (GYNULL != pString && GYNULL != inSertData)
 		{
 			m_strHashTable.Insert(str, inSertData);
-			memcpy(pString, str, sizeof(str[0]) * strLength);
+			GYMemcpy(pString, str, sizeof(str[0]) * strLength);
 			pString[strLength] = 0;
 		}
 	}

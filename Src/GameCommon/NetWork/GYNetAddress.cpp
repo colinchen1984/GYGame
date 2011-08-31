@@ -51,7 +51,7 @@ GYINT32 GYNetAddress::SetAddr(const char* addr)
     {
         result = 0;
 #ifdef _DEBUG
-        GYStrncpy(m_addressString, addr, sizeof(m_addressString));
+        GYMemcpy(m_addressString, addr, sizeof(m_addressString));
 #endif
     }
     return result;
@@ -73,13 +73,13 @@ GYINT32 GYNetAddress::SetAddr(GYINT32 addr, GYBOOL is_net_order)
     GYCHAR address[MaxAddrStringLengh] = {0};
     if(0 != GetAddressString(address, sizeof(address)))
     {
-        err = -1;
+        err = INVALID_VALUE;
         GYMemset(&m_sockAddr, 0, sizeof(m_sockAddr));
     }
     else
     {
 #ifdef _DEBUG
-        GYStrncpy(m_addressString, address, sizeof(m_addressString));
+        GYMemcpy(m_addressString, address, sizeof(m_addressString));
 #endif // _DEBUG
 
     }

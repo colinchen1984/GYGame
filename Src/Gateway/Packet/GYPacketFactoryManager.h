@@ -9,7 +9,7 @@
 #define __GYPACKETFACTORYMANAGER_H__
 #include "GYCommonDefine.h"
 #include "GYProtocolID.h"
-
+#include "GYPacketHandlerCommon.h"
 class GYPacketInteface;
 class GYStringManager;
 
@@ -18,6 +18,7 @@ class GYPacketFactoryManager
 	GYPacketInteface*	m_packetFactory[EM_PACKET_ID_COUNT];
 	GYBOOL				m_packetFactoryBit[EM_PACKET_ID_COUNT];
 	GYStringManager*	m_stringManager;
+	PacketHandler		m_packetHandler[EM_PACKET_ID_COUNT];
 public:
 	GYPacketFactoryManager(){CleanUp();};
 	~GYPacketFactoryManager(){};
@@ -26,7 +27,8 @@ public:
 	GYVOID Release();
 	GYVOID CleanUp();
 	GYPacketInteface* GetPacketByID(EM_PACKET_ID packetID);
-	GYVOID ReleasePacketByID(GYPacketInteface& packet);
+	PacketHandler GetPacketHandlerByID(EM_PACKET_ID packetID);
+	GYVOID ReleasePacket(GYPacketInteface& packet);
 private:
 	GYVOID _RegisterPacket();
 };

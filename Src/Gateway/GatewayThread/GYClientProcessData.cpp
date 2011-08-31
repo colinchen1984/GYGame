@@ -23,10 +23,27 @@ GYVOID GYClientSession::_ProcessInputData(GYPacketFactoryManager& packetFactory,
 		streamSerializer << *packet;
 		//保证数据读取正确
 		GYAssert(dataLen == streamSerializer.GetSerializDataSize());
-		//调用相关函数处理数据包
-		
-
 		m_allRecvDataSize += dataLen;
+		//调用相关函数处理数据包
+		PacketHandler pHandler = packetFactory.GetPacketHandlerByID(GYGetPacketID(packetHead.m_id));
+		GYAssert(GYNULL != pHandler);
+		if (GYTRUE == pHandler(*this, *packet))
+		{
+			packetFactory.ReleasePacket(*packet);
+		}
+		else
+		{
+			//剔除玩家
+			if(EM_CLIENT_SESSION_STATUS_WITH_SERVER == m_status)
+			{
+				_OnClientCloseWithServer();
+			}
+			else
+			{
+				_OnReceiveWithNoServer();
+			}
+		}
+		
 	}
 	else
 	{

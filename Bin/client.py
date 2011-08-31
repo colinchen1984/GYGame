@@ -1,5 +1,6 @@
 import socket
 import time
+import struct
 G_LoopCount = 1
 G_ClientCount = 1
 G_ServerAddress = ("127.0.0.1", 5555)
@@ -11,23 +12,35 @@ for i in range(G_LoopCount):
 			t.connect(G_ServerAddress)	
 			time.sleep(0.0001)
 			s.append((x, t))
-			t.send("Test321312312")
 		except :
 			print x
-	print i
 	time.sleep(2)
-time.sleep(10000)
 
 
 
+userID = 1001
+userName = "TestName"
+testPacket = struct.pack("i", userID)
+testPacket += struct.pack("h", len(userName))
+testPacket += struct.pack(("%ds" % len(userName)), userName)
+
+packetID = 0
+packetHead = struct.pack("hhc", 0, len(testPacket), '\0')
+
+testPacket = packetHead + testPacket
+
+print "%s\t%d" % (testPacket, len(testPacket))
+count = 1
 while(1):
 	back = []
 	for t in s:
-		try:
-			print "%d OK" % t[0]
-			t[1].send("test")
-			t[1].recv(4)
-			back.append(t)
-		except:
-			print t[0]
+		# try:
+		t[1].send(testPacket)
+		recvPacket = t[1].recv(len(testPacket))
+		back.append(t)
+		print "recv packet len %d, send packet len %d, count is %d" % (len(recvPacket), len(testPacket) , count)
+		# except:
+			# print t[0]
 	s = back
+	time.sleep(1)
+	count += 1

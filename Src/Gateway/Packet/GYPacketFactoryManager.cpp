@@ -11,14 +11,15 @@ GYVOID GYPacketFactoryManager::CleanUp()
 {
 	GYMemset(m_packetFactory, 0, sizeof(m_packetFactory));
 	GYMemset(m_packetFactoryBit, 0, sizeof(m_packetFactoryBit));
+	GYMemset(m_packetHandler, 0, sizeof(m_packetHandler));
 	
 }
 
 GYINT32 GYPacketFactoryManager::Init(GYStringManager& stringManager)
 {
 	CleanUp();
-	_RegisterPacket();
 	m_stringManager = &stringManager; 
+	_RegisterPacket();
 	return 0;
 }
 
@@ -40,13 +41,26 @@ GYPacketInteface* GYPacketFactoryManager::GetPacketByID(EM_PACKET_ID packetID)
 	GYPacketInteface* packet = m_packetFactory[packetID];
 	m_packetFactory[packetID] = GYNULL;
 	GYTRUE == m_packetFactoryBit[packetID] ? GYAssert(GYNULL != packet) : GYAssert(GYNULL != packet); //如果出现断言，则认为多线程同时访问了同一个Factory
+	if (GYNULL != packet)
+	{
+		packet->CleanUp();
+	}
 	return packet;
 }
 
-GYVOID GYPacketFactoryManager::ReleasePacketByID( GYPacketInteface& packet )
+GYVOID GYPacketFactoryManager::ReleasePacket( GYPacketInteface& packet )
 {
 	EM_PACKET_ID packetID = GYGetPacketID(packet.GetPacketID());
 	GYAssert(packetID >=0 && packetID < EM_PACKET_ID_COUNT);
 	GYAssert(GYNULL == m_packetFactory[packetID] && GYTRUE == m_packetFactoryBit[packetID]);
 	m_packetFactory[packetID] = &packet;
+}
+
+PacketHandler GYPacketFactoryManager::GetPacketHandlerByID( EM_PACKET_ID packetID )
+{
+	GYAssert(packetID >=0 && packetID < EM_PACKET_ID_COUNT);
+	PacketHandler packetHandler = m_packetHandler[packetID];
+	GYTRUE == m_packetFactoryBit[packetID] ? GYAssert(GYNULL != packetHandler) : GYAssert(GYNULL != packetHandler); //如果出现断言，则认为多线程同时访问了同一个Factory
+
+	return packetHandler;
 }

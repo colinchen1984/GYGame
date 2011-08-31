@@ -6,6 +6,7 @@
 ////////////////////////////////////////////
 #include "GYPacketFactoryManager.h"
 #include "GYTestPacket.h"
+#include "GYPacketHandler.h"
 GYVOID GYPacketFactoryManager::_RegisterPacket()
 {
 	GYPacketInteface* pPacket =GYNULL;
@@ -13,4 +14,8 @@ GYVOID GYPacketFactoryManager::_RegisterPacket()
 	pPacket = GYNew GYTestPacket(*m_stringManager);
 	m_packetFactory[pPacket->GetPacketID()] = pPacket;
 	m_packetFactoryBit[pPacket->GetPacketID()] = GYTRUE;
+	m_packetHandler[pPacket->GetPacketID()] = GYTestPacketHandler;
+
+
+
 }

@@ -76,6 +76,11 @@ public:
 				GYAssert(0 == m_buffer.Write(reinterpret_cast<GYCHAR*>(&value), sizeof(value)));
 			}
 			break;
+		default:
+			{
+				GYAssert(GYFALSE);
+			}
+			break;
 		}
 		m_serializDataSize += sizeof(value);
 		return *this;
