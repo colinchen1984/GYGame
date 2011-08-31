@@ -10,6 +10,6 @@
 GYBOOL GYTestPacketHandler(GYClientSession& session, GYPacketInteface& packet)
 {
 	GYTestPacket& testPacket = static_cast<GYTestPacket&>(packet);
-	session.SendPacket(packet);
+	session.SendPacket(testPacket);
 	return GYTRUE;
 }
