@@ -7,8 +7,10 @@ SET(CMAKE_CXX_COMPILER "g++")
 
 
 INCLUDE_DIRECTORIES(../GameCommon/CommonDefine)
+INCLUDE_DIRECTORIES(../GameCommon/CommonDefine/String)
+INCLUDE_DIRECTORIES(../GameCommon/CommonDefine/TimeController)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/Lib)
-SET(LIB_SRC GYTestPacket.cpp)
+SET(LIB_SRC GYTestPacket.cpp GYProtocolDefine.cpp)
 ADD_LIBRARY(Protocol ${LIB_SRC})
 TARGET_LINK_LIBRARIES(Protocol GameCommon)
 MESSAGE(STATUS ${CMAKE_SYSTEM})
