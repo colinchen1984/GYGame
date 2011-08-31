@@ -8,7 +8,7 @@
 #include "GYProtocolDefine.h"
 #include "GYGatewayThread.h"
 #include "GYPacketFactoryManager.h"
-#include "gystreamserialization.h"
+#include "GYStreamSerialization.h"
 
 #define  INPUTBUFFER m_connection.m_inputBuffer
 #define  OUTPUTBUFFER m_connection.m_outputBuffer
