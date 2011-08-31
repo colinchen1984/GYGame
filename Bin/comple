@@ -11,10 +11,11 @@ cd ../Thread
 rm -rf *
 cmake ../../Src/GameCommon/Thread
 make
-cd ../Gateway
-cmake ../../Src/Gateway
-make
 
 cd ../Protocol
 cmake ../../Src/Protocol
+make
+
+cd ../Gateway
+cmake ../../Src/Gateway
 make
