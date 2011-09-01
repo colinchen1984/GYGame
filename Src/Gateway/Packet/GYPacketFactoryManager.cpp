@@ -9,9 +9,9 @@
 
 GYVOID GYPacketFactoryManager::CleanUp()
 {
-	GYMemset(m_packetFactory, 0, sizeof(m_packetFactory));
-	GYMemset(m_packetFactoryBit, 0, sizeof(m_packetFactoryBit));
-	GYMemset(m_packetHandler, 0, sizeof(m_packetHandler));
+	GYZeroMem(m_packetFactory, sizeof(m_packetFactory));
+	GYZeroMem(m_packetFactoryBit,sizeof(m_packetFactoryBit));
+	GYZeroMem(m_packetHandler, sizeof(m_packetHandler));
 	
 }
 

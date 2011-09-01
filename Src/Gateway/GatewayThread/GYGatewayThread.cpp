@@ -107,6 +107,7 @@ GYVOID GYGatewayThread::AddSession( GYClientSession& session )
 
 GYVOID GYGatewayThread::OnClientSessionClose( GYClientSession& session )
 {
+	m_workSession.Delete(session);
 	m_ClosedSession.Add(session);
 }
 
