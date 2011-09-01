@@ -51,6 +51,33 @@ GYINT32 GYClientSession::Init(const GYSocket& sock, const GYNetAddress& clientAd
 	return result;
 }
 
+
+GYVOID GYClientSession::Release()
+{
+	if(GYNULL != m_reactor)
+	{
+		m_reactor->DeleteEvent(m_clientNetEvnet);
+		m_reactor = GYNULL;
+	}
+	m_connection.Close();
+
+	//剔除玩家
+	if(EM_CLIENT_SESSION_STATUS_WITH_SERVER == m_status)
+	{
+		static_cast<GYGatewayThread*>(m_server)->OnClientSessionClose(*this);
+	}
+	else if(EM_CLIENT_SESSION_STATUS_IN_SERVER_WITH_NO_SERVER == m_status)
+	{
+		static_cast<GYServer*>(m_server)->OnClientSessionClose(*this);
+	}
+	else
+	{
+		GYAssert(GYFALSE);
+	}
+	CleanUp();
+}
+
+
 GYVOID GYClientSession::CleanUp()
 {
 	m_server = GYNULL;
@@ -98,7 +125,7 @@ GYVOID GYClientSession::_OnReceiveWithServer()
 		|| GY_SOCKET_OPERATION_ERROR_CODE_FAIL_TO_CHECK_SOCKET_CORE_BUFFER == result
 		|| GY_SOCKET_OPERATION_ERROR_CODE_CONNECTION_CLOSED == result)
 	{
-		_OnClientCloseWithServer();
+		Release();
 		return;
 	}
 	if (GY_SOCKET_OPERATION_ERROR_CODE_SUCESS != result)
@@ -107,11 +134,11 @@ GYVOID GYClientSession::_OnReceiveWithServer()
 	}
 
 	GYINT32 length = INPUTBUFFER.GetReadSize();
-	if (length > CSPacektHeadLen)
+	if (length > PacektHeadLen)
 	{
-		const GYCSPacketHead* const pPacketHead = reinterpret_cast<const GYCSPacketHead* const>(INPUTBUFFER.ReadPtr());
-		GYAssert(CSPacketMaxLen >= pPacketHead->m_packetLen);
-		if (length >= pPacketHead->m_packetLen + CSPacektHeadLen)
+		const GYPacketHead* const pPacketHead = reinterpret_cast<const GYPacketHead* const>(INPUTBUFFER.ReadPtr());
+		GYAssert(PacketMaxLen >= pPacketHead->m_packetLen);
+		if (length >= pPacketHead->m_packetLen + PacektHeadLen)
 		{
 			_ProcessInputData(static_cast<GYGatewayThread*>(m_server)->GetPacketFactoryManager(), *pPacketHead);
 		}
@@ -125,7 +152,7 @@ GYVOID GYClientSession::_OnReceiveWithNoServer()
 		|| GY_SOCKET_OPERATION_ERROR_CODE_FAIL_TO_CHECK_SOCKET_CORE_BUFFER == result
 		|| GY_SOCKET_OPERATION_ERROR_CODE_CONNECTION_CLOSED == result)
 	{
-		_OnClientCloseWithNoServer();
+		Release();
 		return;
 	}
 	if (GY_SOCKET_OPERATION_ERROR_CODE_SUCESS != result)
@@ -134,39 +161,15 @@ GYVOID GYClientSession::_OnReceiveWithNoServer()
 	}
 
 	GYINT32 length = INPUTBUFFER.GetReadSize();
-	if (length > CSPacektHeadLen)
+	if (length > PacektHeadLen)
 	{
-		const GYCSPacketHead* pPacketHead = reinterpret_cast<const GYCSPacketHead*>(INPUTBUFFER.ReadPtr());
-		GYAssert(CSPacketMaxLen > pPacketHead->m_packetLen);
-		if (length > pPacketHead->m_packetLen + CSPacektHeadLen)
+		const GYPacketHead* pPacketHead = reinterpret_cast<const GYPacketHead*>(INPUTBUFFER.ReadPtr());
+		GYAssert(PacketMaxLen > pPacketHead->m_packetLen);
+		if (length > pPacketHead->m_packetLen + PacektHeadLen)
 		{
 			_ProcessInputData(static_cast<GYServer*>(m_server)->GetPacketFactoryManager(), *pPacketHead);
 		}
 	}
-}
-
-GYVOID GYClientSession::_OnClientCloseWithServer()
-{
-	if(GYNULL != m_reactor)
-	{
-		m_reactor->DeleteEvent(m_clientNetEvnet);
-		m_reactor = GYNULL;
-	}
-	m_connection.Close();
-	static_cast<GYGatewayThread*>(m_server)->OnClientSessionClose(*this);
-	return;
-}
-
-GYVOID GYClientSession::_OnClientCloseWithNoServer()
-{
-	if(GYNULL != m_reactor)
-	{
-		m_reactor->DeleteEvent(m_clientNetEvnet);
-		m_reactor = GYNULL;
-	}
-	m_connection.Close();
-	static_cast<GYServer*>(m_server)->OnClientSessionClose(*this);
-	return;
 }
 
 GYVOID GYClientSession::SendPacket(GYPacketInteface& packet)
@@ -176,33 +179,36 @@ GYVOID GYClientSession::SendPacket(GYPacketInteface& packet)
 	m_allSendDataSize += packetSender.GetSerializDataSize();
 }
 
+
+GYINT32 GYClientSession::SendData( const GYPacketHead& packetHead, const GYCHAR* pData )
+{
+	//这里插入玩家的GUID在数据包前面
+	GYINT32 writeSpaceSize = m_connection.m_outputBuffer.GetWriteSize();
+	const GYINT32 needSpaceSize = PacektHeadLen + packetHead.m_packetLen;
+	if (writeSpaceSize < needSpaceSize)
+	{
+		m_connection.Send();
+		writeSpaceSize = m_connection.m_outputBuffer.GetWriteSize();
+		if (writeSpaceSize < needSpaceSize)
+		{
+			//实在是没有地方了，等等吧
+			return INVALID_VALUE;
+		}
+	}
+	GYAssert(0 == m_connection.m_outputBuffer.Write(pData, PacektHeadLen + packetHead.m_packetLen));
+	return 0;
+}
+
 GYBOOL GYClientSession::Tick()
 {
 	GYBOOL result = GYFALSE;
-	if (GY_SOCKET_OPERATION_ERROR_CODE_SUCESS != m_connection.Send())
+	if (GY_SOCKET_OPERATION_ERROR_CODE_SUCESS == m_connection.Send())
 	{
-		switch(m_status)
-		{
-		case EM_CLIENT_SESSION_STATUS_WITH_SERVER:
-			{
-				_OnClientCloseWithServer();
-			}
-			break;
-		case EM_CLIENT_SESSION_STATUS_IN_SERVER_WITH_NO_SERVER:
-			{
-				_OnClientCloseWithNoServer();
-			}
-			break;
-		default:
-			{
-				GYAssert(GYFALSE);
-			}
-			break;
-		}
+		result = GYTRUE;
 	}
 	else
 	{
-		result = GYTRUE;
+		Release();
 	}
 	return result;
 }

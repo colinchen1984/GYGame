@@ -28,7 +28,7 @@ const GYINT32 LOGIC_SESSION_RECV_BUFFER_LEN = 1024 * 1024;
 const GYINT32 LOGIC_SESSION_SEND_BUFFER_LEN = 1024 * 1024;
 
 class GYServer;
-struct GYCSPacketHead;
+struct GYPacketHead;
 
 enum EM_GATE_WAY_THREAD_STATUS
 {
@@ -98,7 +98,7 @@ public:
 
 	GYINLINE GYPacketFactoryManager& GetPacketFactoryManager(){return m_packetFactory;}
 
-	GYINT32	SendDataToServer(GYClientSession& session, const GYCSPacketHead& packetHead, const GYCHAR* pData);
+	GYINT32	SendDataToServer(GYClientSession& session, const GYPacketHead& packetHead, const GYCHAR* pData);
 
 private:
 	GYVOID	_ConnectLogicServer();
@@ -108,6 +108,8 @@ private:
 	GYINLINE GYVOID	_SetThreadStatus(EM_GATE_WAY_THREAD_STATUS status){m_status = status;}
 
 	GYVOID _StopCurrentService();
+
+	GYVOID _ProcessInputData(const GYGUID& clientGUID, const GYPacketHead& packetHead);
 
 };
 

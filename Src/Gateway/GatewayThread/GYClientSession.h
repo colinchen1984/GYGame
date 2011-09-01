@@ -19,7 +19,7 @@ const GYINT32 CLIENT_SESSION_SEND_BUFFER_LEN = 16 * 1024;
 class GYReactor;
 class GYPacketInteface;
 class GYPacketFactoryManager;
-struct GYCSPacketHead;
+struct GYPacketHead;
 enum EM_CLIENT_SESSION_STATUS
 {
 	EM_CLIENT_SESSION_STATUS_INVALID = -1,
@@ -48,20 +48,22 @@ public:
 
 	GYINT32	Init(const GYSocket& sock, const GYNetAddress& clientAddress);
 
+	GYVOID	Release();
+
 	GYINT32	Regeist2Reactor(GYReactor& reactor, GYVOID* Onwer, EM_CLIENT_SESSION_STATUS status);
 
 	GYINLINE EM_CLIENT_SESSION_STATUS GetStatus(){return m_status;}
 
 	GYVOID	SendPacket(GYPacketInteface& packet);
 
+	GYINT32	SendData(const GYPacketHead& packetHead, const GYCHAR* pData);
+
 	GYBOOL	Tick();
 	GYINLINE const GYGUID& GetGUID(){return m_clientGUID;}
 private:
 	GYVOID	_OnReceiveWithServer();
 	GYVOID	_OnReceiveWithNoServer();
-	GYVOID	_OnClientCloseWithServer();
-	GYVOID	_OnClientCloseWithNoServer();
-	GYVOID	_ProcessInputData(GYPacketFactoryManager& packetFactory, const GYCSPacketHead& packetHead);
+	GYVOID	_ProcessInputData(GYPacketFactoryManager& packetFactory, const GYPacketHead& packetHead);
 };
 
 #endif

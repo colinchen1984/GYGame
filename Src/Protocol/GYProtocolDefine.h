@@ -19,12 +19,12 @@ typedef GYUINT16 GYPACKETLEN;
 
 
 #pragma pack (1)
-struct GYCSPacketHead 
+struct GYPacketHead 
 {
 	GYPACKETID m_id;
 	GYPACKETLEN m_packetLen;
 	GYCHAR		m_flags;
-	GYCSPacketHead()
+	GYPacketHead()
 	{
 		m_id = GYMakePacketID(EM_PACKET_ID_INVALID);
 		m_packetLen = 0;
@@ -34,8 +34,8 @@ struct GYCSPacketHead
 };
 #pragma pack ()
 
-const GYINT32 CSPacektHeadLen = sizeof(GYCSPacketHead);
-const GYINT32 CSPacketMaxLen = (static_cast<GYPACKETLEN>(INVALID_VALUE) / 2);
+const GYINT32 PacektHeadLen = sizeof(GYPacketHead);
+const GYINT32 PacketMaxLen = (static_cast<GYPACKETLEN>(INVALID_VALUE) / 2);
 
 class GYPacketInteface
 {

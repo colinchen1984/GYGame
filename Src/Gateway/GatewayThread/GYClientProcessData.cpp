@@ -13,10 +13,10 @@
 #define  INPUTBUFFER m_connection.m_inputBuffer
 #define  OUTPUTBUFFER m_connection.m_outputBuffer
 
-GYVOID GYClientSession::_ProcessInputData(GYPacketFactoryManager& packetFactory, const GYCSPacketHead& packetHead)
+GYVOID GYClientSession::_ProcessInputData(GYPacketFactoryManager& packetFactory, const GYPacketHead& packetHead)
 {
 	GYPacketInteface* packet = packetFactory.GetPacketByID(GYGetPacketID(packetHead.m_id));
-	const GYINT32 dataLen = CSPacektHeadLen + packetHead.m_packetLen;
+	const GYINT32 dataLen = PacektHeadLen + packetHead.m_packetLen;
 	if (GYNULL != packet)
 	{
 		GYStreamSerialization<CLIENT_SESSION_RECV_BUFFER_LEN> streamSerializer(INPUTBUFFER, EM_SERIALIZAION_MODE_READ);
@@ -29,21 +29,13 @@ GYVOID GYClientSession::_ProcessInputData(GYPacketFactoryManager& packetFactory,
 		GYAssert(GYNULL != pHandler);
 		if (GYTRUE == pHandler(*this, *packet))
 		{
-			packetFactory.ReleasePacket(*packet);
 		}
 		else
 		{
-			//剔除玩家
-			if(EM_CLIENT_SESSION_STATUS_WITH_SERVER == m_status)
-			{
-				_OnClientCloseWithServer();
-			}
-			else
-			{
-				_OnReceiveWithNoServer();
-			}
+			Release();
 		}
-		
+		packetFactory.ReleasePacket(*packet);
+
 	}
 	else
 	{
