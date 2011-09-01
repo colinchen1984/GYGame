@@ -51,7 +51,7 @@ GYINT32 GYServer::Init()
 		{
 			break;
 		}
-		if (m_acceptorSocket.SetBlock(GYFALSE))
+		if (0 != m_acceptorSocket.SetBlock(GYFALSE))
 		{
 			break;
 		}
@@ -102,7 +102,7 @@ GYINT32 GYServer::Init()
 		{
 			break;
 		}
-		m_wholeClientSession = new GYClientSession[GatewayClientSessionCount];
+		m_wholeClientSession = GYNew GYClientSession[GatewayClientSessionCount];
 		for (GYINT32 i = 0; i < GatewayClientSessionCount; ++i)
 		{
 			m_freeClientSession.Add(m_wholeClientSession[i]);
