@@ -63,13 +63,13 @@ public:
 		m_dataArray = GYNew T*[maxCount];
 		m_maxCount = maxCount;
 		m_currentCount = 0;
-		memset(m_dataArray, 0, sizeof(T*) * maxCount);
+		GYZeroMem(m_dataArray, sizeof(T*) * maxCount);
 		return 0;
 	}
 
 	GYINLINE GYINT32 Release()
 	{
-		delete[] m_dataArray;
+		GYDelete[] m_dataArray;
 		CleanUp();
 		return 0;
 	}

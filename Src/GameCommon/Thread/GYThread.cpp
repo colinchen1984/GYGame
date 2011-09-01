@@ -38,10 +38,6 @@ GYINT32 GYThread::InitThread(const GYThreadTask& task)
 	result = pthread_create(&m_threadHandle, GYNULL, thread_proc, static_cast<GYVOID*>(this));
 	result = 0 == result ? 0 : INVALID_VALUE;
 #endif
-	if (INVALID_VALUE == result)
-	{
-		return result;
-	}
 	return result;
 }
 

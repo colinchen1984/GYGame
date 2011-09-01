@@ -26,12 +26,14 @@ GYINT32 GYSocket::SetBlock(GYBOOL block)
 #ifdef LINUX64
     ret = fcntl(m_fd, F_GETFL);
     opt = GYTRUE == block ? ~O_NONBLOCK : O_NONBLOCK;
-    if(-1 != ret)
-        ret = fcntl(m_fd, F_SETFL, ret | opt);
+    if(INVALID_VALUE != ret)
+	{
+		ret = fcntl(m_fd, F_SETFL, ret | opt);
+	}
 #endif
 #ifdef WIN32
     opt = GYTRUE == block ? 0 : 1;
-    ret = 0 == ioctlsocket(m_fd, FIONBIO, &opt) ? 0 : -1;
+    ret = 0 == ioctlsocket(m_fd, FIONBIO, &opt) ? 0 : INVALID_VALUE;
 #endif
     return INVALID_VALUE != ret ? 0 : INVALID_VALUE;
 }
