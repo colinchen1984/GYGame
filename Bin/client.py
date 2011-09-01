@@ -2,7 +2,7 @@ import socket
 import time
 import struct
 G_LoopCount = 10
-G_ClientCount = 20
+G_ClientCount = 5
 G_ServerAddress = ("127.0.0.1", 5555)
 s = []
 for i in range(G_LoopCount):
