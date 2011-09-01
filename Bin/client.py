@@ -1,8 +1,8 @@
 import socket
 import time
 import struct
-G_LoopCount = 1
-G_ClientCount = 1
+G_LoopCount = 10
+G_ClientCount = 20
 G_ServerAddress = ("127.0.0.1", 5555)
 s = []
 for i in range(G_LoopCount):
@@ -14,7 +14,7 @@ for i in range(G_LoopCount):
 			s.append((x, t))
 		except :
 			print x
-	time.sleep(2)
+	time.sleep(0.1)
 
 
 
@@ -42,5 +42,5 @@ while(1):
 		# except:
 			# print t[0]
 	s = back
-	time.sleep(1)
+	time.sleep(0.1)
 	count += 1
