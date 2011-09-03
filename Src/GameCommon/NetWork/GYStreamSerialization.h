@@ -11,13 +11,6 @@
 #include "GYString.h"
 #include "GYCycleBuffer.h"
 #include "GYProtocolDefine.h"
-enum EM_SERIALIZAION_MODE
-{
-	EM_SERIALIZAION_MODE_INVALID = -1,
-	EM_SERIALIZAION_MODE_READ,
-	EM_SERIALIZAION_MODE_WRITE,
-	EM_SERIALIZAION_MODE_COUNT,
-};
 
 template< GYINT32 CYCLE_BUFFER_LEN>
 class GYStreamSerialization : public GYSerializationInteface
@@ -183,6 +176,30 @@ public:
 	}
 
 	virtual GYSerializationInteface& operator<<(GYINT64& value)
+	{
+		switch(m_mode)
+		{
+		case EM_SERIALIZAION_MODE_READ:
+			{
+				GYAssert(0 == m_buffer.Read(reinterpret_cast<GYCHAR*>(&value), sizeof(value)));
+			}
+			break;
+		case EM_SERIALIZAION_MODE_WRITE:
+			{
+				GYAssert(0 == m_buffer.Write(reinterpret_cast<GYCHAR*>(&value), sizeof(value)));
+			}
+			break;
+		default:
+			{
+				GYAssert(GYFALSE);
+			}
+			break;
+		}
+		m_serializDataSize += sizeof(value);
+		return *this;
+	}
+
+	virtual GYSerializationInteface& operator<<(GYUINT64& value)
 	{
 		switch(m_mode)
 		{

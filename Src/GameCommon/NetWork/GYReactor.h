@@ -27,7 +27,7 @@ class GYReactor
     GYWin32SelectReactor	m_reactor;
 #endif // WIN32
 #ifdef LINUX64
-    GYEpollReactor m_reactor;
+    GYEpollReactor			m_reactor;
 #endif // LINUX64
 
 public:

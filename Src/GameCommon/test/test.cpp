@@ -22,6 +22,7 @@
 #include "GYString.h"
 #include "GYStreamSerialization.h"
 #include "GYTestPacket.h"
+#include "GYTableSerialization.h"
 
 using std::list;
 using std::set;
@@ -82,8 +83,11 @@ GYVOID acceptHandler(GYNetEvent& event)
 	}
 }
 
+
+
 GYINT32 main()
 {
+
 	char b[1024];
 	set<int> itTest;
 	for (int i = 0; i < 100; ++i)
@@ -93,11 +97,26 @@ GYINT32 main()
 	set<int>::iterator itTestit = itTest.begin();
 	advance(itTestit, 10);
 	int btes = *itTestit;
-	const char* name = "陈琳";
 	GYStringManager* strManager = new GYStringManager();
 	strManager->Init();
+	GYTableSerialization testOs;
+	const char* name = "scene_config_file.tab";
 	GYString testString1(name, strlen(name), *strManager);
-	GYString testString2(name, strlen(name), *strManager);
+	testOs.Init(testString1);
+	int testArray[5] = {0};
+	for (GYINT32 i = 0; i < 5; ++i)
+	{
+		testOs << testArray[i];
+	}
+	
+	GYString testString2(*strManager);
+	testOs << testString2;
+
+	int testArrayB[1] = {0};
+	for (GYINT32 i = 0; i < 1; ++i)
+	{
+		testOs << testArrayB[i];
+	}
 	testString2 = testString1;
 	testString2 = "test";
 	testString2 = testString1;
