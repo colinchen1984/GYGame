@@ -20,6 +20,8 @@ const GYINT32 BufferCount512 = 128;
 const GYINT32 BufferCount1024 = 128;
 const GYINT32 StringHashTableSize = 128;
 const GYINT32 StringHashTableBucketSize = 128;
+//字符串管理器，本身不是线程安全的，如果需要可以自己加锁
+//或者每个线程一个独立的管理器
 class GYStringManager
 {
 	template<int bufferSize>
@@ -77,5 +79,16 @@ private:
 	GYStringBuffer<1024>*	_Allocate1024();
 };
 
+//字符串管理的单件版本
+class StringMangerSingleton : GYStringManager
+{
+private:
+	StringMangerSingleton(){};
+public:
+	~StringMangerSingleton(){};
+
+	static StringMangerSingleton& GetSingleton(); 
+};
+#define Stringmanager StringMangerSingleton::GetSingleton()
 #endif
 

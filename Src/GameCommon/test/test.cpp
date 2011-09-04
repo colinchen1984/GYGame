@@ -13,6 +13,7 @@
 #include "GYSocket.h"
 #include "GYEvent.h"
 #include "GYReactor.h"
+#include "GYTable.h"
 #include <list>
 #include <set>
 #include <stdio.h>
@@ -82,7 +83,26 @@ GYVOID acceptHandler(GYNetEvent& event)
 		reactor.AddEvent(*e);
 	}
 }
+GYStringManager* strManager = new GYStringManager();
+struct TestStructTable
+{
+	GYINT32 testArray[5];
+	GYString	testArrayString;
+	TestStructTable() : testArrayString(*strManager)
+	{
 
+	}
+
+	GYVOID Serializ(GYSerializationInteface& seralizer)
+	{
+		for (GYINT32 i = 0; i < 5; ++i)
+		{
+			seralizer << testArray[i];
+		}
+		seralizer << testArrayString;
+		
+	}
+};
 
 
 GYINT32 main()
@@ -97,11 +117,20 @@ GYINT32 main()
 	set<int>::iterator itTestit = itTest.begin();
 	advance(itTestit, 10);
 	int btes = *itTestit;
-	GYStringManager* strManager = new GYStringManager();
 	strManager->Init();
 	GYTableSerialization testOs;
-	const char* name = "scene_config_file.tab";
+	const char* name = "test.tab";
 	GYString testString1(name, strlen(name), *strManager);
+	GYTable<TestStructTable> tableFile;
+	tableFile.Load(testString1);
+	tableFile[2];
+	tableFile[16];
+	tableFile[-1];
+	tableFile[1321];
+	tableFile[64];
+	tableFile[100];
+	tableFile[196];
+	tableFile[205];
 	testOs.Init(testString1);
 	int testArray[5] = {0};
 	for (GYINT32 i = 0; i < 5; ++i)

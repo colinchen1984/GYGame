@@ -1,0 +1,8 @@
+﻿/////////////////////////////////////////////
+// create time: 2011/9/4 16:04
+// author:	colin chen
+// file name:	GYTableManager
+// file type:	cpp
+////////////////////////////////////////////
+#include "GYTableManager.h"
+

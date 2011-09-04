@@ -366,10 +366,8 @@ GYVOID GYStringManager::DeleteStringReference( GYCHAR* str, GYINT32 strLength )
 	}
 }
 
-
-
-
-
-
-
-
+StringMangerSingleton& StringMangerSingleton::GetSingleton()
+{
+	static StringMangerSingleton singleon;
+	return singleon;
+}

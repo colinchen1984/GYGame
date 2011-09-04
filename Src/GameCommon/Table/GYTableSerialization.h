@@ -10,6 +10,7 @@
 
 #include "GYSerialization.h"
 class GYString;
+enum EM_TABLE_DATA_TYPE;
 
 class GYTableSerialization : public GYSerializationInteface
 {
@@ -18,6 +19,11 @@ class GYTableSerialization : public GYSerializationInteface
 	GYINT32 m_fileSize;
 	GYINT32 m_serializationDataCount;
 	const GYCHAR* m_dataStart;
+#ifdef CHECK_DATA_TYPE
+	EM_TABLE_DATA_TYPE* m_dataType;
+	GYINT32				m_loadColumCount;
+#endif
+
 public:
 	explicit GYTableSerialization();
 
@@ -49,10 +55,16 @@ public:
 
 	virtual GYSerializationInteface& operator<<(GYString& value);
 
+#ifdef CHECK_DATA_TYPE
+	GYVOID	BeginLoadRowData(){m_loadColumCount = 0;};
+#endif
+
 private:
-	const GYCHAR* _GetLine(const GYCHAR* pData);
+	const GYCHAR* _GetLine(const GYCHAR* pData, GYBOOL processCommetChar);
 
 	const GYCHAR* _GetDataString(const GYCHAR* pData);
+
+	const GYCHAR* _GetDataString(const GYCHAR* pStart, const GYCHAR* pEnd);
 
 	GYVOID _CleanUp();
 };

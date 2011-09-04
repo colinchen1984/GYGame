@@ -1,0 +1,7 @@
+﻿/////////////////////////////////////////////
+// create time: 2011/9/4 16:31
+// author:	colin chen
+// file name:	GYNetWorkManager
+// file type:	cpp
+////////////////////////////////////////////
+#include "GYNetWorkManager.h"

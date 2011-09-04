@@ -8,6 +8,7 @@
 #include "GYString.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -25,6 +26,30 @@ GYTableSerialization::GYTableSerialization()
 GYTableSerialization::~GYTableSerialization()
 {
 }
+
+#ifdef CHECK_DATA_TYPE
+enum EM_TABLE_DATA_TYPE
+{
+	EM_TABLE_DATA_TYPE_INVALID = -1,
+	EM_TABLE_DATA_TYPE_INT,
+	EM_TABLE_DATA_TYPE_UINT,
+	EM_TABLE_DATA_TYPE_INT64,
+	EM_TABLE_DATA_TYPE_UINT64,
+	EM_TABLE_DATA_TYPE_FLOAT,
+	EM_TABLE_DATA_TYPE_STRING,
+	EM_TABLE_DATA_TYPE_COUNT,
+};
+
+static const GYCHAR* DataTypeString[EM_TABLE_DATA_TYPE_COUNT] = 
+{
+	"INT",
+	"UINT",
+	"INT64",
+	"UINT64",
+	"FLOAT",
+	"STR",
+};
+#endif
 
 static const GYINT32 bufferForTableFileLoadLen = 1024 * 1024 * 2;
 static GYCHAR BufferForTableFileLoad[bufferForTableFileLoadLen] = {0};
@@ -61,7 +86,7 @@ GYINT32 GYTableSerialization::Init( const GYString& fileName )
 		}
 		
 		const GYCHAR* nestLine = pDataStart;
-		while(GYNULL != (nestLine = _GetLine(nestLine)))
+		while(GYNULL != (nestLine = _GetLine(nestLine, GYTRUE)))
 		{
 			++m_tableRowCount;
 		}
@@ -76,17 +101,37 @@ GYINT32 GYTableSerialization::Init( const GYString& fileName )
 		}
 		//跳过第一行数据
 
+		nestLine =  _GetLine(pDataStart, GYTRUE);
+		const GYCHAR* pDataStringStart = nestLine;
+		const GYCHAR* pSecondRowEnd = _GetLine(pDataStringStart, GYFALSE);
+
+
 		//处理第二行数据
-		nestLine =  _GetLine(pDataStart);
-		const GYCHAR* pLineStart = nestLine;
-		while(nestLine >= (pLineStart = _GetDataString(pLineStart)))
+		while(pSecondRowEnd >= (pDataStringStart = _GetDataString(pDataStringStart)))
 		{
 			++m_tableColumCount;
 		}
-		
+#ifdef CHECK_DATA_TYPE
+		pDataStringStart = nestLine;
+		m_dataType = GYNew EM_TABLE_DATA_TYPE[m_tableColumCount];
+		const GYCHAR* pDataStringEnd = GYNULL;
+		for (GYINT32 i = 0; i < m_tableColumCount; ++i)
+		{
+			pDataStringEnd = _GetDataString(pDataStringStart);
+			pDataStringStart = _GetDataString(pDataStringStart, pDataStringEnd);
+			for (GYINT32 t = 0; t < EM_TABLE_DATA_TYPE_COUNT; ++t)
+			{
+				if (0 == strcmp(pDataStringStart, DataTypeString[t]))
+				{
+					m_dataType[i] = static_cast<EM_TABLE_DATA_TYPE>(t);
+					break;
+				}
+			}
+			pDataStringStart = pDataStringEnd;
+		}
+#endif
 		//得到第三行数据，也就是表内有效数据的开始
-		nestLine =  _GetLine(nestLine);
-		
+		nestLine =  _GetLine(nestLine, GYTRUE);
 		m_dataStart = nestLine;
 		result = 0;
 	} while (GYFALSE);
@@ -117,97 +162,62 @@ GYSerializationInteface& GYTableSerialization::operator<<(GYUINT16& value)
 	return *this;
 }
 
-static const GYINT32 StringToDataBufferLen = 1024;
-static GYCHAR StringToDataBuffer[StringToDataBufferLen] = {0};
 GYSerializationInteface& GYTableSerialization::operator<<(GYINT32& value)
 {
 	GYAssert(&m_dataStart[m_serializationDataCount] < &BufferForTableFileLoad[m_fileSize]);
-	const GYCHAR* const pDataStart = &m_dataStart[m_serializationDataCount];
+#ifdef CHECK_DATA_TYPE
+	GYAssert(EM_TABLE_DATA_TYPE_INT == m_dataType[m_loadColumCount++]);
+#endif
+	const GYCHAR* pDataStart = &m_dataStart[m_serializationDataCount];
 	const GYCHAR* pDataEnd = _GetDataString(pDataStart);
-	if (GYNULL != pDataEnd)
-	{
-		GYINT32 readDataCount = pDataEnd - pDataStart;
-		if(DataSplitChar == *(pDataEnd - 1) || UnixNewLine == *(pDataEnd -1))
-		{
-			--pDataEnd;
-			if (WindowsNewLineStart == *(pDataEnd -1))
-			{
-				--pDataEnd;
-			}
-			GYINT32 datalen = pDataEnd - pDataStart;
-			GYAssert(datalen < StringToDataBufferLen);
-			GYMemcpy(StringToDataBuffer, pDataStart, datalen);
-			StringToDataBuffer[datalen] = 0;
-			value = atoi(StringToDataBuffer);
-		}		
-		else if (0 == *pDataEnd)
-		{
-			value = atoi(pDataStart);
-		}
-		else 
-		{
-			GYAssert(GYFALSE);
-		}
-		m_serializationDataCount += readDataCount;
-	}
-	else 
-	{
-		GYAssert(GYFALSE);
-	}
+	GYINT32 readDataCount = pDataEnd - pDataStart;
+	GYAssert(readDataCount > 1);
+	const GYCHAR* pData = _GetDataString(pDataStart, pDataEnd);
+	GYAssert(GYNULL != pData);
+	value = atoi(pData);
+	m_serializationDataCount += readDataCount;
 	return *this;
 }
 
 GYSerializationInteface& GYTableSerialization::operator<<(GYUINT32& value)
 {
-	GYINT64 tempValue = 0;
-	*this << tempValue;
-	value = static_cast<GYUINT32>(tempValue);
+	GYAssert(&m_dataStart[m_serializationDataCount] < &BufferForTableFileLoad[m_fileSize]);
+#ifdef CHECK_DATA_TYPE
+	GYAssert(EM_TABLE_DATA_TYPE_UINT == m_dataType[m_loadColumCount++]);
+#endif
+	const GYCHAR* pDataStart = &m_dataStart[m_serializationDataCount];
+	const GYCHAR* pDataEnd = _GetDataString(pDataStart);
+	GYINT32 readDataCount = pDataEnd - pDataStart;
+	GYAssert(readDataCount > 1);
+	const GYCHAR* pData = _GetDataString(pDataStart, pDataEnd);
+	GYAssert(GYNULL != pData);
+#ifdef WIN32
+	value = static_cast<GYUINT32>(_atoi64(pData));
+#else 
+	value =  static_cast<GYUINT32>(strtoll(pData, GYNULL, 10));
+#endif
+	m_serializationDataCount += readDataCount;
 	return *this;
 }
 
 GYSerializationInteface& GYTableSerialization::operator<<(GYINT64& value)
 {
 	GYAssert(&m_dataStart[m_serializationDataCount] < &BufferForTableFileLoad[m_fileSize]);
-	const GYCHAR* const pDataStart = &m_dataStart[m_serializationDataCount];
+#ifdef CHECK_DATA_TYPE
+	GYAssert(EM_TABLE_DATA_TYPE_INT64 == m_dataType[m_loadColumCount++]);
+#endif
+	const GYCHAR* pDataStart = &m_dataStart[m_serializationDataCount];
 	const GYCHAR* pDataEnd = _GetDataString(pDataStart);
-	if (GYNULL != pDataEnd)
-	{
-		GYINT32 readDataCount = pDataEnd - pDataStart;
-		if(DataSplitChar == *(pDataEnd - 1) || UnixNewLine == *(pDataEnd -1))
-		{
-			--pDataEnd;
-			if (WindowsNewLineStart == *(pDataEnd -1))
-			{
-				--pDataEnd;
-			}
-			GYINT32 datalen = pDataEnd - pDataStart;
-			GYAssert(datalen < StringToDataBufferLen);
-			GYMemcpy(StringToDataBuffer, pDataStart, datalen);
-			StringToDataBuffer[datalen] = 0;
+	GYINT32 readDataCount = pDataEnd - pDataStart;
+	GYAssert(readDataCount > 1);
+	const GYCHAR* pData = _GetDataString(pDataStart, pDataEnd);
+	GYAssert(GYNULL != pData);
 #ifdef WIN32
-			value = _atoi64(StringToDataBuffer);
+	value = _atoi64(pData);
 #else 
-			value = strtol(StringToDataBuffer, GYNULL, 10);
+	value = strtoll(pData, GYNULL, 10);
 #endif
-		}		
-		else if (0 == *pDataEnd)
-		{
-#ifdef WIN32
-			value = _atoi64(pDataStart);
-#else 
-			value = strtol(pDataStart, GYNULL, 10);
-#endif
-		}
-		else 
-		{
-			GYAssert(GYFALSE);
-		}
-		m_serializationDataCount += readDataCount;
-	}
-	else 
-	{
-		GYAssert(GYFALSE);
-	}
+	m_serializationDataCount += readDataCount;
 	return *this;
 }
 
@@ -215,126 +225,59 @@ GYSerializationInteface& GYTableSerialization::operator<<(GYINT64& value)
 GYSerializationInteface& GYTableSerialization::operator<<( GYUINT64& value )
 {
 	GYAssert(&m_dataStart[m_serializationDataCount] < &BufferForTableFileLoad[m_fileSize]);
-	const GYCHAR* const pDataStart = &m_dataStart[m_serializationDataCount];
+#ifdef CHECK_DATA_TYPE
+	GYAssert(EM_TABLE_DATA_TYPE_UINT64 == m_dataType[m_loadColumCount++]);
+#endif
+	const GYCHAR* pDataStart = &m_dataStart[m_serializationDataCount];
 	const GYCHAR* pDataEnd = _GetDataString(pDataStart);
-	if (GYNULL != pDataEnd)
-	{
-		GYINT32 readDataCount = pDataEnd - pDataStart;
-		if(DataSplitChar == *(pDataEnd - 1) || UnixNewLine == *(pDataEnd -1))
-		{
-			--pDataEnd;
-			if (WindowsNewLineStart == *(pDataEnd -1))
-			{
-				--pDataEnd;
-			}
-			GYINT32 datalen = pDataEnd - pDataStart;
-			GYAssert(datalen < StringToDataBufferLen);
-			GYMemcpy(StringToDataBuffer, pDataStart, datalen);
-			StringToDataBuffer[datalen] = 0;
+	GYINT32 readDataCount = pDataEnd - pDataStart;
+	GYAssert(readDataCount > 1);
+	const GYCHAR* pData = _GetDataString(pDataStart, pDataEnd);
+	GYAssert(GYNULL != pData);
 #ifdef WIN32
-			value = _atoi64(StringToDataBuffer);
+	value = _atoi64(pData);
 #else 
-			value = strtoull(StringToDataBuffer, GYNULL, 10);
+	value = strtoull(pData, GYNULL, 10);
 #endif
-		}		
-		else if (0 == *pDataEnd)
-		{
-#ifdef WIN32
-			value = _atoi64(pDataStart);
-#else 
-			value = strtoull(pDataStart, GYNULL, 10);
-#endif
-		}
-		else 
-		{
-			GYAssert(GYFALSE);
-		}
-		m_serializationDataCount += readDataCount;
-	}
-	else 
-	{
-		GYAssert(GYFALSE);
-	}
+	m_serializationDataCount += readDataCount;
 	return *this;
 }
 
 GYSerializationInteface& GYTableSerialization::operator<<(GYFLOAT& value)
 {
 	GYAssert(&m_dataStart[m_serializationDataCount] < &BufferForTableFileLoad[m_fileSize]);
-	const GYCHAR* const pDataStart = &m_dataStart[m_serializationDataCount];
+#ifdef CHECK_DATA_TYPE
+	GYAssert(EM_TABLE_DATA_TYPE_FLOAT == m_dataType[m_loadColumCount++]);
+#endif
+	const GYCHAR* pDataStart = &m_dataStart[m_serializationDataCount];
 	const GYCHAR* pDataEnd = _GetDataString(pDataStart);
-	if (GYNULL != pDataEnd)
-	{
-		GYINT32 readDataCount = pDataEnd - pDataStart;
-		if(DataSplitChar == *(pDataEnd - 1) || UnixNewLine == *(pDataEnd -1))
-		{
-			--pDataEnd;
-			if (WindowsNewLineStart == *(pDataEnd -1))
-			{
-				--pDataEnd;
-			}
-			GYINT32 datalen = pDataEnd - pDataStart;
-			GYAssert(datalen < StringToDataBufferLen);
-			GYMemcpy(StringToDataBuffer, pDataStart, datalen);
-			StringToDataBuffer[datalen] = 0;
-			value = static_cast<GYFLOAT>(atof(StringToDataBuffer));
-		}		
-		else if (0 == *pDataEnd)
-		{
-			value = static_cast<GYFLOAT>(atof(pDataStart));
-		}
-		else 
-		{
-			GYAssert(GYFALSE);
-		}
-		m_serializationDataCount += readDataCount;
-	}
-	else 
-	{
-		GYAssert(GYFALSE);
-	}
+	GYINT32 readDataCount = pDataEnd - pDataStart;
+	GYAssert(readDataCount > 1);
+	const GYCHAR* pData = _GetDataString(pDataStart, pDataEnd);
+	GYAssert(GYNULL != pData);
+	value = static_cast<GYFLOAT>(atof(pData));
+	m_serializationDataCount += readDataCount;
 	return *this;
 }
 
 GYSerializationInteface& GYTableSerialization::operator<<(GYString& value)
 {
 	GYAssert(&m_dataStart[m_serializationDataCount] < &BufferForTableFileLoad[m_fileSize]);
-	const GYCHAR* const pDataStart = &m_dataStart[m_serializationDataCount];
+#ifdef CHECK_DATA_TYPE
+	GYAssert(EM_TABLE_DATA_TYPE_STRING == m_dataType[m_loadColumCount++]);
+#endif
+	const GYCHAR* pDataStart = &m_dataStart[m_serializationDataCount];
 	const GYCHAR* pDataEnd = _GetDataString(pDataStart);
-	if (GYNULL != pDataEnd)
-	{
-		GYINT32 readDataCount = pDataEnd - pDataStart;
-		if(DataSplitChar == *(pDataEnd - 1) || UnixNewLine == *(pDataEnd -1))
-		{
-			--pDataEnd;
-			if (WindowsNewLineStart == *(pDataEnd -1))
-			{
-				--pDataEnd;
-			}
-			GYINT32 datalen = pDataEnd - pDataStart;
-			GYAssert(datalen < StringToDataBufferLen);
-			GYMemcpy(StringToDataBuffer, pDataStart, datalen);
-			StringToDataBuffer[datalen] = 0;
-			value = StringToDataBuffer;
-		}		
-		else if (0 == *pDataEnd)
-		{
-			value = pDataStart;
-		}
-		else 
-		{
-			GYAssert(GYFALSE);
-		}
-		m_serializationDataCount += readDataCount;
-	}
-	else 
-	{
-		GYAssert(GYFALSE);
-	}
+	GYINT32 readDataCount = pDataEnd - pDataStart;
+	GYAssert(readDataCount > 1);
+	const GYCHAR* pData = _GetDataString(pDataStart, pDataEnd);
+	GYAssert(GYNULL != pData);
+	value = pData;
+	m_serializationDataCount += readDataCount;
 	return *this;
 }
 
-const GYCHAR* GYTableSerialization::_GetLine( const GYCHAR* pData )
+const GYCHAR* GYTableSerialization::_GetLine(const GYCHAR* pData, GYBOOL processCommetChar)
 {
 	const GYCHAR* pResult = GYNULL;
 	const GYCHAR* const pLineHead = pData;
@@ -355,9 +298,9 @@ const GYCHAR* GYTableSerialization::_GetLine( const GYCHAR* pData )
 				pResult = pData;
 			}
 		}
-		if (GYNULL != pResult && LineCommentChar == *pResult)
+		if (GYTRUE == processCommetChar && GYNULL != pResult && LineCommentChar == *pResult)
 		{
-			pResult = _GetLine(pResult);
+			pResult = _GetLine(pResult, processCommetChar);
 		}
 		
 	}while(GYFALSE);
@@ -389,6 +332,34 @@ const GYCHAR* GYTableSerialization::_GetDataString( const GYCHAR* pData )
 	return pResult;
 }
 
+static const GYINT32 StringToDataBufferLen = 1024;
+static GYCHAR StringToDataBuffer[StringToDataBufferLen] = {0};
+const GYCHAR* GYTableSerialization::_GetDataString( const GYCHAR* pStart, const GYCHAR* pEnd )
+{
+	const GYCHAR* pResult = GYNULL;
+	if (GYNULL != pStart && GYNULL != pEnd)
+	{
+		if(DataSplitChar == *(pEnd - 1) || UnixNewLine == *(pEnd -1))
+		{
+			--pEnd;
+			if (WindowsNewLineStart == *(pEnd -1))
+			{
+				--pEnd;
+			}
+			GYINT32 datalen = pEnd - pStart;
+			GYAssert(datalen > 0 && datalen < StringToDataBufferLen);
+			GYMemcpy(StringToDataBuffer, pStart, datalen);
+			StringToDataBuffer[datalen] = 0;
+			pResult = StringToDataBuffer;
+		}		
+		else if (0 == *pEnd)
+		{
+			pResult = pEnd;
+		}
+	}
+	return pResult;
+}
+
 GYVOID GYTableSerialization::_CleanUp()
 {
 	m_tableRowCount = 0;
@@ -396,4 +367,8 @@ GYVOID GYTableSerialization::_CleanUp()
 	m_fileSize = 0;
 	m_serializationDataCount = 0;
 	m_dataStart = GYNULL;
+#ifdef CHECK_DATA_TYPE
+	m_dataType = GYNULL;
+	m_loadColumCount = 0;
+#endif
 }
