@@ -53,21 +53,25 @@ static const GYCHAR* DataTypeString[EM_TABLE_DATA_TYPE_COUNT] =
 
 static const GYINT32 bufferForTableFileLoadLen = 1024 * 1024 * 2;
 static GYCHAR BufferForTableFileLoad[bufferForTableFileLoadLen] = {0};
-GYINT32 GYTableSerialization::Init( const GYString& fileName )
+GYINT32 GYTableSerialization::Init( const GYCHAR* fileName )
 {
 	GYINT32 result = INVALID_VALUE;
 	do 
 	{
+		if (GYNULL == fileName)
+		{
+			break;
+		}
 		_CleanUp();
 
 		struct stat fileInfo;
-		if(stat(fileName.c_str(), &fileInfo) < 0)
+		if(stat(fileName, &fileInfo) < 0)
 		{
 			break;
 		}
 		GYAssert(bufferForTableFileLoadLen > fileInfo.st_size);
 		m_fileSize = fileInfo.st_size;
-		FILE* pFile = fopen(fileName.c_str(), TableFileLoadMode);
+		FILE* pFile = fopen(fileName, TableFileLoadMode);
 		if (GYNULL == pFile)
 		{
 			break;

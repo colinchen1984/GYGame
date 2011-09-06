@@ -30,7 +30,12 @@ public:
 		GYDelete[] m_tableRow;
 	}
 
-	GYINT32 Load(const GYString& fileName)
+	const GYCHAR* GetTableFileName()
+	{
+		return T::GetTableFileName();
+	}
+
+	GYINT32 Load(const GYCHAR* fileName)
 	{
 		GYINT32 result = INVALID_VALUE;
 		do 

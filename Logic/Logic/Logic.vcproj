@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../Src/GameCommon/NetWork;../../Src/GameCommon/CommonDefine;../../Src/GameCommon/CommonDefine/String;../../Src/GameCommon/CommonDefine/TimeController;../../Src/GameCommon/Table;../../Src/Protocol"
+				AdditionalIncludeDirectories="../../Src/GameCommon/NetWork;../../Src/GameCommon/CommonDefine;../../Src/GameCommon/CommonDefine/String;../../Src/GameCommon/CommonDefine/TimeController;../../Src/GameCommon/Table;../../Src/Protocol;../../Src/Logic/Table;../../Src/Logic/NetWork;../../Src/Logic/PacketHandler;../../Src/Logic/Packet;../../Src/Logic"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -172,6 +172,14 @@
 			Name="Table"
 			>
 			<File
+				RelativePath="..\..\Src\Logic\Table\GYTableDefine.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Src\Logic\Table\GYTableDefine.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Src\Logic\Table\GYTableManager.cpp"
 				>
 			</File>
@@ -184,6 +192,14 @@
 			Name="NetWorkManager"
 			>
 			<File
+				RelativePath="..\..\Src\Logic\NetWork\GYGatewaySession.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Src\Logic\NetWork\GYGatewaySession.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Src\Logic\NetWork\GYNetWorkManager.cpp"
 				>
 			</File>
@@ -192,6 +208,46 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="PacketHandler"
+			>
+			<File
+				RelativePath="..\..\Src\Logic\PacketHandler\GYPacketHandler.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Src\Logic\PacketHandler\GYPacketHandlerCommon.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Src\Logic\PacketHandler\GYTestPacketHandler.cpp"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Packet"
+			>
+			<File
+				RelativePath="..\..\Src\Logic\Packet\GYPacketFactoryManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Src\Logic\Packet\GYPacketFactoryManager.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Src\Logic\Packet\GYPacketFactoryRegister.cpp"
+				>
+			</File>
+		</Filter>
+		<File
+			RelativePath="..\..\Src\Logic\GYServer.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\Src\Logic\GYServer.h"
+			>
+		</File>
 		<File
 			RelativePath="..\..\Src\Logic\main.cpp"
 			>

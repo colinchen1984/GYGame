@@ -10,9 +10,21 @@
 #include "GYCommonDefine.h"
 #include "GYStringManger.h"
 #include "GYTable.h"
+#include "GYTableDefine.h"
+
 class GYTableManager
 {
 public:
-	
+	GYTable<GYSceneDefine>		m_sceneDefine;
+public:
+	GYTableManager();
+
+	~GYTableManager();
+
+	GYINT32 Init();
+
+	static GYTableManager& GetSingleton();
 };
+
+#define GETTABLEMANAGER GYTableManager::GetSingleton()
 #endif

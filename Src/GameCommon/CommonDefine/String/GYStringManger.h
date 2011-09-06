@@ -80,15 +80,15 @@ private:
 };
 
 //字符串管理的单件版本
-class StringMangerSingleton : GYStringManager
+class StringMangerSingleton : public GYStringManager
 {
-private:
-	StringMangerSingleton(){};
 public:
-	~StringMangerSingleton(){};
+	StringMangerSingleton();
+
+	~StringMangerSingleton();
 
 	static StringMangerSingleton& GetSingleton(); 
 };
-#define Stringmanager StringMangerSingleton::GetSingleton()
+#define GETSTRINGMANAGERSINGLETON StringMangerSingleton::GetSingleton()
 #endif
 

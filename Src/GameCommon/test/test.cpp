@@ -122,7 +122,7 @@ GYINT32 main()
 	const char* name = "test.tab";
 	GYString testString1(name, strlen(name), *strManager);
 	GYTable<TestStructTable> tableFile;
-	tableFile.Load(testString1);
+	tableFile.Load(testString1.c_str());
 	tableFile[2];
 	tableFile[16];
 	tableFile[-1];
@@ -131,7 +131,7 @@ GYINT32 main()
 	tableFile[100];
 	tableFile[196];
 	tableFile[205];
-	testOs.Init(testString1);
+	testOs.Init(testString1.c_str());
 	int testArray[5] = {0};
 	for (GYINT32 i = 0; i < 5; ++i)
 	{

@@ -31,7 +31,7 @@ public:
 
 	virtual ~GYTableSerialization();
 	
-	GYINT32 Init(const GYString& fileName);
+	GYINT32 Init(const GYCHAR* fileName);
 
 	GYINLINE GYINT32 GetTableDataRowCount(){return m_tableRowCount - 2;};
 
