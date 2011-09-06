@@ -11,7 +11,10 @@ cd ../Thread
 rm -rf *
 cmake ../../Src/GameCommon/Thread
 make
-
+cd ../Table
+rm -rf *
+cmake ../../Src/GameCommon/Table
+make
 cd ../Protocol
 cmake ../../Src/Protocol
 make
