@@ -16,6 +16,10 @@ cd ../Protocol
 cmake ../../Src/Protocol
 make
 
+cd ../test
+cmake ../../Src/GameCommon/test
+make
+
 cd ../Gateway
 cmake ../../Src/Gateway
 make
