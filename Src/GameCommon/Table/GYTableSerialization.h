@@ -10,7 +10,9 @@
 
 #include "GYSerialization.h"
 class GYString;
+#ifdef CHECK_DATA_TYPE
 enum EM_TABLE_DATA_TYPE;
+#endif
 
 class GYTableSerialization : public GYSerializationInteface
 {
