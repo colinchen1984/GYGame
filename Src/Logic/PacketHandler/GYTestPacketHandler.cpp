@@ -6,8 +6,16 @@
 ////////////////////////////////////////////
 #include "GYPacketHandler.h"
 #include "GYTestPacket.h"
-GYBOOL GYTestPacketHandler(const GYGUID& guid, GYPacketInteface& packet)
+#include "GYGatewaySession.h"
+#include "GYSCTest.h"
+#include "GYStringManger.h"
+
+GYBOOL GYTestPacketHandler(GYGatewaySession& gatewaySession, const GYGUID& guid, GYPacketInteface& packet)
 {
-	GYTestPacket& testPacket = static_cast<GYTestPacket&>(packet);
+	const GYTestPacket& tPacket = static_cast<GYTestPacket&>(packet);
+	GYSCTest replyPacket(GETSTRINGMANAGERSINGLETON);
+	replyPacket.SetUserName(tPacket.GetName());
+	replyPacket.SetUserID(guid);
+	gatewaySession.SendPacket(guid, replyPacket);
 	return GYTRUE;
 }

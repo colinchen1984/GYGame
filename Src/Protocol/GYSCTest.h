@@ -1,34 +1,32 @@
 ﻿/////////////////////////////////////////////
-// create time: 2011/7/31 20:11
+// create time:2011/9/7 14:54
 // author:	colin chen
-// file name:	GYTestPacket
+// file name:	GYSCTest
 // file type:	h
 ////////////////////////////////////////////
-
-#ifndef __GYTESTPACKET_H__
-#define __GYTESTPACKET_H__
+#ifndef __GYSCTEST_H__
+#define __GYSCTEST_H__
 #include "GYCommonDefine.h"
 #include "GYString.h"
 #include "GYProtocolDefine.h"
 
-class GYStringManager;
 class GYSerializationInteface;
 
-class GYTestPacket : public GYPacketInteface
+class GYSCTest : public GYPacketInteface
 {
 	GYGUID		m_userID;
 	GYString	m_name;
 public:
-	GYTestPacket(GYStringManager& stringManager):m_name(stringManager)
+	GYSCTest(GYStringManager& stringManager):m_name(stringManager)
 	{
 	};
-	~GYTestPacket(){};
+	~GYSCTest(){};
 
-	virtual GYPACKETID GetPacketID(){return EM_PACKET_ID_TEST_ID;}
+	virtual GYPACKETID GetPacketID(){return EM_PACKET_ID_SC_TEST_ID;}
 	virtual GYCHAR GetPacketFlags(){return 0;}
 
 	GYVOID SetUserName(const GYString& name);
-	const GYString& GetName() const;
+	const GYString& GetUserName();
 
 	GYVOID SetUserID(const GYGUID& userID);
 	const GYGUID& GetUserID();

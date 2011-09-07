@@ -21,13 +21,19 @@ class GYPacketFactoryManager
 	PacketHandler		m_packetHandler[EM_PACKET_ID_COUNT];
 public:
 	GYPacketFactoryManager(){CleanUp();};
+
 	~GYPacketFactoryManager(){};
 
 	GYINT32 Init(GYStringManager& stringManager);
+
 	GYVOID Release();
+
 	GYVOID CleanUp();
+
 	GYPacketInteface* GetPacketByID(EM_PACKET_ID packetID);
+
 	PacketHandler GetPacketHandlerByID(EM_PACKET_ID packetID);
+
 	GYVOID ReleasePacket(GYPacketInteface& packet);
 private:
 	GYVOID _RegisterPacket();

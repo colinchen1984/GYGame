@@ -23,9 +23,10 @@ GYGatewaySession::~GYGatewaySession()
 static GYVOID HandleGatewayData(GYNetEvent& event)
 {
 	GYGatewaySession* pSession = static_cast<GYGatewaySession*>(event.m_data);
+	pSession->_OnReceive();
 }
 
-GYINT32 GYGatewaySession::Init(GYReactor& reactor, const GYSocket& sock, const GYNetAddress& gatewayAddress)
+GYINT32 GYGatewaySession::Init(GYNetWorkManager& networkManager, GYReactor& reactor, const GYSocket& sock, const GYNetAddress& gatewayAddress)
 {
 	GYINT32 result= INVALID_VALUE;
 	do 
@@ -35,11 +36,17 @@ GYINT32 GYGatewaySession::Init(GYReactor& reactor, const GYSocket& sock, const G
 			break;
 		}
 		
+		if (GYNULL != m_networkManger)
+		{
+			break;
+		}
 		CleanUp();
+		m_networkManger = &networkManager;
 		m_connection.SetFd(sock.GetFD());
 		if (m_connection.SetBlock(GYFALSE))
 		{
 			m_connection.Close();
+			CleanUp();
 			break;
 		}
 
@@ -52,7 +59,8 @@ GYINT32 GYGatewaySession::Init(GYReactor& reactor, const GYSocket& sock, const G
 		if (0 != reactor.AddEvent(m_gatewaySessionEvnet))
 		{
 			m_connection.Close();
-			m_reactor = GYNULL;
+			reactor.Release();
+			CleanUp();
 			break;
 		}
 		m_reactor = &reactor;
@@ -67,20 +75,21 @@ GYINT32 GYGatewaySession::Init(GYReactor& reactor, const GYSocket& sock, const G
 
 GYVOID GYGatewaySession::Release()
 {
-// 	if(GYNULL != m_reactor)
-// 	{
-// 		m_reactor->DeleteEvent(m_gatewaySessionEvnet);
-// 		m_reactor = GYNULL;
-// 	}
-// 	m_connection.Close();
-// 
-// 	CleanUp();
+	if(GYNULL != m_reactor)
+	{
+		m_reactor->DeleteEvent(m_gatewaySessionEvnet);
+		m_reactor = GYNULL;
+	}
+	m_connection.Close();
+	m_networkManger->OnGatewaySessionClose(*this);
+	CleanUp();
 }
 
 
 GYVOID GYGatewaySession::CleanUp()
 {
 	m_reactor = GYNULL;
+	m_networkManger = GYNULL;
 	m_connection.CleanUp();
 	m_gatewayAddress.CleanUp();
 	m_gatewaySessionEvnet.CleanUp();
@@ -119,9 +128,10 @@ GYVOID GYGatewaySession::_OnReceive()
 }
 	
 
-GYVOID GYGatewaySession::SendPacket(GYPacketInteface& packet)
+GYVOID GYGatewaySession::SendPacket(const GYGUID& guid, GYPacketInteface& packet)
 {
-	GYStreamSerialization<GATEWAY_SESSION_SEND_BUFFER_LEN> packetSender(OUTPUTBUFFER, EM_SERIALIZAION_MODE_WRITE);
+	GYStreamSerialization<GATEWAY_SESSION_SEND_BUFFER_LEN> packetSender(m_connection.m_outputBuffer, EM_SERIALIZAION_MODE_WRITE);
+	packetSender << const_cast<GYGUID&>(guid);
 	packetSender << packet;
 	m_allSendDataSize += packetSender.GetSerializDataSize();
 }
@@ -153,7 +163,7 @@ GYVOID GYGatewaySession::_ProcessInputData( GYPacketFactoryManager& packetFactor
 		//调用相关函数处理数据包
 		PacketHandler pHandler = packetFactory.GetPacketHandlerByID(GYGetPacketID(packetHead.m_id));
 		GYAssert(GYNULL != pHandler);
-		if (GYTRUE == pHandler(tempGuid, *packet))
+		if (GYTRUE == pHandler(*this, tempGuid, *packet))
 		{
 		}
 		else

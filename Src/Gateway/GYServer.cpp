@@ -197,7 +197,7 @@ GYVOID GYServer::_OnAcceptClient()
 // 		}
 // 		
 // 		m_usingClientSession.Add(session);
-		m_gateThread[count++].AddSession(*session);
+		m_gateThread[count++].AddWorkingSession(*session);
 		if (count >= GatewayThreadCount)
 		{
 			count = 0;

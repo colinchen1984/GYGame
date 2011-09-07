@@ -40,7 +40,7 @@ GYPacketInteface* GYPacketFactoryManager::GetPacketByID(EM_PACKET_ID packetID)
 	GYAssert(packetID >=0 && packetID < EM_PACKET_ID_COUNT);
 	GYPacketInteface* packet = m_packetFactory[packetID];
 	m_packetFactory[packetID] = GYNULL;
-	GYTRUE == m_packetFactoryBit[packetID] ? GYAssert(GYNULL != packet) : GYAssert(GYNULL != packet); //如果出现断言，则认为多线程同时访问了同一个Factory
+	GYTRUE == m_packetFactoryBit[packetID] ? GYAssert(GYNULL != packet) : GYAssert(GYNULL == packet); //如果出现断言，则认为多线程同时访问了同一个Factory
 	if (GYNULL != packet)
 	{
 		packet->CleanUp();

@@ -13,15 +13,17 @@
 #include "GYSocket.h"
 #include "GYEvent.h"
 
+class GYTimeStamp;
+
 class GYNetWorkManager
 {
 	friend GYVOID AcceptEventHandler(GYNetEvent& event);
 	GYReactor						m_reactor;
 	GYGatewaySession*				m_gatewaySession;
 	GYList<GYGatewaySession>		m_freeGatewaySessionList;
-	GYList<GYGatewaySession>		m_usingGatewaySessionList;
+	GYList<GYGatewaySession>		m_workSession;
 	GYNetAddress					m_listenAddress;
-	GYListenSocket					m_listenSocket;
+	GYListenSocket					m_acceptorSocket;
 	GYNetEvent						m_listenEvent;
 public:
 	GYNetWorkManager();
@@ -33,6 +35,10 @@ public:
 	GYINT32	Init(const GYNetAddress& listenAddress);
 
 	GYVOID Release();
+
+	GYVOID RunOnce(const GYTimeStamp& timeStamp);
+
+	GYVOID OnGatewaySessionClose(GYGatewaySession& session);
 
 private:
 	GYVOID	_OnAcceptGateway();

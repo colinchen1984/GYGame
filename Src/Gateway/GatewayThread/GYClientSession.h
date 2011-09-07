@@ -54,15 +54,22 @@ public:
 
 	GYINLINE EM_CLIENT_SESSION_STATUS GetStatus(){return m_status;}
 
-	GYVOID	SendPacket(GYPacketInteface& packet);
+	GYVOID	SendPacketToClient(GYPacketInteface& packet);
 
-	GYINT32	SendData(const GYPacketHead& packetHead, const GYCHAR* pData);
+	GYINT32	SendDataToClient(const GYPacketHead& packetHead, const GYCHAR* pData);
+
+	GYINT32	SendPacketToLogic(GYPacketInteface& packet);
 
 	GYBOOL	Tick();
+
 	GYINLINE const GYGUID& GetGUID(){return m_clientGUID;}
+
+	GYVOID SetGUID(const GYGUID& guid);
 private:
 	GYVOID	_OnReceiveWithServer();
+
 	GYVOID	_OnReceiveWithNoServer();
+
 	GYVOID	_ProcessInputData(GYPacketFactoryManager& packetFactory, const GYPacketHead& packetHead);
 };
 

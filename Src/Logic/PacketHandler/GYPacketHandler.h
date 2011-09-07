@@ -9,6 +9,7 @@
 #define __GYPACKETHANDLER_H__
 #include "GYCommonDefine.h"
 class GYPacketInteface;
+class GYGatewaySession;
 
-extern GYBOOL GYTestPacketHandler(const GYGUID& guid, GYPacketInteface& packet);
+extern GYBOOL GYTestPacketHandler(GYGatewaySession& gatewaySession, const GYGUID& guid, GYPacketInteface& packet);
 #endif

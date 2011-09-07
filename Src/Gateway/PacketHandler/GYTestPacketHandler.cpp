@@ -10,6 +10,11 @@
 GYBOOL GYTestPacketHandler(GYClientSession& session, GYPacketInteface& packet)
 {
 	GYTestPacket& testPacket = static_cast<GYTestPacket&>(packet);
-	session.SendPacket(testPacket);
+	if (INVALID_VALUE == session.GetGUID())
+	{
+		session.SetGUID(testPacket.GetUserID());
+	}
+	
+	session.SendPacketToLogic(testPacket);
 	return GYTRUE;
 }

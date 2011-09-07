@@ -1,8 +1,9 @@
 import socket
 import time
 import struct
-G_LoopCount = 10
-G_ClientCount = 5
+import random
+G_LoopCount = 1
+G_ClientCount = 1
 G_ServerAddress = ("127.0.0.1", 5555)
 s = []
 for i in range(G_LoopCount):
@@ -18,9 +19,9 @@ for i in range(G_LoopCount):
 
 
 
-userID = 1001
+userID = random.randrange(12225545855, 1222554585500)
 userName = "TestName"
-testPacket = struct.pack("i", userID)
+testPacket = struct.pack("Q", userID)
 testPacket += struct.pack("h", len(userName))
 testPacket += struct.pack(("%ds" % len(userName)), userName)
 

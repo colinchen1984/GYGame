@@ -10,12 +10,14 @@
 #include "GYStringManger.h"
 #include "GYPacketFactoryManager.h"
 #include "GYTableManager.h"
+#include "GYNetWorkManager.h"
 
 class GYServer
 {
 	StringMangerSingleton		m_stringManager;
 	GYPacketFactoryManager		m_packetFactoryManager;
 	GYTableManager				m_tableManger;
+	GYNetWorkManager			m_networkManager;
 public:
 	GYServer();
 

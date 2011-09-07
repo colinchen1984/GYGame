@@ -172,7 +172,7 @@ GYVOID GYClientSession::_OnReceiveWithNoServer()
 	}
 }
 
-GYVOID GYClientSession::SendPacket(GYPacketInteface& packet)
+GYVOID GYClientSession::SendPacketToClient(GYPacketInteface& packet)
 {
 	GYStreamSerialization<CLIENT_SESSION_SEND_BUFFER_LEN> packetSender(OUTPUTBUFFER, EM_SERIALIZAION_MODE_WRITE);
 	packetSender << packet;
@@ -180,7 +180,7 @@ GYVOID GYClientSession::SendPacket(GYPacketInteface& packet)
 }
 
 
-GYINT32 GYClientSession::SendData( const GYPacketHead& packetHead, const GYCHAR* pData )
+GYINT32 GYClientSession::SendDataToClient( const GYPacketHead& packetHead, const GYCHAR* pData )
 {
 	//这里插入玩家的GUID在数据包前面
 	GYINT32 writeSpaceSize = m_connection.m_outputBuffer.GetWriteSize();
@@ -212,6 +212,27 @@ GYBOOL GYClientSession::Tick()
 	}
 	return result;
 }
+
+GYINT32 GYClientSession::SendPacketToLogic( GYPacketInteface& packet )
+{
+	GYINT32 result = INVALID_VALUE;
+	if(EM_CLIENT_SESSION_STATUS_WITH_SERVER == m_status)
+	{
+		GYGatewayThread& gatewayThread = *static_cast<GYGatewayThread*>(m_server);
+		gatewayThread.SendPacketToServer(*this, packet);
+		result = 0;
+	}
+	return result;
+}
+
+GYVOID GYClientSession::SetGUID( const GYGUID& guid )
+{
+	m_clientGUID = guid;
+	GYGatewayThread& gatewayThread = *static_cast<GYGatewayThread*>(m_server);
+	gatewayThread.RegisteSession(*this);
+}
+
+
 
 
 

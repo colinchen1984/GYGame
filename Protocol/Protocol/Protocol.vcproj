@@ -157,6 +157,14 @@
 			>
 		</File>
 		<File
+			RelativePath="..\..\Src\Protocol\GYSCTest.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\Src\Protocol\GYSCTest.h"
+			>
+		</File>
+		<File
 			RelativePath="..\..\Src\Protocol\GYTestPacket.cpp"
 			>
 		</File>

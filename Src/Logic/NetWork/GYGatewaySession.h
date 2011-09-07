@@ -19,13 +19,16 @@ const GYINT32 GATEWAY_SESSION_SEND_BUFFER_LEN = 16 * 1024 * 1024;
 class GYReactor;
 class GYPacketInteface;
 class GYPacketFactoryManager;
+class GYNetWorkManager;
 struct GYPacketHead;
 
 class GYGatewaySession : public GYObject
 {
+	friend GYVOID HandleGatewayData(GYNetEvent& event);
 	GYBufferStreamSocket<GATEWAY_SESSION_RECV_BUFFER_LEN, GATEWAY_SESSION_SEND_BUFFER_LEN>	m_connection;
 	GYNetAddress	m_gatewayAddress;
 	GYNetEvent		m_gatewaySessionEvnet;
+	GYNetWorkManager* m_networkManger;
 	GYReactor*		m_reactor;
 	GYINT64			m_allSendDataSize;
 	GYINT64			m_allRecvDataSize;
@@ -34,11 +37,11 @@ public:
 	~GYGatewaySession();
 	GYVOID	CleanUp();
 
-	GYINT32	Init(GYReactor& reactor, const GYSocket& sock, const GYNetAddress& gatewayAddress);
+	GYINT32	Init(GYNetWorkManager& networkManager, GYReactor& reactor, const GYSocket& sock, const GYNetAddress& gatewayAddress);
 
 	GYVOID	Release();
 
-	GYVOID	SendPacket(GYPacketInteface& packet);
+	GYVOID	SendPacket(const GYGUID& guid, GYPacketInteface& packet);
 
 	GYBOOL	Tick();
 

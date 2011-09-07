@@ -84,7 +84,7 @@ public:
 
 	GYVOID	Run();
 
-	GYVOID	AddSession(GYClientSession& session);
+	GYVOID	AddWorkingSession(GYClientSession& session);
 
 	GYVOID	OnClientSessionClose(GYClientSession& session);
 	
@@ -99,6 +99,10 @@ public:
 	GYINLINE GYPacketFactoryManager& GetPacketFactoryManager(){return m_packetFactory;}
 
 	GYINT32	SendDataToServer(GYClientSession& session, const GYPacketHead& packetHead, const GYCHAR* pData);
+
+	GYINT32	SendPacketToServer(GYClientSession& session,const GYPacketInteface& packet);
+
+	GYINT32 RegisteSession(GYClientSession& session);
 
 private:
 	GYVOID	_ConnectLogicServer();

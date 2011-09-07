@@ -5,6 +5,8 @@
 // file type:	cpp
 ////////////////////////////////////////////
 #include "GYServer.h"
+#include "GYNetAddress.h"
+#include "GYTimeStamp.h"
 
 static GYServer* ServerSingleton = GYNULL;
 
@@ -40,6 +42,15 @@ GYINT32 GYServer::Init()
 			m_packetFactoryManager.Release();
 			break;
 		}
+		GYNetAddress listenAddress;
+		listenAddress.SetAddr("127.0.0.1");
+		listenAddress.SetPort(5556);
+		if (0 != m_networkManager.Init(listenAddress))
+		{
+			m_packetFactoryManager.Release();
+			break;
+		}
+		
 		result = 0;
 	} while (GYFALSE);
 	return result;
@@ -57,5 +68,7 @@ GYServer& GYServer::GetSingleton()
 
 GYVOID GYServer::RunOnce()
 {
-	
+	GYTimeStamp time;
+	time.m_termTime = 30;
+	m_networkManager.RunOnce(time);
 }

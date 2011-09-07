@@ -45,13 +45,34 @@ GYINT32 GYGatewayThread::Init(const GYNetAddress& targetServerAddress, GYServer*
 			m_connection2Logic.Close();
 			break;
 		}
+
+		if(0 != m_stringManager.Init())
+		{
+			m_connection2Logic.Close();
+			m_reactor.Release();
+			break;
+		}
+		
+		if (0 != m_packetFactory.Init(m_stringManager))
+		{
+			m_connection2Logic.Close();
+			m_reactor.Release();
+			break;
+		}
+		if (0 != m_workSessionHash.Init(CLIENT_FOR_PER_THREAD, CLIENT_FOR_PER_THREAD))
+		{
+			m_connection2Logic.Close();
+			m_reactor.Release();
+			m_packetFactory.Release();
+			break;
+		}
+		
 		m_targetServerAddress = targetServerAddress;
 		m_server = server;
 		handler[EM_GATE_WAY_THREAD_STATUS_CONNECTING_LOGIC_SERVER] = &GYGatewayThread::_ConnectLogicServer;
 		handler[EM_GATE_WAY_THREAD_STATUS_SERVERING_CLIENT_SESSION] = &GYGatewayThread::_ServeringClientSession;
 		_SetThreadStatus(EM_GATE_WAY_THREAD_STATUS_CONNECTING_LOGIC_SERVER);
-		m_stringManager.Init();
-		m_packetFactory.Init(m_stringManager);
+
 		result = 0;
 	} while (GYFALSE);
 	return result;
@@ -100,7 +121,7 @@ GYVOID GYGatewayThread::Run()
 	};
 }
 
-GYVOID GYGatewayThread::AddSession( GYClientSession& session )
+GYVOID GYGatewayThread::AddWorkingSession( GYClientSession& session )
 {
 	GYGuard<GYFastMutex> g(m_addSessionMutex);
 	m_addSession.Add(session);
@@ -110,6 +131,7 @@ GYVOID GYGatewayThread::OnClientSessionClose( GYClientSession& session )
 {
 	m_workSession.Delete(session);
 	m_ClosedSession.Add(session);
+	m_workSessionHash.Remove(session.GetGUID());
 }
 
 GYVOID GYGatewayThread::_ConnectLogicServer()
@@ -162,6 +184,7 @@ GYVOID GYGatewayThread::_ServeringClientSession()
 			m_workSession.Add(*pSession);
 		}
 	}
+	m_connection2Logic.Send();
 	static GYTimeStamp termTime;
 	termTime.m_termTime = 1;
 	m_reactor.RunOnce(termTime);
@@ -190,12 +213,11 @@ GYVOID GYGatewayThread::ProcessLogicServerData()
 	if (length > headLen)
 	{
 		const GYCHAR* pData = m_connection2Logic.m_inputBuffer.ReadPtr();
-		//TODO: 分析数据包，找到对应的Client Session，并将数据发送个该Client 
 		const GYGUID& guid = *reinterpret_cast<const GYGUID*>(pData);
 		const GYPacketHead& packetHead = *reinterpret_cast<const GYPacketHead*>(pData + GYGUIDLEN);
 		if (length >= headLen + packetHead.m_packetLen)
 		{
-			
+			_ProcessInputData(guid, packetHead);			
 		}
 		
 	}
@@ -242,6 +264,16 @@ GYINT32 GYGatewayThread::SendDataToServer( GYClientSession& session, const GYPac
 	return 0;
 }
 
+GYINT32 GYGatewayThread::SendPacketToServer(GYClientSession& session, const GYPacketInteface& packet)
+{
+	//这里插入玩家的GUID在数据包前面
+	GYStreamSerialization<LOGIC_SESSION_SEND_BUFFER_LEN> packetSender(m_connection2Logic.m_outputBuffer, EM_SERIALIZAION_MODE_WRITE);
+	packetSender << const_cast<GYGUID&>(session.GetGUID());
+	packetSender << const_cast<GYPacketInteface&>(packet);
+	return 0;
+}
+
+
 GYVOID GYGatewayThread::_ProcessInputData(const GYGUID& clientGUID, const GYPacketHead& packetHead)
 {
 	const GYINT32 dataLen = GYGUIDLEN + PacektHeadLen + packetHead.m_packetLen;
@@ -282,7 +314,7 @@ GYVOID GYGatewayThread::_ProcessInputData(const GYGUID& clientGUID, const GYPack
 		//目前认为如果没有注册该包，就认为Gateway不需要处理该包
 		//直接发往Client
 		const GYCHAR* const pData = m_connection2Logic.m_inputBuffer.ReadPtr();
-		if(0 == client.SendData(packetHead, (pData + GYGUIDLEN)))
+		if(0 == client.SendDataToClient(packetHead, (pData + GYGUIDLEN)))
 		{
 			m_connection2Logic.m_inputBuffer.ReadPtr(dataLen);
 		}
@@ -292,4 +324,11 @@ GYVOID GYGatewayThread::_ProcessInputData(const GYGUID& clientGUID, const GYPack
 		}
 	}
 }
+
+GYINT32 GYGatewayThread::RegisteSession( GYClientSession& session )
+{
+	GYINT32 result = m_workSessionHash.Insert(session.GetGUID(), &session);
+	return result;
+}
+
 

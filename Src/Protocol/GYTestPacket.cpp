@@ -13,7 +13,7 @@ GYVOID GYTestPacket::SetUserName( const GYString& name )
 	m_name = name;
 }
 
-const GYString& GYTestPacket::GetUserName()
+const GYString& GYTestPacket::GetName() const
 {
 	return m_name;
 }
@@ -23,12 +23,12 @@ GYVOID GYTestPacket::Serializ( GYSerializationInteface& serializer )
 	serializer << m_userID << m_name;
 }
 
-GYVOID GYTestPacket::SetUserID( GYINT32 userID )
+GYVOID GYTestPacket::SetUserID(const GYGUID& userID)
 {
 	m_userID = userID;
 }
 
-GYINT32 GYTestPacket::GetUserID()
+const GYGUID& GYTestPacket::GetUserID()
 {
 	return m_userID;
 }

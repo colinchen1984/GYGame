@@ -11,11 +11,9 @@ GYVOID GYPacketFactoryManager::_RegisterPacket()
 {
 	GYPacketInteface* pPacket =GYNULL;
 
-	pPacket = GYNew GYTestPacket(*m_stringManager);
-	m_packetFactory[pPacket->GetPacketID()] = pPacket;
-	m_packetFactoryBit[pPacket->GetPacketID()] = GYTRUE;
+ 	pPacket = GYNew GYTestPacket(*m_stringManager);
+ 	m_packetFactory[pPacket->GetPacketID()] = pPacket;
+ 	m_packetFactoryBit[pPacket->GetPacketID()] = GYTRUE;
 	m_packetHandler[pPacket->GetPacketID()] = GYTestPacketHandler;
-
-
 
 }
