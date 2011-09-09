@@ -22,6 +22,7 @@ SET(packetFiles ./Packet/GYPacketFactoryManager.cpp ./Packet/GYPacketFactoryRegi
 SET(packetHandlerFiles ./PacketHandler/GYTestPacketHandler.cpp)
 ADD_EXECUTABLE(Logic main.cpp GYServer.cpp ${tableFiles} ${networkFiles} ${packetFiles} ${packetHandlerFiles})
 TARGET_LINK_LIBRARIES(Logic NetWork GameCommon Protocol Table)
+ADD_DEFINITIONS(-D_DEBUG)
 IF(WIN32)
 ADD_DEFINITIONS(-DWIN32)
 ELSEIF(UNIX)
