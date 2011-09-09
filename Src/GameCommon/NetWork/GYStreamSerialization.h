@@ -33,16 +33,17 @@ public:
 
 	virtual GYSerializationInteface& operator<<(GYCHAR& value)
 	{
+		const static GYINT32 size = sizeof(GYCHAR);
 		switch(m_mode)
 		{
 		case EM_SERIALIZAION_MODE_READ:
 			{
-				GYAssert(0 == m_buffer.Read(&value, sizeof(value)));
+				GYAssert(0 == m_buffer.Read(&value, size));
 			}
 			break;
 		case EM_SERIALIZAION_MODE_WRITE:
 			{
-				GYAssert(0 == m_buffer.Write(&value, sizeof(value)));
+				GYAssert(0 == m_buffer.Write(&value, size));
 			}
 			break;
 		default:
@@ -51,22 +52,23 @@ public:
 			}
 			break;
 		}
-		m_serializDataSize += sizeof(value);
+		m_serializDataSize += size;
 		return *this;
 	}
 
 	virtual GYSerializationInteface& operator<<(GYUINT8& value)
 	{
+		const static GYINT32 size = sizeof(GYUINT8);
 		switch(m_mode)
 		{
 		case EM_SERIALIZAION_MODE_READ:
 			{
-				GYAssert(0 == m_buffer.Read(reinterpret_cast<GYCHAR*>(&value), sizeof(value)));
+				GYAssert(0 == m_buffer.Read(reinterpret_cast<GYCHAR*>(&value), size));
 			}
 			break;
 		case EM_SERIALIZAION_MODE_WRITE:
 			{
-				GYAssert(0 == m_buffer.Write(reinterpret_cast<GYCHAR*>(&value), sizeof(value)));
+				GYAssert(0 == m_buffer.Write(reinterpret_cast<GYCHAR*>(&value), size));
 			}
 			break;
 		default:
@@ -75,22 +77,23 @@ public:
 			}
 			break;
 		}
-		m_serializDataSize += sizeof(value);
+		m_serializDataSize += size;
 		return *this;
 	}
 
 	virtual GYSerializationInteface& operator<<(GYINT16& value)
 	{
+		const static GYINT32 size = sizeof(GYINT16);
 		switch(m_mode)
 		{
 		case EM_SERIALIZAION_MODE_READ:
 			{
-				GYAssert(0 == m_buffer.Read(reinterpret_cast<GYCHAR*>(&value), sizeof(value)));
+				GYAssert(0 == m_buffer.Read(reinterpret_cast<GYCHAR*>(&value), size));
 			}
 			break;
 		case EM_SERIALIZAION_MODE_WRITE:
 			{
-				GYAssert(0 == m_buffer.Write(reinterpret_cast<GYCHAR*>(&value), sizeof(value)));
+				GYAssert(0 == m_buffer.Write(reinterpret_cast<GYCHAR*>(&value), size));
 			}
 			break;
 		default:
@@ -99,22 +102,23 @@ public:
 			}
 			break;
 		}
-		m_serializDataSize += sizeof(value);
+		m_serializDataSize += size;
 		return *this;
 	}
 
 	virtual GYSerializationInteface& operator<<(GYUINT16& value)
 	{
+		const static GYINT32 size = sizeof(GYUINT16);
 		switch(m_mode)
 		{
 		case EM_SERIALIZAION_MODE_READ:
 			{
-				GYAssert(0 == m_buffer.Read(reinterpret_cast<GYCHAR*>(&value), sizeof(value)));
+				GYAssert(0 == m_buffer.Read(reinterpret_cast<GYCHAR*>(&value), size));
 			}
 			break;
 		case EM_SERIALIZAION_MODE_WRITE:
 			{
-				GYAssert(0 == m_buffer.Write(reinterpret_cast<GYCHAR*>(&value), sizeof(value)));
+				GYAssert(0 == m_buffer.Write(reinterpret_cast<GYCHAR*>(&value), size));
 			}
 			break;		
 		default:
@@ -123,22 +127,23 @@ public:
 			}
 			break;
 		}
-		m_serializDataSize += sizeof(value);
+		m_serializDataSize += size;
 		return *this;
 	}
 
 	virtual GYSerializationInteface& operator<<(GYINT32& value)
 	{
+		const static GYINT32 size = sizeof(GYINT32);
 		switch(m_mode)
 		{
 		case EM_SERIALIZAION_MODE_READ:
 			{
-				GYAssert(0 == m_buffer.Read(reinterpret_cast<GYCHAR*>(&value), sizeof(value)));
+				GYAssert(0 == m_buffer.Read(reinterpret_cast<GYCHAR*>(&value), size));
 			}
 			break;
 		case EM_SERIALIZAION_MODE_WRITE:
 			{
-				GYAssert(0 == m_buffer.Write(reinterpret_cast<GYCHAR*>(&value), sizeof(value)));
+				GYAssert(0 == m_buffer.Write(reinterpret_cast<GYCHAR*>(&value), size));
 			}
 			break;
 		default:
@@ -147,22 +152,23 @@ public:
 			}
 			break;
 		}
-		m_serializDataSize += sizeof(value);
+		m_serializDataSize += size;
 		return *this;
 	}
 
 	virtual GYSerializationInteface& operator<<(GYUINT32& value)
 	{
+		const static GYINT32 size = sizeof(GYUINT32);
 		switch(m_mode)
 		{
 		case EM_SERIALIZAION_MODE_READ:
 			{
-				GYAssert(0 == m_buffer.Read(reinterpret_cast<GYCHAR*>(&value), sizeof(value)));
+				GYAssert(0 == m_buffer.Read(reinterpret_cast<GYCHAR*>(&value), size));
 			}
 			break;
 		case EM_SERIALIZAION_MODE_WRITE:
 			{
-				GYAssert(0 == m_buffer.Write(reinterpret_cast<GYCHAR*>(&value), sizeof(value)));
+				GYAssert(0 == m_buffer.Write(reinterpret_cast<GYCHAR*>(&value), size));
 			}
 			break;
 		default:
@@ -171,22 +177,23 @@ public:
 			}
 			break;
 		}
-		m_serializDataSize += sizeof(value);
+		m_serializDataSize += size;
 		return *this;
 	}
 
 	virtual GYSerializationInteface& operator<<(GYINT64& value)
 	{
+		const static GYINT32 size = sizeof(GYINT64);
 		switch(m_mode)
 		{
 		case EM_SERIALIZAION_MODE_READ:
 			{
-				GYAssert(0 == m_buffer.Read(reinterpret_cast<GYCHAR*>(&value), sizeof(value)));
+				GYAssert(0 == m_buffer.Read(reinterpret_cast<GYCHAR*>(&value), size));
 			}
 			break;
 		case EM_SERIALIZAION_MODE_WRITE:
 			{
-				GYAssert(0 == m_buffer.Write(reinterpret_cast<GYCHAR*>(&value), sizeof(value)));
+				GYAssert(0 == m_buffer.Write(reinterpret_cast<GYCHAR*>(&value), size));
 			}
 			break;
 		default:
@@ -195,22 +202,23 @@ public:
 			}
 			break;
 		}
-		m_serializDataSize += sizeof(value);
+		m_serializDataSize += size;
 		return *this;
 	}
 
 	virtual GYSerializationInteface& operator<<(GYUINT64& value)
 	{
+		const static GYINT32 size = sizeof(GYUINT64);
 		switch(m_mode)
 		{
 		case EM_SERIALIZAION_MODE_READ:
 			{
-				GYAssert(0 == m_buffer.Read(reinterpret_cast<GYCHAR*>(&value), sizeof(value)));
+				GYAssert(0 == m_buffer.Read(reinterpret_cast<GYCHAR*>(&value), size));
 			}
 			break;
 		case EM_SERIALIZAION_MODE_WRITE:
 			{
-				GYAssert(0 == m_buffer.Write(reinterpret_cast<GYCHAR*>(&value), sizeof(value)));
+				GYAssert(0 == m_buffer.Write(reinterpret_cast<GYCHAR*>(&value), size));
 			}
 			break;
 		default:
@@ -219,22 +227,23 @@ public:
 			}
 			break;
 		}
-		m_serializDataSize += sizeof(value);
+		m_serializDataSize += size;
 		return *this;
 	}
 
 	virtual GYSerializationInteface& operator<<(GYFLOAT& value)
 	{
+		const static GYINT32 size = sizeof(GYFLOAT);
 		switch(m_mode)
 		{
 		case EM_SERIALIZAION_MODE_READ:
 			{
-				GYAssert(0 == m_buffer.Read(reinterpret_cast<GYCHAR*>(&value), sizeof(value)));
+				GYAssert(0 == m_buffer.Read(reinterpret_cast<GYCHAR*>(&value), size));
 			}
 			break;
 		case EM_SERIALIZAION_MODE_WRITE:
 			{
-				GYAssert(0 == m_buffer.Write(reinterpret_cast<GYCHAR*>(&value), sizeof(value)));
+				GYAssert(0 == m_buffer.Write(reinterpret_cast<GYCHAR*>(&value), size));
 			}
 			break;
 		default:
@@ -243,7 +252,7 @@ public:
 			}
 			break;
 		}
-		m_serializDataSize += sizeof(value);
+		m_serializDataSize += size;
 		return *this;
 	}
 
