@@ -26,3 +26,7 @@ make
 cd ../Gateway
 cmake ../../Src/Gateway
 make
+
+cd ../Logic
+cmake ../../Src/Gateway
+make
