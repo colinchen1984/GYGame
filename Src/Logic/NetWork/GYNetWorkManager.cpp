@@ -117,7 +117,7 @@ GYVOID GYNetWorkManager::_OnAcceptGateway()
 			else
 			{
 				//不可修复错误，关闭服务器
-				wprintf(L"Can't handle this error %d, current client session count is %d\n", err, debugCount);
+				printf("Can't handle this error %d, current client session count is %d\n", err, debugCount);
 			}
 		}
 

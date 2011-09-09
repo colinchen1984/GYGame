@@ -20,7 +20,7 @@ GYGatewaySession::~GYGatewaySession()
 
 }
 
-static GYVOID HandleGatewayData(GYNetEvent& event)
+GYVOID HandleGatewayData(GYNetEvent& event)
 {
 	GYGatewaySession* pSession = static_cast<GYGatewaySession*>(event.m_data);
 	pSession->_OnReceive();
