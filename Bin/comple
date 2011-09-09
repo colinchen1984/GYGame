@@ -28,5 +28,5 @@ cmake ../../Src/Gateway
 make
 
 cd ../Logic
-cmake ../../Src/Gateway
+cmake ../../Src/Logic
 make
