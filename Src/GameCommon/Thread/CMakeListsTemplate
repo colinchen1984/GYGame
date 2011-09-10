@@ -1,4 +1,4 @@
-PROJECT(Table CXX)
+PROJECT(Thread CXX)
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug")
 endif()
@@ -6,13 +6,13 @@ endif()
 SET(CMAKE_CXX_COMPILER "g++")
 
 #ADD_SUBDIRECTORY(./ ./Test)
-INCLUDE_DIRECTORIES(../CommonDefine ../CommonDefine/String)
+INCLUDE_DIRECTORIES(../CommonDefine ../CommonDefine/String ../CommonDefine/TimeController)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/Lib)
-SET{NoDir ./GYTable.cpp ./GYTableSerialization.cpp}
-
-ADD_LIBRARY(Table ${NoDir} )
-MESSAGE(STATUS ${CMAKE_SYSTEM})
+$FILELIST$
+ADD_LIBRARY(Thread $HEADLIST$)
+TARGET_LINK_LIBRARIES(Thread pthread)
 ADD_DEFINITIONS(-D_DEBUG)
+MESSAGE(STATUS ${CMAKE_SYSTEM})
 IF(WIN32)
 ADD_DEFINITIONS(-DWIN32)
 ELSEIF(UNIX)

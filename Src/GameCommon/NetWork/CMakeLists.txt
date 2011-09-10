@@ -10,8 +10,9 @@ INCLUDE_DIRECTORIES(../CommonDefine)
 INCLUDE_DIRECTORIES(../CommonDefine/String)
 INCLUDE_DIRECTORIES(../CommonDefine/TimeController)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/Lib)
-SET(LIB_SRC GYEpoll.cpp GYNetAddress.cpp GYNetWorkCommonDefine.cpp GYReactor.cpp GYSocket.cpp  GYWin32Select.cpp)
-ADD_LIBRARY(NetWork ${LIB_SRC})
+SET{NoDir ./GYEpoll.cpp ./GYNetAddress.cpp ./GYNetWorkCommonDefine.cpp ./GYReactor.cpp ./GYSocket.cpp ./GYWin32Select.cpp}
+
+ADD_LIBRARY(NetWork ${NoDir} )
 MESSAGE(STATUS ${CMAKE_SYSTEM})
 ADD_DEFINITIONS(-D_DEBUG)
 IF(WIN32)
