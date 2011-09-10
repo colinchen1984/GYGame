@@ -41,7 +41,8 @@ if "__main__" == __name__:
 	finalMap = {}
 	for d in dirList:
 		finalMap[d] = []
-	finalMap["NoDir"] = []
+	DEFAULT = "SOURCE_DEFULT"
+	finalMap[DEFAULT] = []
 	for f in fileList:
 		fileStr = f.replace(cwd, "")
 		relatedPath = fileStr.replace("\\", "/")
@@ -52,7 +53,7 @@ if "__main__" == __name__:
 				finalMap[d].append(fileStr)
 				break
 		else:
-			finalMap["NoDir"].append(fileStr)
+			finalMap[DEFAULT].append(fileStr)
 	
 	template = "SET{$HEAD$ $FILES$}"
 	fileList = ""
@@ -60,9 +61,9 @@ if "__main__" == __name__:
 	for f in finalMap:
 		str = string.join(finalMap[f], " ")
 		str = template.replace("$FILES$", str)
-		str = str.replace("$HEAD$", f)
+		str = str.replace("$HEAD$", f.upper())
 		fileList += str + "\n"
-		headList += "${" + f + "} "
+		headList += "${" + f.upper() + "} "
 	file = open("CMakeListsTemplate", "rb")
 	data = file.read()
 	file.close
