@@ -1,4 +1,8 @@
 #!/bin/bash
+cd ../Src
+chmod +x updatemakefile.bat
+./updatemakefile.bat
+cd ../Bin
 cd ./GameCommon
 rm -rf *
 cmake ../../Src/GameCommon/CommonDefine
