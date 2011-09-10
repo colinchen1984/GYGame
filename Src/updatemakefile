@@ -1,4 +1,4 @@
-#!/bin/bash
+﻿#!/bin/bash
 cd ./GameCommon
 cd ./CommonDefine
 python CMakeListsGenerator.py
