@@ -55,7 +55,7 @@ if "__main__" == __name__:
 		else:
 			finalMap[DEFAULT].append(fileStr)
 	
-	template = "SET{$HEAD$ $FILES$}"
+	template = "SET($HEAD$ $FILES$)"
 	fileList = ""
 	headList = ""
 	for f in finalMap:
