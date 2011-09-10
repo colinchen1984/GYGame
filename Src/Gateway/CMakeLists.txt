@@ -15,12 +15,12 @@ INCLUDE_DIRECTORIES(./Packet)
 INCLUDE_DIRECTORIES(./)
 MESSAGE(STATUS ${PROJECT_BINARY_DIR})
 LINK_DIRECTORIES(${PROJECT_BINARY_DIR}/../Protocol/Lib ${PROJECT_BINARY_DIR}/../NetWork/Lib ${PROJECT_BINARY_DIR}/../Thread/Lib ${PROJECT_BINARY_DIR}/../GameCommon/Lib)
-SET{PacketHandler ./PacketHandler/GYTestPacketHandler.cpp}
-SET{GatewayThread ./GatewayThread/GYClientProcessData.cpp ./GatewayThread/GYClientSession.cpp ./GatewayThread/GYGatewayThread.cpp}
-SET{Packet ./Packet/GYPacketFactoryManager.cpp ./Packet/GYPacketFactoryRegister.cpp}
-SET{NoDir ./GYServer.cpp ./main.cpp}
+SET(PACKETHANDLER ./PacketHandler/GYTestPacketHandler.cpp)
+SET(GATEWAYTHREAD ./GatewayThread/GYClientProcessData.cpp ./GatewayThread/GYClientSession.cpp ./GatewayThread/GYGatewayThread.cpp)
+SET(SOURCE_DEFULT ./GYServer.cpp ./main.cpp)
+SET(PACKET ./Packet/GYPacketFactoryManager.cpp ./Packet/GYPacketFactoryRegister.cpp)
 
-ADD_EXECUTABLE(Gateway ${PacketHandler} ${GatewayThread} ${Packet} ${NoDir} )
+ADD_EXECUTABLE(Gateway ${PACKETHANDLER} ${GATEWAYTHREAD} ${SOURCE_DEFULT} ${PACKET} )
 TARGET_LINK_LIBRARIES(Gateway NetWork pthread Thread GameCommon Protocol)
 ADD_DEFINITIONS(-D_DEBUG)
 IF(WIN32)

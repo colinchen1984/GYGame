@@ -1,19 +1,19 @@
 ﻿#!/bin/bash
 cd ./GameCommon
 cd ./CommonDefine
-python CMakeListsGenerator.py
+python ../../CMakeListsGenerator.py
 cd ../NetWork
-python CMakeListsGenerator.py
+python ../../CMakeListsGenerator.py
 cd ../Thread
-python CMakeListsGenerator.py
+python ../../CMakeListsGenerator.py
 cd ../Table
-python CMakeListsGenerator.py
+python ../../CMakeListsGenerator.py
 cd ../test
-python CMakeListsGenerator.py
+python ../../CMakeListsGenerator.py
 cd ../../Protocol
-python CMakeListsGenerator.py
+python ../CMakeListsGenerator.py
 cd ../Gateway
-python CMakeListsGenerator.py
+python ../CMakeListsGenerator.py
 cd ../Logic
-python CMakeListsGenerator.py
+python ../CMakeListsGenerator.py
 cd ../

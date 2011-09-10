@@ -16,13 +16,13 @@ INCLUDE_DIRECTORIES(./Table)
 INCLUDE_DIRECTORIES(./)
 MESSAGE(STATUS ${PROJECT_BINARY_DIR})
 LINK_DIRECTORIES(${PROJECT_BINARY_DIR}/../Table/Lib ${PROJECT_BINARY_DIR}/../Protocol/Lib ${PROJECT_BINARY_DIR}/../NetWork/Lib ${PROJECT_BINARY_DIR}/../Thread/Lib ${PROJECT_BINARY_DIR}/../GameCommon/Lib)
-SET{PacketHandler ./PacketHandler/GYTestPacketHandler.cpp}
-SET{NoDir ./GYServer.cpp ./main.cpp}
-SET{NetWork ./NetWork/GYGatewaySession.cpp ./NetWork/GYNetWorkManager.cpp}
-SET{Packet ./Packet/GYPacketFactoryManager.cpp ./Packet/GYPacketFactoryRegister.cpp}
-SET{Table ./Table/GYTableDefine.cpp ./Table/GYTableManager.cpp}
+SET(SOURCE_DEFULT ./GYServer.cpp ./main.cpp)
+SET(PACKETHANDLER ./PacketHandler/GYTestPacketHandler.cpp)
+SET(NETWORK ./NetWork/GYGatewaySession.cpp ./NetWork/GYNetWorkManager.cpp)
+SET(PACKET ./Packet/GYPacketFactoryManager.cpp ./Packet/GYPacketFactoryRegister.cpp)
+SET(TABLE ./Table/GYTableDefine.cpp ./Table/GYTableManager.cpp)
 
-ADD_EXECUTABLE(Logic ${PacketHandler} ${NoDir} ${NetWork} ${Packet} ${Table} )
+ADD_EXECUTABLE(Logic ${SOURCE_DEFULT} ${PACKETHANDLER} ${NETWORK} ${PACKET} ${TABLE} )
 TARGET_LINK_LIBRARIES(Logic NetWork GameCommon Protocol Table)
 ADD_DEFINITIONS(-D_DEBUG)
 IF(WIN32)

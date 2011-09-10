@@ -10,11 +10,11 @@ INCLUDE_DIRECTORIES(../CommonDefine)
 INCLUDE_DIRECTORIES(../CommonDefine/String)
 INCLUDE_DIRECTORIES(../CommonDefine/TimeController)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/Lib)
-SET{TimeController ./TimeController/GYTimeController.cpp}
-SET{String ./String/GYString.cpp ./String/GYStringManger.cpp}
-SET{NoDir ./GYCommonDefine.cpp}
+SET(TIMECONTROLLER ./TimeController/GYTimeController.cpp)
+SET(STRING ./String/GYString.cpp ./String/GYStringManger.cpp)
+SET(SOURCE_DEFULT ./GYCommonDefine.cpp)
 
-ADD_LIBRARY(GameCommon $HEAD$)
+ADD_LIBRARY(GameCommon ${TIMECONTROLLER} ${STRING} ${SOURCE_DEFULT} )
 MESSAGE(STATUS ${CMAKE_SYSTEM})
 ADD_DEFINITIONS(-D_DEBUG)
 IF(WIN32)
