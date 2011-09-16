@@ -1,4 +1,4 @@
-PROJECT(Gateway CXX)
+﻿PROJECT(Gateway CXX)
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug")
 endif()
