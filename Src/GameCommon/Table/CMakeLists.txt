@@ -8,7 +8,7 @@ SET(CMAKE_CXX_COMPILER "g++")
 #ADD_SUBDIRECTORY(./ ./Test)
 INCLUDE_DIRECTORIES(../CommonDefine ../CommonDefine/String)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/Lib)
-SET(SOURCE_DEFULT ./GYTable.cpp ./GYTableSerialization.cpp)
+SET(SOURCE_DEFULT ./GYTableSerialization.cpp ./GYTable.cpp)
 
 ADD_LIBRARY(Table ${SOURCE_DEFULT} )
 MESSAGE(STATUS ${CMAKE_SYSTEM})
