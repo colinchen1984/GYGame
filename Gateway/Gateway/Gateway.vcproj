@@ -220,6 +220,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Src\Gateway\PacketHandler\GYSCTestPacketHandler.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Src\Gateway\PacketHandler\GYTestPacketHandler.cpp"
 				>
 			</File>
