@@ -7,11 +7,11 @@
 #include "GYGatewayThread.h"
 #include "GYGuard.h"
 #include <stdio.h>
-#include <wchar.h>
 #include "GYTimeStamp.h"
 #include "GYServer.h"
 #include "GYProtocolDefine.h"
 #include "GYStreamSerialization.h"
+#include "GYTimeController.h"
 
 GYGatewayThread::GYGatewayThread()
 {
@@ -96,6 +96,7 @@ GYVOID GYGatewayThread::Run()
 {
 	while(GYTRUE)
 	{
+		//printf("Begin GYGatewayThread::Run in %u\n", this);
 		if (EM_GATE_WAY_THREAD_STATUS_EXIT != m_status)
 		{
 			(this->*handler[m_status])();
@@ -138,7 +139,7 @@ GYVOID GYGatewayThread::_ConnectLogicServer()
 {
 	if(0 != m_connection2Logic.Connect(m_targetServerAddress))
 	{
-		wprintf(L"Connect logic server fail\n");
+		printf("Connect logic server fail\n");
 		GYSleep(1 * 1000);
 		return;
 	}
@@ -165,6 +166,7 @@ GYVOID GYGatewayThread::_ConnectLogicServer()
 
 GYVOID GYGatewayThread::_ServeringClientSession()
 {
+	//printf("Enter %s\n", "_ServeringClientSession");
 	GYClientSession* pSession = GYNULL;
 	pSession = GYNULL;
 	while(GYNULL != (pSession = m_ClosedSession.PickUpFirstItem()))
@@ -188,13 +190,14 @@ GYVOID GYGatewayThread::_ServeringClientSession()
 	static GYTimeStamp termTime;
 	termTime.m_termTime = 1;
 	m_reactor.RunOnce(termTime);
+	return;
 }
 
 GYVOID GYGatewayThread::ProcessLogicServerData()
 {
+	//printf("Enter %s\n", "ProcessLogicServerData");
 	GY_SOCKET_OPERATION_ERROR_CODE result = m_connection2Logic.Recv();
 	if (GY_SOCKET_OPERATION_ERROR_CODE_CONNECTION_CLOSED == result 
-		|| GY_SOCKET_OPERATION_ERROR_CODE_FAIL_TO_CHECK_SOCKET_CORE_BUFFER == result
 		|| GY_SOCKET_OPERATION_ERROR_CODE_FAIL_TO_CHECK_SOCKET_CORE_BUFFER == result)
 	{
 		//当与logic server断开连接后，重新打开套接字，并尝试连接logic server
@@ -207,20 +210,27 @@ GYVOID GYGatewayThread::ProcessLogicServerData()
 	{
 		return;
 	}
-
-	GYINT32 length = m_connection2Logic.m_inputBuffer.GetReadSize();
-	const static GYINT32 headLen = GYGUIDLEN + PacektHeadLen;
-	if (length > headLen)
+	while(GYTRUE)
 	{
-		const GYCHAR* pData = m_connection2Logic.m_inputBuffer.ReadPtr();
-		const GYGUID& guid = *reinterpret_cast<const GYGUID*>(pData);
-		const GYPacketHead& packetHead = *reinterpret_cast<const GYPacketHead*>(pData + GYGUIDLEN);
-		if (length >= headLen + packetHead.m_packetLen)
+		GYINT32 length = m_connection2Logic.m_inputBuffer.GetReadSize();
+		const static GYINT32 headLen = GYGUIDLEN + PacektHeadLen;
+		if (length > headLen)
 		{
-			_ProcessInputData(guid, packetHead);			
+			const GYCHAR* pData = m_connection2Logic.m_inputBuffer.ReadPtr();
+			const GYGUID& guid = *reinterpret_cast<const GYGUID*>(pData);
+			const GYPacketHead& packetHead = *reinterpret_cast<const GYPacketHead*>(pData + GYGUIDLEN);
+			if (length >= headLen + packetHead.m_packetLen)
+			{
+				_ProcessInputData(guid, packetHead);			
+			}
+
 		}
-		
+		else
+		{
+			break;
+		}
 	}
+
 }
 
 GYVOID GYGatewayThread::_StopCurrentService()
@@ -245,7 +255,9 @@ GYVOID GYGatewayThread::_StopCurrentService()
 
 GYINT32 GYGatewayThread::SendDataToServer( GYClientSession& session, const GYPacketHead& packetHead, const GYCHAR* pData)
 {
+	//printf("Enter %s\n", "SendDataToServer");
 	//这里插入玩家的GUID在数据包前面
+	m_connection2Logic.Send();
 	const GYGUID& clientGUID = session.GetGUID();
 	GYINT32 writeSpaceSize = m_connection2Logic.m_outputBuffer.GetWriteSize();
 	const GYINT32 needSpaceSize = GYGUIDLEN + PacektHeadLen + packetHead.m_packetLen;
@@ -266,7 +278,9 @@ GYINT32 GYGatewayThread::SendDataToServer( GYClientSession& session, const GYPac
 
 GYINT32 GYGatewayThread::SendPacketToServer(GYClientSession& session, const GYPacketInteface& packet)
 {
+	//printf("Enter %s\n", "SendPacketToServer");
 	//这里插入玩家的GUID在数据包前面
+	m_connection2Logic.Send();
 	GYStreamSerialization<LOGIC_SESSION_SEND_BUFFER_LEN> packetSender(m_connection2Logic.m_outputBuffer, EM_SERIALIZAION_MODE_WRITE);
 	packetSender << const_cast<GYGUID&>(session.GetGUID());
 	packetSender << const_cast<GYPacketInteface&>(packet);
@@ -276,18 +290,21 @@ GYINT32 GYGatewayThread::SendPacketToServer(GYClientSession& session, const GYPa
 
 GYVOID GYGatewayThread::_ProcessInputData(const GYGUID& clientGUID, const GYPacketHead& packetHead)
 {
+	//printf("Enter %s\n", "GYGatewayThread::_ProcessInputData");
 	const GYINT32 dataLen = GYGUIDLEN + PacektHeadLen + packetHead.m_packetLen;
-	GYPacketInteface* packet = m_packetFactory.GetPacketByID(GYGetPacketID(packetHead.m_id));
-
 
 	GYClientSession** pClentSession = m_workSessionHash.Find(clientGUID);
 	if (GYNULL == pClentSession || GYNULL == *pClentSession)
 	{
 		//服务器发过来的数据出错
+		//可能是Client断开后logic发来数据
 		m_connection2Logic.m_inputBuffer.ReadPtr(dataLen);
 		return;
 	}
+
+	GYPacketInteface* packet = m_packetFactory.GetPacketByID(GYGetPacketID(packetHead.m_id));
 	GYClientSession& client = **pClentSession;
+	GYAssert(client.GetGUID() == clientGUID);
 	if (GYNULL != packet)
 	{
 		GYStreamSerialization<LOGIC_SESSION_RECV_BUFFER_LEN> streamSerializer(m_connection2Logic.m_inputBuffer, EM_SERIALIZAION_MODE_READ);
@@ -308,6 +325,7 @@ GYVOID GYGatewayThread::_ProcessInputData(const GYGUID& clientGUID, const GYPack
 			client.Release();
 		}
 		m_packetFactory.ReleasePacket(*packet);
+		packet = GYNULL;
 	}
 	else
 	{
@@ -323,6 +341,7 @@ GYVOID GYGatewayThread::_ProcessInputData(const GYGUID& clientGUID, const GYPack
 			//等会再发吧
 		}
 	}
+	GYAssert(GYNULL == packet);
 }
 
 GYINT32 GYGatewayThread::RegisteSession( GYClientSession& session )

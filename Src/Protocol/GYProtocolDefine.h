@@ -43,7 +43,7 @@ protected:
 	GYPacketInteface(){};
 public:
 	virtual ~GYPacketInteface(){};
-	virtual GYPACKETID GetPacketID(){return EM_PACKET_ID_INVALID;}
+	virtual GYPACKETID GetPacketID(){return GYMakePacketID(EM_PACKET_ID_INVALID);}
 	virtual GYCHAR GetPacketFlags(){return 0;}
 	virtual GYVOID Serializ(GYSerializationInteface& serializer) = 0;
 	virtual GYVOID CleanUp() = 0;

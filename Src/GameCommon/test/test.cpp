@@ -108,7 +108,9 @@ struct TestStructTable
 GYINT32 main()
 {
 
+	FILE* file = fopen("2.txt", "rb");
 	char b[1024];
+	fgets(b, 1024, file);
 	set<int> itTest;
 	for (int i = 0; i < 100; ++i)
 	{

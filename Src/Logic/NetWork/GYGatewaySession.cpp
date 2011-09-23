@@ -12,7 +12,7 @@
 
 GYGatewaySession::GYGatewaySession()
 {
-	CleanUp();
+ 	CleanUp();
 }
 
 GYGatewaySession::~GYGatewaySession()
@@ -114,26 +114,36 @@ GYVOID GYGatewaySession::_OnReceive()
 		return;
 	}
 
-	GYINT32 length = INPUTBUFFER.GetReadSize();
-	if (length > PacektHeadLen + GYGUIDLEN)
+	while(GYTRUE)
 	{
-		const GYGUID* const pHumanGUID = reinterpret_cast<const GYGUID* const>(INPUTBUFFER.ReadPtr());
-		const GYPacketHead* const pPacketHead = reinterpret_cast<const GYPacketHead* const>(pHumanGUID + 1);
-		GYAssert(PacketMaxLen >= pPacketHead->m_packetLen);
-		if (length >= pPacketHead->m_packetLen + PacektHeadLen + GYGUIDLEN)
+		GYINT32 length = INPUTBUFFER.GetReadSize();
+		if (length > PacektHeadLen + GYGUIDLEN)
 		{
-			_ProcessInputData(GETPACKETFACTORY, *pHumanGUID, *pPacketHead);
+			const GYGUID* const pHumanGUID = reinterpret_cast<const GYGUID* const>(INPUTBUFFER.ReadPtr());
+			const GYPacketHead* const pPacketHead = reinterpret_cast<const GYPacketHead* const>(pHumanGUID + 1);
+			GYAssert(PacketMaxLen >= pPacketHead->m_packetLen);
+			if (length >= pPacketHead->m_packetLen + PacektHeadLen + GYGUIDLEN)
+			{
+				_ProcessInputData(GETPACKETFACTORY, *pHumanGUID, *pPacketHead);
+			}
+		}
+		else
+		{
+			break;
 		}
 	}
+
 }
 	
 
 GYVOID GYGatewaySession::SendPacket(const GYGUID& guid, GYPacketInteface& packet)
 {
+	m_connection.Send();
 	GYStreamSerialization<GATEWAY_SESSION_SEND_BUFFER_LEN> packetSender(m_connection.m_outputBuffer, EM_SERIALIZAION_MODE_WRITE);
 	packetSender << const_cast<GYGUID&>(guid);
 	packetSender << packet;
 	m_allSendDataSize += packetSender.GetSerializDataSize();
+	GYAssert(m_connection.m_outputBuffer.GetWriteSize() > 0);
 }
 
 GYBOOL GYGatewaySession::Tick()

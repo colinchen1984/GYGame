@@ -7,6 +7,7 @@
 #include "GYPacketHandler.h"
 #include "GYClientSession.h"
 #include "GYTestPacket.h"
+#include "GYTimeController.h"
 GYBOOL GYTestPacketHandler(GYClientSession& session, GYPacketInteface& packet)
 {
 	GYTestPacket& testPacket = static_cast<GYTestPacket&>(packet);
@@ -14,7 +15,7 @@ GYBOOL GYTestPacketHandler(GYClientSession& session, GYPacketInteface& packet)
 	{
 		session.SetGUID(testPacket.GetUserID());
 	}
-	
+	testPacket.SetGatewayReceiveTime(GYTimeController::GetCpuTime());
 	session.SendPacketToLogic(testPacket);
 	return GYTRUE;
 }

@@ -35,7 +35,7 @@ public:
 	
 	GYUINT32	GetNowTime();				//取得当前 GMT时间， 如果设置了时区，则会加上时区 单位秒
 
-	static GYUINT32	GetCupTime();				//取得当前进程获得了多少CUP时间单位毫秒
+	static GYUINT64	GetCpuTime();				//取得当前进程获得了多少CUP时间单位毫秒
 
 	GYINT32		Init(GYINT32 timeZone);		
 };

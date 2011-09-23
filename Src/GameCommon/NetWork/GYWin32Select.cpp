@@ -10,6 +10,7 @@
 #include "GYBufferStreamSocket.h"
 #include "GYReactor.h"
 #include "GYTimeStamp.h"
+
 GYWin32SelectReactor::GYWin32SelectReactor()
 {
     _CleanUp();
@@ -110,19 +111,20 @@ GYINT32 GYWin32SelectReactor::_RunOnce(const GYTimeStamp& timeStamp)
         }
 
         GYINT32 err = ::select(0, &m_workingfdSet[GY_NET_EVENT_TYPE_READ], &m_workingfdSet[GY_NET_EVENT_TYPE_WRITE], &m_workingfdSet[GY_NET_EVENT_TYPE_EXCEPTION], &waitTime);
-        if (SOCKET_ERROR == err)
+		if (SOCKET_ERROR == err)
         {
 			GYINT32 t = GetLastNetWorkError();
             break;
         }
         if (err > 0)
         {
-            for (GYINT32 i = 0; i < eventCount; ++i)
+            for (GYINT32 i = 0; i < eventCount && err > 0; ++i)
             {
                 const GYNetEvent& event = *m_eventArray[i];
                 if(FD_ISSET(event.m_fd->GetFD(), &m_workingfdSet[event.m_eventType]))
                 {
                     m_reactor->PostEvent(*const_cast<GYNetEvent*>(&event));
+					--err;
                 }
             }
         }

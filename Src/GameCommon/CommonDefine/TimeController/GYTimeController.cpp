@@ -25,10 +25,19 @@ GYUINT32 GYTimeController::GetProcessRunTime()
 	return result;
 }
 
-GYUINT32 GYTimeController::GetCupTime()
+GYUINT64 GYTimeController::GetCpuTime()
 {
-	GYUINT32 t= clock();
-	return t;
+	GYUINT64 result = INVALID_VALUE;
+#ifdef WIN32
+	result = GetTickCount();
+#endif
+
+#ifdef LINUX64
+	timeval current;
+	gettimeofday(&current, GYNULL);
+	result = 1000 * (current.tv_sec) + (current.tv_usec) / 1000;
+#endif
+	return result;
 }
 
 GYUINT32	GYTimeController::GetNowTime()

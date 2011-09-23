@@ -14,8 +14,13 @@ class GYSerializationInteface;
 
 class GYSCTest : public GYPacketInteface
 {
+public:
 	GYGUID		m_userID;
 	GYString	m_name;
+	GYUINT64	m_gatewayReceiveClientPacketTime;
+	GYUINT64	m_logicReceiveGatewayPacketTime;
+	GYUINT64	m_gateReceiveLogicPacketTime;
+
 public:
 	GYSCTest(GYStringManager& stringManager):m_name(stringManager)
 	{

@@ -9,12 +9,13 @@
 #include "GYGatewayThread.h"
 #include "GYPacketFactoryManager.h"
 #include "GYStreamSerialization.h"
-
+//#include <stdio.h>
 #define  INPUTBUFFER m_connection.m_inputBuffer
 #define  OUTPUTBUFFER m_connection.m_outputBuffer
 
 GYVOID GYClientSession::_ProcessInputData(GYPacketFactoryManager& packetFactory, const GYPacketHead& packetHead)
 {
+	//printf("Enter %s\n", "GYClientSession::_ProcessInputData");
 	GYPacketInteface* packet = packetFactory.GetPacketByID(GYGetPacketID(packetHead.m_id));
 	const GYINT32 dataLen = PacektHeadLen + packetHead.m_packetLen;
 	if (GYNULL != packet)

@@ -43,7 +43,7 @@ GYINT32 GYServer::Init()
 	do 
 	{
 		GYNetAddress listenAddress;
-		listenAddress.SetAddr("127.0.0.1");
+		listenAddress.SetAddr("192.168.1.100");
 		listenAddress.SetPort(5555);
 		m_usingClientSession.CleanUp();
 		m_freeClientSession.CleanUp();
@@ -82,7 +82,7 @@ GYINT32 GYServer::Init()
 			break;
 		}
 		GYNetAddress logicServerAddress;
-		logicServerAddress.SetAddr("127.0.0.1");
+		logicServerAddress.SetAddr("192.168.1.100");
 		logicServerAddress.SetPort(5556);
 		GYBOOL threadInit = GYTRUE;
 		GYThreadTask task;
@@ -115,8 +115,6 @@ GYINT32 GYServer::Init()
 
 GYINT32 GYServer::RunOnce()
 {
-	static GYUINT32 beginTime = GYTimeController::GetCupTime();
-
 	{
 		static GYINT32 count = 0;
 		GYGuard<GYFastMutex> g(m_sessionCloseMutex);
@@ -131,9 +129,7 @@ GYINT32 GYServer::RunOnce()
 	GYTimeStamp termTime;
 	termTime.m_termTime = 30;
 	GYINT32 result = m_reactor.RunOnce(termTime);
-	GYUINT32 endTime = GYTimeController::GetCupTime();
-	//wprintf(L"Frame time is %u\n", endTime - beginTime);
-	beginTime = endTime;
+	GYAssert(0 == result);
 	return result;
 		
 }

@@ -12,4 +12,6 @@ class GYClientSession;
 class GYPacketInteface;
 
 extern GYBOOL GYTestPacketHandler(GYClientSession& session, GYPacketInteface& packet);
+extern GYBOOL GYSCTestPacketHandler(GYClientSession& session, GYPacketInteface& packet);
+
 #endif

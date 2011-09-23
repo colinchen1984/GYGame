@@ -25,6 +25,11 @@ GYTableSerialization::GYTableSerialization()
 
 GYTableSerialization::~GYTableSerialization()
 {
+#ifdef CHECK_DATA_TYPE
+	GYDelete[] m_dataType;
+	m_dataType = GYNULL;
+	m_loadColumCount = 0;
+#endif
 }
 
 #ifdef CHECK_DATA_TYPE
@@ -84,7 +89,7 @@ GYINT32 GYTableSerialization::Init( const GYCHAR* fileName )
 		BufferForTableFileLoad[m_fileSize] = 0;
 		const GYCHAR* pDataStart = BufferForTableFileLoad;
 		static const GYCHAR BOM[3] ={(GYCHAR)0xef, (GYCHAR)0xbb, (GYCHAR)0xbf} ;
-		if (0 == GYMemcmp(BufferForTableFileLoad, BOM, 3))
+		if (0 == GYMemcmp(BufferForTableFileLoad, BOM, sizeof(BOM)))
 		{
 			pDataStart += 3;
 		}

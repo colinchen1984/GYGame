@@ -10,7 +10,7 @@
 #include "GYProtocolDefine.h"
 #include "GYStreamSerialization.h"
 #include "GYServer.h"
-
+#include <stdio.h>
 GYClientSession::GYClientSession()
 {
 	CleanUp();
@@ -120,6 +120,7 @@ GYINT32 GYClientSession::Regeist2Reactor(GYReactor& reactor,  GYVOID* Onwer, EM_
 #define  OUTPUTBUFFER m_connection.m_outputBuffer
 GYVOID GYClientSession::_OnReceiveWithServer()
 {
+	//printf("Enter %s\n", "_OnReceiveWithServer");
 	GY_SOCKET_OPERATION_ERROR_CODE result = m_connection.Recv();
 	if (GY_SOCKET_OPERATION_ERROR_CODE_CONNECTION_CLOSED == result 
 		|| GY_SOCKET_OPERATION_ERROR_CODE_FAIL_TO_CHECK_SOCKET_CORE_BUFFER == result
@@ -132,21 +133,28 @@ GYVOID GYClientSession::_OnReceiveWithServer()
 	{
 		return;
 	}
-
-	GYINT32 length = INPUTBUFFER.GetReadSize();
-	if (length > PacektHeadLen)
+	while (GYTRUE)
 	{
-		const GYPacketHead* const pPacketHead = reinterpret_cast<const GYPacketHead* const>(INPUTBUFFER.ReadPtr());
-		GYAssert(PacketMaxLen >= pPacketHead->m_packetLen);
-		if (length >= pPacketHead->m_packetLen + PacektHeadLen)
+		GYINT32 length = INPUTBUFFER.GetReadSize();
+		if (length > PacektHeadLen)
 		{
-			_ProcessInputData(static_cast<GYGatewayThread*>(m_server)->GetPacketFactoryManager(), *pPacketHead);
+			const GYPacketHead* const pPacketHead = reinterpret_cast<const GYPacketHead* const>(INPUTBUFFER.ReadPtr());
+			GYAssert(PacketMaxLen >= pPacketHead->m_packetLen);
+			if (length >= pPacketHead->m_packetLen + PacektHeadLen)
+			{
+				_ProcessInputData(static_cast<GYGatewayThread*>(m_server)->GetPacketFactoryManager(), *pPacketHead);
+			}
+		}
+		else
+		{
+			break;
 		}
 	}
 }
 
 GYVOID GYClientSession::_OnReceiveWithNoServer()
 {
+	//printf("Enter %s\n", "_OnReceiveWithNoServer");
 	GY_SOCKET_OPERATION_ERROR_CODE result = m_connection.Recv();
 	if (GY_SOCKET_OPERATION_ERROR_CODE_CONNECTION_CLOSED == result 
 		|| GY_SOCKET_OPERATION_ERROR_CODE_FAIL_TO_CHECK_SOCKET_CORE_BUFFER == result
@@ -159,21 +167,30 @@ GYVOID GYClientSession::_OnReceiveWithNoServer()
 	{
 		return;
 	}
-
-	GYINT32 length = INPUTBUFFER.GetReadSize();
-	if (length > PacektHeadLen)
+	while(GYTRUE)
 	{
-		const GYPacketHead* pPacketHead = reinterpret_cast<const GYPacketHead*>(INPUTBUFFER.ReadPtr());
-		GYAssert(PacketMaxLen > pPacketHead->m_packetLen);
-		if (length > pPacketHead->m_packetLen + PacektHeadLen)
+		GYINT32 length = INPUTBUFFER.GetReadSize();
+		if (length > PacektHeadLen)
 		{
-			_ProcessInputData(static_cast<GYServer*>(m_server)->GetPacketFactoryManager(), *pPacketHead);
+			const GYPacketHead* pPacketHead = reinterpret_cast<const GYPacketHead*>(INPUTBUFFER.ReadPtr());
+			GYAssert(PacketMaxLen > pPacketHead->m_packetLen);
+			if (length > pPacketHead->m_packetLen + PacektHeadLen)
+			{
+				_ProcessInputData(static_cast<GYServer*>(m_server)->GetPacketFactoryManager(), *pPacketHead);
+			}
+		}
+		else
+		{
+			break;
 		}
 	}
+
 }
 
 GYVOID GYClientSession::SendPacketToClient(GYPacketInteface& packet)
 {
+	//printf("Enter %s\n", "SendPacketToClient");
+	m_connection.Send();
 	GYStreamSerialization<CLIENT_SESSION_SEND_BUFFER_LEN> packetSender(OUTPUTBUFFER, EM_SERIALIZAION_MODE_WRITE);
 	packetSender << packet;
 	m_allSendDataSize += packetSender.GetSerializDataSize();
@@ -182,18 +199,22 @@ GYVOID GYClientSession::SendPacketToClient(GYPacketInteface& packet)
 
 GYINT32 GYClientSession::SendDataToClient( const GYPacketHead& packetHead, const GYCHAR* pData )
 {
+	//printf("Enter %s\n", "SendDataToClient");
 	//这里插入玩家的GUID在数据包前面
+	m_connection.Send();
 	GYINT32 writeSpaceSize = m_connection.m_outputBuffer.GetWriteSize();
 	const GYINT32 needSpaceSize = PacektHeadLen + packetHead.m_packetLen;
-	if (writeSpaceSize < needSpaceSize)
+	if (writeSpaceSize <= needSpaceSize)
 	{
-		m_connection.Send();
-		writeSpaceSize = m_connection.m_outputBuffer.GetWriteSize();
 		if (writeSpaceSize < needSpaceSize)
 		{
 			//实在是没有地方了，等等吧
 			return INVALID_VALUE;
 		}
+	}
+	else
+	{
+		GYAssert(GYFALSE);
 	}
 	GYAssert(0 == m_connection.m_outputBuffer.Write(pData, PacektHeadLen + packetHead.m_packetLen));
 	return 0;
@@ -215,6 +236,7 @@ GYBOOL GYClientSession::Tick()
 
 GYINT32 GYClientSession::SendPacketToLogic( GYPacketInteface& packet )
 {
+	//printf("Enter %s\n", "SendPacketToLogic");
 	GYINT32 result = INVALID_VALUE;
 	if(EM_CLIENT_SESSION_STATUS_WITH_SERVER == m_status)
 	{
@@ -227,6 +249,7 @@ GYINT32 GYClientSession::SendPacketToLogic( GYPacketInteface& packet )
 
 GYVOID GYClientSession::SetGUID( const GYGUID& guid )
 {
+	//printf("Enter %s\n", "SendPacketToLogic");
 	m_clientGUID = guid;
 	GYGatewayThread& gatewayThread = *static_cast<GYGatewayThread*>(m_server);
 	gatewayThread.RegisteSession(*this);

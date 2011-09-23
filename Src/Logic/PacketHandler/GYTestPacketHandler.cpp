@@ -9,13 +9,15 @@
 #include "GYGatewaySession.h"
 #include "GYSCTest.h"
 #include "GYStringManger.h"
-
+#include "GYTimeController.h"
 GYBOOL GYTestPacketHandler(GYGatewaySession& gatewaySession, const GYGUID& guid, GYPacketInteface& packet)
 {
 	const GYTestPacket& tPacket = static_cast<GYTestPacket&>(packet);
 	GYSCTest replyPacket(GETSTRINGMANAGERSINGLETON);
 	replyPacket.SetUserName(tPacket.GetName());
 	replyPacket.SetUserID(guid);
+	replyPacket.m_gatewayReceiveClientPacketTime = tPacket.GetGatewayReceiveTime();
+	replyPacket.m_logicReceiveGatewayPacketTime = GYTimeController::GetCpuTime();
 	gatewaySession.SendPacket(guid, replyPacket);
 	return GYTRUE;
 }

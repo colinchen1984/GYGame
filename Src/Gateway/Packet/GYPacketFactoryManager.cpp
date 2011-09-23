@@ -45,6 +45,7 @@ GYPacketInteface* GYPacketFactoryManager::GetPacketByID(EM_PACKET_ID packetID)
 	{
 		packet->CleanUp();
 	}
+	//printf("%u Allocate packet %u with id %d\n", this, packet, packetID);
 	return packet;
 }
 
@@ -54,6 +55,7 @@ GYVOID GYPacketFactoryManager::ReleasePacket( GYPacketInteface& packet )
 	GYAssert(packetID >=0 && packetID < EM_PACKET_ID_COUNT);
 	GYAssert(GYNULL == m_packetFactory[packetID] && GYTRUE == m_packetFactoryBit[packetID]);
 	m_packetFactory[packetID] = &packet;
+	//printf("%u Release packet %u with id %d\n", this, &packet, packetID);
 }
 
 PacketHandler GYPacketFactoryManager::GetPacketHandlerByID( EM_PACKET_ID packetID )

@@ -18,6 +18,7 @@ class GYTestPacket : public GYPacketInteface
 {
 	GYGUID		m_userID;
 	GYString	m_name;
+	GYUINT64	m_gatewayReceiveTime;
 public:
 	GYTestPacket(GYStringManager& stringManager):m_name(stringManager)
 	{
@@ -32,6 +33,9 @@ public:
 
 	GYVOID SetUserID(const GYGUID& userID);
 	const GYGUID& GetUserID();
+
+	GYVOID SetGatewayReceiveTime(const GYUINT64& time);
+	const GYUINT64& GetGatewayReceiveTime() const;
 
 	virtual GYVOID Serializ(GYSerializationInteface& serializer);
 

@@ -7,7 +7,7 @@
 
 //include file
 #include "GYSocket.h"
-#include <stdio.h>
+//#include <stdio.h>
 #include <fcntl.h>
 #include "GYNetAddress.h"
 #include "GYNetWorkErrorCode.h"
@@ -109,7 +109,7 @@ GYINT32 GYListenSocket::Accept(GYSocket& s, GYNetAddress& clientAddress)
 		GYINT32 err = GetLastNetWorkError();
 		if (GYEMFILE == err)
 		{
-			printf("GYEMFILE happen\n");
+			//printf("GYEMFILE happen\n");
 			::close(m_dummyFile);
 			m_dummyFile = ::accept(m_fd, NULL, NULL);
 			::close(m_dummyFile);
@@ -117,7 +117,7 @@ GYINT32 GYListenSocket::Accept(GYSocket& s, GYNetAddress& clientAddress)
 		}
 		else
 		{
-			printf("Accept errno is %d\n", err);
+			//printf("Accept errno is %d\n", err);
 		}	
 	}
 	

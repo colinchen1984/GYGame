@@ -20,7 +20,7 @@ const GYString& GYSCTest::GetUserName()
 
 GYVOID GYSCTest::Serializ( GYSerializationInteface& serializer )
 {
-	serializer << m_userID << m_name;
+	serializer << m_userID << m_name << m_gatewayReceiveClientPacketTime << m_logicReceiveGatewayPacketTime << m_gateReceiveLogicPacketTime;
 }
 
 GYVOID GYSCTest::SetUserID(const GYGUID& userID)
@@ -37,4 +37,8 @@ GYVOID GYSCTest::CleanUp()
 {
 	m_userID = INVALID_VALUE;
 	m_name.CleanUp();
+	m_gatewayReceiveClientPacketTime = INVALID_VALUE;
+	m_logicReceiveGatewayPacketTime = INVALID_VALUE;
+	m_gateReceiveLogicPacketTime = INVALID_VALUE;
+	
 }
