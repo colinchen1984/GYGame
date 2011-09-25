@@ -86,28 +86,29 @@ GYVOID acceptHandler(GYNetEvent& event)
 GYStringManager* strManager = new GYStringManager();
 struct TestStructTable
 {
-	GYINT32 testArray[5];
-	GYString	testArrayString;
-	TestStructTable() : testArrayString(*strManager)
+	GYINT32	testArrayID;
+	GYUINT64 testArray[4];
+	TestStructTable()
 	{
 
 	}
 
 	GYVOID Serializ(GYSerializationInteface& seralizer)
 	{
-		for (GYINT32 i = 0; i < 5; ++i)
+		seralizer << testArrayID;
+		for (GYINT32 i = 0; i < 4; ++i)
 		{
 			seralizer << testArray[i];
 		}
-		seralizer << testArrayString;
-		
 	}
 };
 
-
+#include <hash_map>
+using namespace stdext;
 GYINT32 main()
 {
-
+	hash_map<GYUINT64, GYINT32> testHashMap;
+	testHashMap[1231L] = 3;
 	FILE* file = fopen("2.txt", "rb");
 	char b[1024];
 	fgets(b, 1024, file);
@@ -121,10 +122,28 @@ GYINT32 main()
 	int btes = *itTestit;
 	strManager->Init();
 	GYTableSerialization testOs;
-	const char* name = "test.tab";
+	const char* name = "ret.tab";
 	GYString testString1(name, strlen(name), *strManager);
 	GYTable<TestStructTable> tableFile;
 	tableFile.Load(testString1.c_str());
+	GYHashTable<GYINT32> testHash;
+	testHash.Init(256, 1024);
+	GYINT32 allCOunt = 0;
+	for (GYINT32 i = 1; i <= tableFile.GetTableRowCount(); ++i)
+	{
+		const TestStructTable& row = *tableFile[i];
+		for (GYINT32 t = 0; t < 4; ++t)
+		{
+			GYINT32 result = testHash.Insert(row.testArray[t], t);
+			if(0 != result)
+			{
+				printf("%llu is in hash already and count is %d\n", row.testArray[t], ++allCOunt);
+
+			}
+		}
+		
+	}
+	
 	tableFile[2];
 	tableFile[16];
 	tableFile[-1];

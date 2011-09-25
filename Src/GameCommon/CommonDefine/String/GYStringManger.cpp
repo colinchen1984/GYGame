@@ -55,7 +55,7 @@ GYINT32 GYStringManager::Init()
 
 GYCHAR* GYStringManager::AllocateString( const GYCHAR* str, GYINT32 strLength )
 {
-	GYCHAR** findResult = m_strHashTable.Find(str);
+	GYCHAR** findResult = m_strHashTable.Find(str, strLength);
 	GYCHAR* pString = GYNULL;
 	if (GYNULL == findResult)
 	{
@@ -128,7 +128,7 @@ GYCHAR* GYStringManager::AllocateString( const GYCHAR* str, GYINT32 strLength )
 		}
 		if (GYNULL != pString && GYNULL != inSertData)
 		{
-			m_strHashTable.Insert(str, inSertData);
+			m_strHashTable.Insert(str, strLength, inSertData);
 			GYMemcpy(pString, str, sizeof(str[0]) * strLength);
 			pString[strLength] = 0;
 		}
@@ -289,7 +289,7 @@ GYStringManager::GYStringBuffer<16>* GYStringManager::_Allocate16()
 
 GYVOID GYStringManager::DeleteStringReference( GYCHAR* str, GYINT32 strLength )
 {
-	GYCHAR** targetStr = m_strHashTable.Find(str);
+	GYCHAR** targetStr = m_strHashTable.Find(str, strLength);
 	if (GYNULL == targetStr)
 	{
 		//该字符串没有注册过
@@ -303,7 +303,7 @@ GYVOID GYStringManager::DeleteStringReference( GYCHAR* str, GYINT32 strLength )
 		--pStringBuffer->m_referenceCount;
 		if (pStringBuffer->m_referenceCount <= 0)
 		{
-			m_strHashTable.Remove(str);
+			m_strHashTable.Remove(str, strLength);
 			m_16poolUsed.Delete(*pStringBuffer);
 			m_16poolFree.Add(*pStringBuffer);
 		}
@@ -315,7 +315,7 @@ GYVOID GYStringManager::DeleteStringReference( GYCHAR* str, GYINT32 strLength )
 		--pStringBuffer->m_referenceCount;
 		if (pStringBuffer->m_referenceCount <= 0)
 		{
-			m_strHashTable.Remove(str);
+			m_strHashTable.Remove(str, strLength);
 			m_32poolUsed.Delete(*pStringBuffer);
 			m_32poolFree.Add(*pStringBuffer);
 		}
@@ -326,7 +326,7 @@ GYVOID GYStringManager::DeleteStringReference( GYCHAR* str, GYINT32 strLength )
 		--pStringBuffer->m_referenceCount;
 		if (pStringBuffer->m_referenceCount <= 0)
 		{
-			m_strHashTable.Remove(str);
+			m_strHashTable.Remove(str, strLength);
 			m_64poolUsed.Delete(*pStringBuffer);
 			m_64poolFree.Add(*pStringBuffer);
 		}
@@ -337,7 +337,7 @@ GYVOID GYStringManager::DeleteStringReference( GYCHAR* str, GYINT32 strLength )
 		--pStringBuffer->m_referenceCount;
 		if (pStringBuffer->m_referenceCount <= 0)
 		{
-			m_strHashTable.Remove(str);
+			m_strHashTable.Remove(str, strLength);
 			m_128poolUsed.Delete(*pStringBuffer);
 			m_128poolFree.Add(*pStringBuffer);
 		}
@@ -348,7 +348,7 @@ GYVOID GYStringManager::DeleteStringReference( GYCHAR* str, GYINT32 strLength )
 		--pStringBuffer->m_referenceCount;
 		if (pStringBuffer->m_referenceCount <= 0)
 		{
-			m_strHashTable.Remove(str);
+			m_strHashTable.Remove(str, strLength);
 			m_512poolUsed.Delete(*pStringBuffer);
 			m_512poolFree.Add(*pStringBuffer);
 		}
@@ -359,7 +359,7 @@ GYVOID GYStringManager::DeleteStringReference( GYCHAR* str, GYINT32 strLength )
 		--pStringBuffer->m_referenceCount;
 		if (pStringBuffer->m_referenceCount <= 0)
 		{
-			m_strHashTable.Remove(str);
+			m_strHashTable.Remove(str, strLength);
 			m_1024poolUsed.Delete(*pStringBuffer);
 			m_1024poolFree.Add(*pStringBuffer);
 		}

@@ -61,12 +61,14 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalOptions=" /PROFILE"
 				AdditionalDependencies="Thread.lib NetWork.lib GameCommon.lib Protocol.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="../../Bin/NetWork;../../Bin/Protocol;../../Bin/Thread;../../Bin/GameCommon"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
+				Profile="true"
 			/>
 			<Tool
 				Name="VCALinkTool"

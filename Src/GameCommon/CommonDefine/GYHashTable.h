@@ -8,6 +8,7 @@
 #ifndef __GYHASHTABLE_H__
 #define __GYHASHTABLE_H__
 #include "GYCommonDefine.h"
+#include "GYString.h"
 #include <malloc.h>
 
 
@@ -17,7 +18,7 @@ class GYHashTable
 	struct  __Hash
 	{
 		T value;
-		GYUINT32 HashValue3;
+		GYUINT64 HashValue3;
 		GYBOOL bUsed;
 		__Hash()
 		{
@@ -34,35 +35,20 @@ class GYHashTable
 	GYINT32	m_nTableSize;
 	GYINT32 m_nBucketSize;
 
-	GYUINT32 _HashFunction1(const char* key)
+	GYUINT64 _HashFunction1(const GYCHAR* key, GYINT32 len)
 	{
-		GYUINT32 hash = 0 ;
-
-		while(*key)
+		GYUINT64 hash = 0;
+		for (GYINT32 i = 0; i <= len; ++i) 
 		{
-			hash = (*key++) + (hash << 6) + (hash << 16 ) - hash;
-		} 
-
-		return (hash & 0x7FFFFFFF);
+			hash = ( hash * 31 + key[i]);
+		}
+		return hash;
 	}
 
-	GYUINT32 _HashFunction2(const char* key)
-	{
-		GYUINT32 hash = 5381;
-
-		while(*key)
-		{
-			hash += (hash << 5) + (*key++);
-		} 
-
-		return  (hash & 0x7FFFFFFF);
-	}
-
-	GYUINT32 _HashFunction3(const char* key)
+	GYUINT64 _HashFunction2(const char* key)
 	{
 		GYUINT32  hash  =   0 ;
 		GYUINT32  x     =   0 ;
-
 		while  (*key)
 		{
 			hash = (hash << 4) + (*key++);
@@ -72,8 +58,17 @@ class GYHashTable
 				hash &= ~ x;
 			} 
 		} 
-
 		return (hash & 0x7FFFFFFF);
+	}
+
+	GYUINT64 _HashFunction3(const char* key)
+	{
+		GYUINT32 hash = 5381;
+		while(*key)
+		{
+			hash += (hash << 5) + (*key++);
+		} 
+		return  (hash & 0x7FFFFFFF);
 	}
 
 public:
@@ -134,36 +129,56 @@ public:
 
 	GYINT32 Insert(GYINT32 key, const T& value)
 	{
-		char key__[5] = {0};
+		GYCHAR key__[5] = {0};
 		*((GYINT32*)key__) = key;
-		GYINT32 err = Insert(key__, value);
+		GYINT32 err = Insert(key__, sizeof(key), value);
 		return err;
 	}
 
 	GYINT32 Insert(const GYGUID& guid, const T& value)
 	{
-		char key__[GYGUIDLEN+1] = {0};
+		GYCHAR key__[GYGUIDLEN+1] = {0};
 		*(reinterpret_cast<GYGUID*>(key__)) = guid;
-		GYINT32 err = Insert(key__, value);
+		GYINT32 err = Insert(key__, sizeof(guid), value);
 		return err;
 	}
 
-	GYINT32 Insert(const char* key, const T& value)
+	GYINT32 Insert(const GYString& key, const T& value)
+	{
+		GYINT32 err = Insert(key.c_str(), key.length(), value);
+		return err;
+	}
+
+	GYINT32 Insert(const char* key, GYINT32 keyLen, const T& value)
 	{
 		GYINT32 err = INVALID_VALUE;
-		GYUINT32 hash_value1 = _HashFunction1(key);
-		GYUINT32 pos1 = hash_value1 % m_nTableSize;
+		GYUINT64 hash_value1 = _HashFunction1(key, keyLen);
+		GYUINT64 pos1 = hash_value1 % m_nTableSize;
 		if(m_pHashTable[pos1])
 		{
-			GYUINT32 hash_value2 = _HashFunction2(key);
-			GYUINT32 pos2 = hash_value2 % m_nBucketSize;
+			GYUINT64 hash_value2 = _HashFunction2(key);
+			GYUINT64 pos2 = hash_value2 % m_nBucketSize;
+			const GYUINT64 hash3Value = _HashFunction3(key);
 			if (GYFALSE == m_pHashTable[pos1][pos2].bUsed)
 			{
 				m_pHashTable[pos1][pos2].bUsed = GYTRUE;
-				m_pHashTable[pos1][pos2].HashValue3 = _HashFunction3(key);
+				m_pHashTable[pos1][pos2].HashValue3 = hash3Value;
 				m_pHashTable[pos1][pos2].value = value;
 				err = 0;
-
+			}
+			else
+			{
+				for (GYINT32 i = 0; i < m_nBucketSize; ++i)
+				{
+					if (GYFALSE == m_pHashTable[pos1][i].bUsed)
+					{
+						m_pHashTable[pos1][i].bUsed = GYTRUE;
+						m_pHashTable[pos1][i].HashValue3 = hash3Value;
+						m_pHashTable[pos1][i].value = value;
+						err = 0;
+						break;
+					}
+				}
 			}
 		}
 		return err;
@@ -173,7 +188,7 @@ public:
 	{
 		char key__[5] = {0};
 		*((GYINT32*)key__) = key;
-		GYINT32 err = Remove(key__);
+		GYINT32 err = Remove(key__, sizeof(key));
 		return err;
 	}
 
@@ -181,24 +196,43 @@ public:
 	{
 		char key__[GYGUIDLEN+1] = {0};
 		*(reinterpret_cast<GYGUID*>(key__)) = guid;
-		GYINT32 err = Remove(key__);
+		GYINT32 err = Remove(key__, sizeof(guid));
 		return err;
 	}
 	
-	GYINT32 Remove(const char* key)
+	GYINT32 Remove(const GYString& key)
+	{
+		GYINT32 err = Remove(key.c_str(), key.length());
+		return err;
+	}
+
+	GYINT32 Remove(const char* key, GYINT32 keyLen)
 	{
 		GYINT32 err = INVALID_VALUE;
-		GYUINT32 hash_value1 = _HashFunction1(key);
-		GYUINT32 pos1 = hash_value1 % m_nTableSize;
+		GYUINT64 hash_value1 = _HashFunction1(key, keyLen);
+		GYUINT64 pos1 = hash_value1 % m_nTableSize;
 		if(m_pHashTable[pos1])
 		{
-			GYUINT32 hash_value2 = _HashFunction2(key);
-			GYUINT32 pos2 = hash_value2 % m_nBucketSize;
-			if(m_pHashTable[pos1][pos2].HashValue3 == _HashFunction3(key)&&
+			GYUINT64 hash_value2 = _HashFunction2(key);
+			GYUINT64 pos2 = hash_value2 % m_nBucketSize;
+			const GYUINT64 hash3Value = _HashFunction3(key);
+			if(m_pHashTable[pos1][pos2].HashValue3 == hash3Value&&
 				GYTRUE == m_pHashTable[pos1][pos2].bUsed)
 			{
 				m_pHashTable[pos1][pos2].bUsed = GYFALSE;
 				err = 0;
+			}
+			else
+			{
+				for (GYINT32 i = 0; i < m_nBucketSize; ++i)
+				{
+					if (GYTRUE == m_pHashTable[pos1][i].bUsed && hash3Value == m_pHashTable[pos1][i].HashValue3)
+					{
+						m_pHashTable[pos1][pos2].bUsed = GYFALSE;
+						err = 0;
+						break;
+					}
+				}
 			}
 		}
 		return err;
@@ -208,7 +242,7 @@ public:
 	{
 		char key__[5] = {0};
 		*((GYINT32*)key__) = key;
-		T* ret = Find(key__);
+		T* ret = Find(key__, sizeof(key));
 		return ret;
 	}
 
@@ -216,28 +250,44 @@ public:
 	{
 		char key__[GYGUIDLEN+1] = {0};
 		*(reinterpret_cast<GYGUID*>(key__)) = guid;
-		T* ret = Find(key__);
+		T* ret = Find(key__, sizeof(guid));
 		return ret;
 	}
 
-	T* Find(const GYCHAR* key)
+	T* Find(const GYString& key)
+	{
+		T* result = Find(key.c_str(), key.length());
+		return result;
+	}
+
+	T* Find(const GYCHAR* key, GYINT32 dataLen)
 	{
 		T* ret = GYNULL;
-		GYUINT32 hash_value1 = _HashFunction1(key);
-		GYUINT32 pos1 = hash_value1 % m_nTableSize;
+		GYUINT64 hash_value1 = _HashFunction1(key, dataLen);
+		GYUINT64 pos1 = hash_value1 % m_nTableSize;
 		if(m_pHashTable[pos1])
 		{
-			GYUINT32 hash_value2 = _HashFunction2(key);
-			GYUINT32 pos2 = hash_value2 % m_nBucketSize;
-			if(m_pHashTable[pos1][pos2].HashValue3 == _HashFunction3(key)
+			GYUINT64 hash_value2 = _HashFunction2(key);
+			GYUINT64 pos2 = hash_value2 % m_nBucketSize;
+			const GYUINT64 hash3Value = _HashFunction3(key);
+			if(hash3Value == m_pHashTable[pos1][pos2].HashValue3
 				&& m_pHashTable[pos1][pos2].bUsed)
 			{
 				ret = &m_pHashTable[pos1][pos2].value;
 			}
+			else
+			{
+				for (GYINT32 i = 0; i < m_nBucketSize; ++i)
+				{
+					if (GYTRUE == m_pHashTable[pos1][i].bUsed && hash3Value == m_pHashTable[pos1][i].HashValue3)
+					{
+						ret = &m_pHashTable[pos1][pos2].value;
+						break;
+					}
+				}
+			}
 		}
 		return ret;
 	}
-
-
 };
 #endif

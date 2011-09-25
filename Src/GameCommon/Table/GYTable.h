@@ -35,6 +35,11 @@ public:
 		return T::GetTableFileName();
 	}
 
+	GYINT32 GetTableRowCount()
+	{
+		return m_tableRowCount;
+	}
+
 	GYINT32 Load(const GYCHAR* fileName)
 	{
 		GYINT32 result = INVALID_VALUE;
@@ -102,6 +107,7 @@ public:
 		}
 		if (GYNULL == pResult)
 		{
+			endIndex = endIndex == m_tableRowCount ? m_tableRowCount : endIndex + 1;
 			for (GYINT32 i = beginIndex; i < endIndex; ++i)
 			{
 				if ((*(GYINT32*)(&m_tableRow[i])) == tableID)

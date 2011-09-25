@@ -61,6 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalOptions=" /PROFILE"
 				AdditionalDependencies="Table.lib NetWork.lib GameCommon.lib Protocol.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="../../Bin/NetWork;../../Bin/Protocol;../../Bin/Table;../../Bin/GameCommon"
