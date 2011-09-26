@@ -47,6 +47,38 @@ GYBOOL GYString::operator==( const GYString& str ) const
 	{
 		result = GYTRUE;
 	}
+	else if (m_stringLength == str.m_stringLength)
+	{
+		GYINT32 intCheckCount = m_stringLength / sizeof(GYINT32);
+		GYINT32 charCheckCount = m_stringLength % sizeof(GYINT32);
+		result = GYTRUE;
+		if (intCheckCount > 0)
+		{
+			for (GYINT32 i = 0; i < intCheckCount; ++i)
+			{
+				GYINT32 leftValue = (reinterpret_cast<GYINT32*>(const_cast<GYCHAR*>(m_stringBuffer)))[i];
+				GYINT32 rightValue = (reinterpret_cast<GYINT32*>(const_cast<GYCHAR*>(str.m_stringBuffer)))[i];
+				if (leftValue != rightValue)
+				{
+					result = GYFALSE;
+					break;
+				}
+			}
+			
+		}
+		if (GYTRUE == result)
+		{
+			for (GYINT32 i = m_stringLength - charCheckCount; i < m_stringLength; ++i)
+			{
+				if (m_stringBuffer[i] != str.m_stringBuffer[i])
+				{
+					result = GYFALSE;
+					break;
+				}
+				
+			}
+		}
+	}
 	
 	return result;
 }
@@ -62,9 +94,17 @@ GYString& GYString::operator=( const GYString& str )
 	if (m_stringBuffer != str.m_stringBuffer)
 	{
 		CleanUp();
-
-		m_stringLength = str.m_stringLength;
-		m_stringBuffer = m_strManager.AllocateString(str.m_stringBuffer, str.m_stringLength);
+		if (GYTRUE == m_strManager.IsSameManager(str.m_strManager))
+		{
+			m_strManager.AddStringReferenceCount(str.m_stringBuffer);
+			m_stringBuffer = str.m_stringBuffer;
+			m_stringLength = str.m_stringLength;
+		}
+		else
+		{
+			m_stringLength = str.m_stringLength;
+			m_stringBuffer = m_strManager.AllocateString(str.m_stringBuffer, str.m_stringLength);
+		}
 		if (GYNULL == m_stringBuffer)
 		{
 			m_stringLength = 0;
@@ -91,9 +131,9 @@ GYVOID GYString::CleanUp()
 	if (GYNULL != m_stringBuffer)
 	{
 		m_strManager.DeleteStringReference(m_stringBuffer, m_stringLength);
-		m_stringLength = 0;
-		m_stringBuffer = GYNULL;
 	}
+	m_stringLength = 0;
+	m_stringBuffer = GYNULL;
 }
 
 

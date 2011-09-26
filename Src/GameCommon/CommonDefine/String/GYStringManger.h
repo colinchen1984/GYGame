@@ -10,7 +10,6 @@
 
 #include "GYCommonDefine.h"
 #include "GYList.h"
-#include "GYHashTable.h"
 
 const GYINT32 BufferCount16 = 1024 ;
 const GYINT32 BufferCount32 = 1024;
@@ -18,12 +17,13 @@ const GYINT32 BufferCount64 = 512;
 const GYINT32 BufferCount128 = 256;
 const GYINT32 BufferCount512 = 128;
 const GYINT32 BufferCount1024 = 128;
-const GYINT32 StringHashTableSize = 128;
-const GYINT32 StringHashTableBucketSize = 128;
 //字符串管理器，本身不是线程安全的，如果需要可以自己加锁
 //或者每个线程一个独立的管理器
 class GYStringManager
 {
+	static const GYINT32 STRINGBUFFER_INT_DATA_COUNT = 1;
+	static const GYINT32 STRINGBUFFER_POINT_DATA_COUNT = 2;
+
 	template<int bufferSize>
 	struct GYStringBuffer
 	{
@@ -58,8 +58,6 @@ class GYStringManager
 	GYList<GYStringBuffer<1024> >	m_1024poolFree;
 	GYList<GYStringBuffer<1024> >	m_1024poolUsed;
 	GYStringBuffer<1024>			m_1024pooldata[BufferCount1024];
-	GYHashTable<GYCHAR*>			m_strHashTable;
-
 public:
 	GYStringManager();
 	~GYStringManager(){};
@@ -68,8 +66,11 @@ public:
 
 	GYCHAR*		AllocateString(const GYCHAR* str, GYINT32 strLength);
 
-	GYVOID		DeleteStringReference(GYCHAR* str, GYINT32 strLength);
+	GYVOID		AddStringReferenceCount(const GYCHAR* str);
 
+	GYVOID		DeleteStringReference(GYCHAR* str, GYINT32 strLength);
+	
+	GYINLINE	GYBOOL		IsSameManager(const GYStringManager& manager) const {return this == &manager ? GYTRUE : GYFALSE;}
 private:
 	GYStringBuffer<16>*		_Allocate16();
 	GYStringBuffer<32>*		_Allocate32();

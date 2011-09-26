@@ -170,12 +170,25 @@ public:
 			{
 				for (GYINT32 i = 0; i < m_nBucketSize; ++i)
 				{
-					if (GYFALSE == m_pHashTable[pos1][i].bUsed)
+					GYINT32 position = INVALID_VALUE;
+					if (pos2 - i >= 0 && GYFALSE == m_pHashTable[pos1][pos2 - i].bUsed)
 					{
-						m_pHashTable[pos1][i].bUsed = GYTRUE;
-						m_pHashTable[pos1][i].HashValue3 = hash3Value;
-						m_pHashTable[pos1][i].value = value;
+						position = pos2 - i;
+					}
+					else if (pos2 + i < m_nBucketSize && GYFALSE == m_pHashTable[pos1][pos2 + i].bUsed)
+					{
+						position = pos2 + i;
+					}
+					if (INVALID_VALUE != position)
+					{
+						m_pHashTable[pos1][position].bUsed = GYTRUE;
+						m_pHashTable[pos1][position].HashValue3 = hash3Value;
+						m_pHashTable[pos1][position].value = value;
 						err = 0;
+						break;
+					}
+					if (pos2 - i < 0 && pos2 + i >= m_nBucketSize)
+					{
 						break;
 					}
 				}
@@ -226,10 +239,23 @@ public:
 			{
 				for (GYINT32 i = 0; i < m_nBucketSize; ++i)
 				{
-					if (GYTRUE == m_pHashTable[pos1][i].bUsed && hash3Value == m_pHashTable[pos1][i].HashValue3)
+					GYINT32 position = INVALID_VALUE;
+					if (pos2 - i >= 0 && GYTRUE == m_pHashTable[pos1][pos2 - i].bUsed && hash3Value == m_pHashTable[pos1][pos2 - i].HashValue3)
 					{
-						m_pHashTable[pos1][pos2].bUsed = GYFALSE;
+						position = pos2 - i;
+					}
+					else if (pos2 + i < m_nBucketSize && GYTRUE == m_pHashTable[pos1][pos2 + i].bUsed && hash3Value == m_pHashTable[pos1][pos2 + i].HashValue3)
+					{
+						position = pos2 + i;
+					}
+					if (INVALID_VALUE != position)
+					{
+						m_pHashTable[pos1][position].bUsed = GYFALSE;
 						err = 0;
+						break;
+					}
+					if (pos2 - i < 0 && pos2 + i >= m_nBucketSize)
+					{
 						break;
 					}
 				}
@@ -279,9 +305,22 @@ public:
 			{
 				for (GYINT32 i = 0; i < m_nBucketSize; ++i)
 				{
-					if (GYTRUE == m_pHashTable[pos1][i].bUsed && hash3Value == m_pHashTable[pos1][i].HashValue3)
+					GYINT32 position = INVALID_VALUE;
+					if (pos2 - i >= 0 && GYTRUE == m_pHashTable[pos1][pos2 - i].bUsed && hash3Value == m_pHashTable[pos1][pos2 - i].HashValue3)
 					{
-						ret = &m_pHashTable[pos1][pos2].value;
+						position = pos2 - i;
+					}
+					else if (pos2 + i < m_nBucketSize && GYTRUE == m_pHashTable[pos1][pos2 + i].bUsed && hash3Value == m_pHashTable[pos1][pos2 + i].HashValue3)
+					{
+						position = pos2 + i;
+					}
+					if (INVALID_VALUE != position)
+					{
+						ret = &m_pHashTable[pos1][position].value;
+						break;
+					}
+					if (pos2 - i < 0 && pos2 + i >= m_nBucketSize)
+					{
 						break;
 					}
 				}
