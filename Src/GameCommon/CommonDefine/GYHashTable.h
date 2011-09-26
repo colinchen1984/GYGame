@@ -106,7 +106,6 @@ public:
 	
 	GYINT32	Init(GYINT32 nTableSize, GYINT32 nBucketSize)
 	{
-		printf("%d\n", sizeof(__Hash));
 		GYINT32 err = 0;
 		m_nTableSize = nTableSize;
 		m_nBucketSize = nBucketSize;
@@ -180,9 +179,8 @@ public:
 			GYUINT64 hash_value2 = _HashFunction2(key);
 			GYINT32 pos2 = hash_value2 % m_nBucketSize;
 			const GYUINT64 hash3Value = _HashFunction3(key);
-			if (GYFALSE == m_pHashTable[pos1][pos2].bUsed)
+			if (INVALID_VALUE == m_pHashTable[pos1][pos2].HashValue3)
 			{
-				m_pHashTable[pos1][pos2].bUsed = GYTRUE;
 				m_pHashTable[pos1][pos2].HashValue3 = hash3Value;
 				m_pHashTable[pos1][pos2].value = value;
 				err = 0;
