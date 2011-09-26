@@ -270,7 +270,7 @@ GYVOID GYStringManager::DeleteStringReference( GYCHAR* str, GYINT32 strLength )
 	GYCHAR* targetStr = str - (sizeof(GYINT32) * STRINGBUFFER_INT_DATA_COUNT + sizeof(GYVOID*) * STRINGBUFFER_POINT_DATA_COUNT);
 	if (strLength < 16)
 	{
-		GYStringBuffer<16>* pStringBuffer = reinterpret_cast<GYStringBuffer<16>*>(*targetStr);
+		GYStringBuffer<16>* pStringBuffer = reinterpret_cast<GYStringBuffer<16>*>(targetStr);
 		--pStringBuffer->m_referenceCount;
 		if (pStringBuffer->m_referenceCount <= 0)
 		{
@@ -281,7 +281,7 @@ GYVOID GYStringManager::DeleteStringReference( GYCHAR* str, GYINT32 strLength )
 	}
 	else if (strLength >= 16 && strLength < 32)
 	{
-		GYStringBuffer<32>* pStringBuffer = reinterpret_cast<GYStringBuffer<32>*>(*targetStr);
+		GYStringBuffer<32>* pStringBuffer = reinterpret_cast<GYStringBuffer<32>*>(targetStr);
 		--pStringBuffer->m_referenceCount;
 		if (pStringBuffer->m_referenceCount <= 0)
 		{
@@ -291,7 +291,7 @@ GYVOID GYStringManager::DeleteStringReference( GYCHAR* str, GYINT32 strLength )
 	}
 	else if (strLength >= 32 && strLength < 64)
 	{
-		GYStringBuffer<64>* pStringBuffer = reinterpret_cast<GYStringBuffer<64>*>(*targetStr);
+		GYStringBuffer<64>* pStringBuffer = reinterpret_cast<GYStringBuffer<64>*>(targetStr);
 		--pStringBuffer->m_referenceCount;
 		if (pStringBuffer->m_referenceCount <= 0)
 		{
@@ -301,7 +301,7 @@ GYVOID GYStringManager::DeleteStringReference( GYCHAR* str, GYINT32 strLength )
 	}
 	else if (strLength >= 64 && strLength < 128)
 	{
-		GYStringBuffer<128>* pStringBuffer = reinterpret_cast<GYStringBuffer<128>*>(*targetStr);
+		GYStringBuffer<128>* pStringBuffer = reinterpret_cast<GYStringBuffer<128>*>(targetStr);
 		--pStringBuffer->m_referenceCount;
 		if (pStringBuffer->m_referenceCount <= 0)
 		{
@@ -311,7 +311,7 @@ GYVOID GYStringManager::DeleteStringReference( GYCHAR* str, GYINT32 strLength )
 	}
 	else if (strLength >= 128 && strLength < 512)
 	{
-		GYStringBuffer<512>* pStringBuffer = reinterpret_cast<GYStringBuffer<512>*>(*targetStr);
+		GYStringBuffer<512>* pStringBuffer = reinterpret_cast<GYStringBuffer<512>*>(targetStr);
 		--pStringBuffer->m_referenceCount;
 		if (pStringBuffer->m_referenceCount <= 0)
 		{
@@ -321,7 +321,7 @@ GYVOID GYStringManager::DeleteStringReference( GYCHAR* str, GYINT32 strLength )
 	}
 	else if (strLength >= 512 && strLength < 1024)
 	{
-		GYStringBuffer<1024>* pStringBuffer = reinterpret_cast<GYStringBuffer<1024>*>(*targetStr);
+		GYStringBuffer<1024>* pStringBuffer = reinterpret_cast<GYStringBuffer<1024>*>(targetStr);
 		--pStringBuffer->m_referenceCount;
 		if (pStringBuffer->m_referenceCount <= 0)
 		{

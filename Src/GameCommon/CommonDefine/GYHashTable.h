@@ -11,7 +11,29 @@
 #include "GYString.h"
 #include <malloc.h>
 
+//下面提供插入操作测试数据
+//所有数据均成功插入
+//key类型为GYGUID
+//value类型为GYINT32
+//数据来源为n个不重复的key
+//n = 1024 × 32
+//m_nTableSize = 32 * 2
+//m_nBucketSize = 1024
+//冲突次数为8952
+//探测步数最多为28，发生1次
+//耗时16ms
 
+//n = 1024 × 32
+//m_nTableSize = 32 * 4
+//m_nBucketSize = 1024
+//冲突次数为4526
+//探测步数最多为9，发生1次
+//耗时< 1ms
+//
+//建议配置为
+//m_nBucketSize = 1024
+//m_nTableSize = 2 × n / 1024
+///////////////////////////
 template<typename T>
 class GYHashTable
 {
@@ -153,11 +175,11 @@ public:
 	{
 		GYINT32 err = INVALID_VALUE;
 		GYUINT64 hash_value1 = _HashFunction1(key, keyLen);
-		GYUINT64 pos1 = hash_value1 % m_nTableSize;
+		GYINT32 pos1 = hash_value1 % m_nTableSize;
 		if(m_pHashTable[pos1])
 		{
 			GYUINT64 hash_value2 = _HashFunction2(key);
-			GYUINT64 pos2 = hash_value2 % m_nBucketSize;
+			GYINT32 pos2 = hash_value2 % m_nBucketSize;
 			const GYUINT64 hash3Value = _HashFunction3(key);
 			if (GYFALSE == m_pHashTable[pos1][pos2].bUsed)
 			{
@@ -168,6 +190,7 @@ public:
 			}
 			else
 			{
+				//static GYINT32 count = 0;
 				for (GYINT32 i = 0; i < m_nBucketSize; ++i)
 				{
 					GYINT32 position = INVALID_VALUE;
@@ -184,6 +207,7 @@ public:
 						m_pHashTable[pos1][position].bUsed = GYTRUE;
 						m_pHashTable[pos1][position].HashValue3 = hash3Value;
 						m_pHashTable[pos1][position].value = value;
+						//printf("%d\t%d\t%d\t%d\t%d\n", ++count, i, pos1, pos2, position);
 						err = 0;
 						break;
 					}
@@ -223,11 +247,11 @@ public:
 	{
 		GYINT32 err = INVALID_VALUE;
 		GYUINT64 hash_value1 = _HashFunction1(key, keyLen);
-		GYUINT64 pos1 = hash_value1 % m_nTableSize;
+		GYINT32 pos1 = hash_value1 % m_nTableSize;
 		if(m_pHashTable[pos1])
 		{
 			GYUINT64 hash_value2 = _HashFunction2(key);
-			GYUINT64 pos2 = hash_value2 % m_nBucketSize;
+			GYINT32 pos2 = hash_value2 % m_nBucketSize;
 			const GYUINT64 hash3Value = _HashFunction3(key);
 			if(m_pHashTable[pos1][pos2].HashValue3 == hash3Value&&
 				GYTRUE == m_pHashTable[pos1][pos2].bUsed)
@@ -290,11 +314,11 @@ public:
 	{
 		T* ret = GYNULL;
 		GYUINT64 hash_value1 = _HashFunction1(key, dataLen);
-		GYUINT64 pos1 = hash_value1 % m_nTableSize;
+		GYINT32 pos1 = hash_value1 % m_nTableSize;
 		if(m_pHashTable[pos1])
 		{
 			GYUINT64 hash_value2 = _HashFunction2(key);
-			GYUINT64 pos2 = hash_value2 % m_nBucketSize;
+			GYINT32 pos2 = hash_value2 % m_nBucketSize;
 			const GYUINT64 hash3Value = _HashFunction3(key);
 			if(hash3Value == m_pHashTable[pos1][pos2].HashValue3
 				&& m_pHashTable[pos1][pos2].bUsed)
