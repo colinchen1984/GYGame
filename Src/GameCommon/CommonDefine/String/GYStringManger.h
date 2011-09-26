@@ -36,7 +36,7 @@ class GYStringManager
 			m_referenceCount = 0;
 			m_prev = GYNULL;
 			m_next = GYNULL;
-			memset(m_buffer, 0, sizeof(m_buffer));
+			GYZeroMem(m_buffer, sizeof(m_buffer));
 		}
 	};
 
