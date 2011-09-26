@@ -39,16 +39,14 @@ class GYHashTable
 {
 	struct  __Hash
 	{
-		T value;
 		GYUINT64 HashValue3;
-		GYBOOL bUsed;
+		T value;
 		__Hash()
 		{
 			CleanUp();
 		}
 		GYVOID CleanUp()
 		{
-			bUsed			= GYFALSE;
 			HashValue3		= INVALID_VALUE;
 		}
 	};
@@ -108,6 +106,7 @@ public:
 	
 	GYINT32	Init(GYINT32 nTableSize, GYINT32 nBucketSize)
 	{
+		printf("%d\n", sizeof(__Hash));
 		GYINT32 err = 0;
 		m_nTableSize = nTableSize;
 		m_nBucketSize = nBucketSize;
@@ -194,17 +193,16 @@ public:
 				for (GYINT32 i = 0; i < m_nBucketSize; ++i)
 				{
 					GYINT32 position = INVALID_VALUE;
-					if (pos2 - i >= 0 && GYFALSE == m_pHashTable[pos1][pos2 - i].bUsed)
+					if (pos2 - i >= 0 && INVALID_VALUE == m_pHashTable[pos1][pos2 - i].HashValue3)
 					{
 						position = pos2 - i;
 					}
-					else if (pos2 + i < m_nBucketSize && GYFALSE == m_pHashTable[pos1][pos2 + i].bUsed)
+					else if (pos2 + i < m_nBucketSize && INVALID_VALUE == m_pHashTable[pos1][pos2 + i].HashValue3)
 					{
 						position = pos2 + i;
 					}
 					if (INVALID_VALUE != position)
 					{
-						m_pHashTable[pos1][position].bUsed = GYTRUE;
 						m_pHashTable[pos1][position].HashValue3 = hash3Value;
 						m_pHashTable[pos1][position].value = value;
 						//printf("%d\t%d\t%d\t%d\t%d\n", ++count, i, pos1, pos2, position);
@@ -264,17 +262,17 @@ public:
 				for (GYINT32 i = 0; i < m_nBucketSize; ++i)
 				{
 					GYINT32 position = INVALID_VALUE;
-					if (pos2 - i >= 0 && GYTRUE == m_pHashTable[pos1][pos2 - i].bUsed && hash3Value == m_pHashTable[pos1][pos2 - i].HashValue3)
+					if (pos2 - i >= 0 && hash3Value == m_pHashTable[pos1][pos2 - i].HashValue3)
 					{
 						position = pos2 - i;
 					}
-					else if (pos2 + i < m_nBucketSize && GYTRUE == m_pHashTable[pos1][pos2 + i].bUsed && hash3Value == m_pHashTable[pos1][pos2 + i].HashValue3)
+					else if (pos2 + i < m_nBucketSize && hash3Value == m_pHashTable[pos1][pos2 + i].HashValue3)
 					{
 						position = pos2 + i;
 					}
 					if (INVALID_VALUE != position)
 					{
-						m_pHashTable[pos1][position].bUsed = GYFALSE;
+						m_pHashTable[pos1][position].HashValue3 = INVALID_VALUE;
 						err = 0;
 						break;
 					}
@@ -330,11 +328,11 @@ public:
 				for (GYINT32 i = 0; i < m_nBucketSize; ++i)
 				{
 					GYINT32 position = INVALID_VALUE;
-					if (pos2 - i >= 0 && GYTRUE == m_pHashTable[pos1][pos2 - i].bUsed && hash3Value == m_pHashTable[pos1][pos2 - i].HashValue3)
+					if (pos2 - i >= 0 && hash3Value == m_pHashTable[pos1][pos2 - i].HashValue3)
 					{
 						position = pos2 - i;
 					}
-					else if (pos2 + i < m_nBucketSize && GYTRUE == m_pHashTable[pos1][pos2 + i].bUsed && hash3Value == m_pHashTable[pos1][pos2 + i].HashValue3)
+					else if (pos2 + i < m_nBucketSize && hash3Value == m_pHashTable[pos1][pos2 + i].HashValue3)
 					{
 						position = pos2 + i;
 					}
