@@ -1,7 +1,7 @@
 场景ID	场景宽度	场景长度	区域大小	怪物配置文件	
 INT	INT	INT	INT	INT	STR
 #1	256	256	8	2000	monster_file.tab
-1	256	32	565	2000	
+1	256	32	565	2000	monster_file
 2	256	33	566	2000	monster_file.tab
 4	256	34	567	2000	monster_file.tab
 16	256	35	568	2000	monster_file.tab
