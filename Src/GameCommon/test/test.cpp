@@ -24,7 +24,7 @@
 #include "GYStreamSerialization.h"
 #include "GYTestPacket.h"
 #include "GYTableSerialization.h"
-
+#include "GYTimeController.h"
 using std::list;
 using std::set;
 
@@ -104,9 +104,9 @@ struct TestStructTable
 
 #ifdef WIN32
 #include <hash_set>
+using namespace stdext;
 #endif 
 #include "GYHashTable.h"
-using namespace stdext;
 GYINT32 main()
 {
 #ifdef WIN32
@@ -118,13 +118,13 @@ GYINT32 main()
 	const char* name = "test.tab";
 	GYString testString1(name, strlen(name), *strManager);
 	GYTable<TestStructTable> tableFile;
-	GYUINT32 begin = GetTickCount();
+	GYUINT64 begin = GetTickCount();
 	tableFile.Load(testString1.c_str());
-	GYUINT32 end = GetTickCount() - begin;
+	GYUINT64 end = GetTickCount() - begin;
 	GYHashTable<GYINT32> testHash;
 	testHash.Init(32 * 4, 1024);
 	GYINT32 allCOunt = 0;
-	begin = GetTickCount();
+	begin = GYTimeController::GetCpuTime();
 	for (GYINT32 i = 3; i < tableFile.GetTableRowCount(); ++i)
 	{
 		const TestStructTable& row = *tableFile.GetRowByIndex(i);
@@ -139,8 +139,8 @@ GYINT32 main()
 		}
 		
 	}
-	end = GetTickCount() - begin;
-	printf("\n\n\n\n%u", end);
+	end = GYTimeController::GetCpuTime();
+	printf("\n\n\n\n%llu", end);
 	return 0;
 	tableFile[2];
 	tableFile[16];
