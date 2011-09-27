@@ -120,7 +120,7 @@ GYINT32 main()
 	GYTable<TestStructTable> tableFile;
 	GYUINT64 begin = GYTimeController::GetCpuTime();
 	tableFile.Load(testString1.c_str());
-	GYUINT64 end = GetTickCount() - begin;
+	GYUINT64 end = GYTimeController::GetCpuTime - begin;
 	GYHashTable<GYINT32> testHash;
 	testHash.Init(32 * 4, 1024);
 	GYINT32 allCOunt = 0;
