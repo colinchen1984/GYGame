@@ -118,7 +118,7 @@ GYINT32 main()
 	const char* name = "test.tab";
 	GYString testString1(name, strlen(name), *strManager);
 	GYTable<TestStructTable> tableFile;
-	GYUINT64 begin = GetTickCount();
+	GYUINT64 begin = GYTimeController::GetCpuTime();
 	tableFile.Load(testString1.c_str());
 	GYUINT64 end = GetTickCount() - begin;
 	GYHashTable<GYINT32> testHash;
