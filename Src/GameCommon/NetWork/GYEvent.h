@@ -27,9 +27,9 @@ class GYWin32SelectReactor;
 
 struct GYNetEvent : public GYObject
 {
-	friend  GYEpollReactor;
-	friend	GYWin32SelectReactor;
-	friend  GYReactor;
+	friend  class GYEpollReactor;
+	friend	class GYWin32SelectReactor;
+	friend  class GYReactor;
 
 	GYVOID*						m_data;			//指向的数据块
 	GYBOOL						m_accept;		//是否绑定了监听端口
