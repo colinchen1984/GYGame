@@ -102,13 +102,17 @@ struct TestStructTable
 	}
 };
 
+#ifdef WIN32
 #include <hash_set>
+#endif 
 #include "GYHashTable.h"
 using namespace stdext;
 GYINT32 main()
 {
+#ifdef WIN32
 	hash_set<GYINT32> testSet;
 	testSet.insert(3);
+#endif 
 	strManager->Init();
 	GYTableSerialization testOs;
 	const char* name = "test.tab";
