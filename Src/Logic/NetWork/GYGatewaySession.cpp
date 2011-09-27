@@ -20,7 +20,7 @@ GYGatewaySession::~GYGatewaySession()
 
 }
 
-GYVOID HandleGatewayData(GYNetEvent& event)
+GYVOID HandleGatewaySessionReavData(GYNetEvent& event)
 {
 	GYGatewaySession* pSession = static_cast<GYGatewaySession*>(event.m_data);
 	pSession->_OnReceive();
@@ -53,9 +53,9 @@ GYINT32 GYGatewaySession::Init(GYNetWorkManager& networkManager, GYReactor& reac
 		m_gatewaySessionEvnet.CleanUp();
 		m_gatewaySessionEvnet.m_accept = GYFALSE;
 		m_gatewaySessionEvnet.m_data = this;
-		m_gatewaySessionEvnet.m_eventHandler = HandleGatewayData;
+		m_gatewaySessionEvnet.SetEventHandler(GY_NET_EVENT_TYPE_READ, HandleGatewaySessionReavData);
+		
 		m_gatewaySessionEvnet.m_fd = &m_connection;
-		m_gatewaySessionEvnet.m_eventType = GY_NET_EVENT_TYPE_READ;
 		if (0 != reactor.AddEvent(m_gatewaySessionEvnet))
 		{
 			m_connection.Close();

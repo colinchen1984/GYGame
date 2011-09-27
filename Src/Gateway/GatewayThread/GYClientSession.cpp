@@ -101,9 +101,8 @@ GYINT32 GYClientSession::Regeist2Reactor(GYReactor& reactor,  GYVOID* Onwer, EM_
 	m_clientNetEvnet.CleanUp();
 	m_clientNetEvnet.m_accept = GYFALSE;
 	m_clientNetEvnet.m_data = this;
-	m_clientNetEvnet.m_eventHandler = HandleClientData;
+	m_clientNetEvnet.SetEventHandler(GY_NET_EVENT_TYPE_READ, HandleClientData);
 	m_clientNetEvnet.m_fd = &m_connection;
-	m_clientNetEvnet.m_eventType = GY_NET_EVENT_TYPE_READ;
 	if (0 != reactor.AddEvent(m_clientNetEvnet))
 	{
 		m_connection.Close();

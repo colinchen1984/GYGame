@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="../../Src/Protocol;../../Src/GameCommon/CommonDefine/String;../../Src/GameCommon/NetWork;../../Src/GameCommon/CommonDefine;../../Src/GameCommon/Table;../../Src/GameCommon/Thread"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;CHECK_DATA_TYPE"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"

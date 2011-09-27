@@ -14,6 +14,7 @@ class GYNetEvent;
 class GYReactor;
 struct epoll_event;
 class GYTimeStamp;
+
 class GYEpollReactor
 {
     friend class GYReactor;
@@ -36,6 +37,8 @@ private:
 
 private:
     GYVOID _CleanUp();
+
+	static GYINT32 EventMask2EpollEvent(const GYNetEvent& event);
 };
 
 #endif // LINUX64

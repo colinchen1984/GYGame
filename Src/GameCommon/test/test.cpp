@@ -75,9 +75,8 @@ GYVOID acceptHandler(GYNetEvent& event)
 
 		*p = stream;
 		e->m_accept = GYFALSE;
-		e->m_eventHandler = testHandler;
+		e->SetEventHandler(GY_NET_EVENT_TYPE_READ, testHandler);
 		e->m_fd = p;
-		e->m_eventType = GY_NET_EVENT_TYPE_READ;
 		int err =setsockopt(p->GetFD(), SOL_SOCKET,SO_RCVBUF,testbuffer,1024 );
 		int error = GetLastNetWorkError();
 		reactor.AddEvent(*e);
@@ -86,7 +85,7 @@ GYVOID acceptHandler(GYNetEvent& event)
 GYStringManager* strManager = new GYStringManager();
 struct TestStructTable
 {
-	GYINT32	testArrayID;
+	GYINT32 testID;
 	GYUINT64 testArray[4];
 	TestStructTable()
 	{
@@ -95,7 +94,7 @@ struct TestStructTable
 
 	GYVOID Serializ(GYSerializationInteface& seralizer)
 	{
-		seralizer << testArrayID;
+		seralizer << testID;
 		for (GYINT32 i = 0; i < 4; ++i)
 		{
 			seralizer << testArray[i];
@@ -103,35 +102,28 @@ struct TestStructTable
 	}
 };
 
-#include <hash_map>
+#include <hash_set>
+#include "GYHashTable.h"
 using namespace stdext;
 GYINT32 main()
 {
-	hash_map<GYUINT64, GYINT32> testHashMap;
-	testHashMap[1231L] = 3;
-	FILE* file = fopen("2.txt", "rb");
-	char b[1024];
-	fgets(b, 1024, file);
-	set<int> itTest;
-	for (int i = 0; i < 100; ++i)
-	{
-		itTest.insert(i);
-	}
-	set<int>::iterator itTestit = itTest.begin();
-	advance(itTestit, 10);
-	int btes = *itTestit;
+	hash_set<GYINT32> testSet;
+	testSet.insert(3);
 	strManager->Init();
 	GYTableSerialization testOs;
-	const char* name = "ret.tab";
+	const char* name = "test.tab";
 	GYString testString1(name, strlen(name), *strManager);
 	GYTable<TestStructTable> tableFile;
+	GYUINT32 begin = GetTickCount();
 	tableFile.Load(testString1.c_str());
+	GYUINT32 end = GetTickCount() - begin;
 	GYHashTable<GYINT32> testHash;
-	testHash.Init(256, 1024);
+	testHash.Init(32 * 4, 1024);
 	GYINT32 allCOunt = 0;
-	for (GYINT32 i = 1; i <= tableFile.GetTableRowCount(); ++i)
+	begin = GetTickCount();
+	for (GYINT32 i = 3; i < tableFile.GetTableRowCount(); ++i)
 	{
-		const TestStructTable& row = *tableFile[i];
+		const TestStructTable& row = *tableFile.GetRowByIndex(i);
 		for (GYINT32 t = 0; t < 4; ++t)
 		{
 			GYINT32 result = testHash.Insert(row.testArray[t], t);
@@ -143,7 +135,9 @@ GYINT32 main()
 		}
 		
 	}
-	
+	end = GetTickCount() - begin;
+	printf("\n\n\n\n%u", end);
+	return 0;
 	tableFile[2];
 	tableFile[16];
 	tableFile[-1];
@@ -196,10 +190,8 @@ GYINT32 main()
 	listensocket.SetBlock(GYFALSE);
 	GYNetEvent event;
 	event.m_accept = GYTRUE;
-	event.m_eventHandler = acceptHandler;
+	event.SetEventHandler(GY_NET_EVENT_TYPE_READ, acceptHandler);
 	event.m_fd = &listensocket;
-	event.m_eventType = GY_NET_EVENT_TYPE_READ;
-
 	reactor.Init(32);
 	reactor.AddEvent(event);
 	while (GYTRUE)

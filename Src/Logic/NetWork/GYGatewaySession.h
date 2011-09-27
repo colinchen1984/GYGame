@@ -24,7 +24,7 @@ struct GYPacketHead;
 
 class GYGatewaySession : public GYObject
 {
-	friend GYVOID HandleGatewayData(GYNetEvent& event);
+	friend GYVOID HandleGatewaySessionReavData(GYNetEvent& event);
 	GYBufferStreamSocket<GATEWAY_SESSION_RECV_BUFFER_LEN, GATEWAY_SESSION_SEND_BUFFER_LEN>	m_connection;
 	GYNetAddress	m_gatewayAddress;
 	GYNetEvent		m_gatewaySessionEvnet;

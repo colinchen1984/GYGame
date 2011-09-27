@@ -64,20 +64,9 @@ public:
 
     GYINT32 SetBlock(GYBOOL block);
 
-    GYBOOL IsRegisted()
-    {
-        return m_isRegisterToReactor;
-    }
-
-    GYVOID SetRegisted(GYBOOL r)
-    {
-        m_isRegisterToReactor = r;
-    }
-
     GYVOID CleanUp()
     {
         m_fd = INVALID_SOCKET;
-        m_isRegisterToReactor = GYFALSE;
     }
 };
 

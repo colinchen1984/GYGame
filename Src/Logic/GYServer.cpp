@@ -9,6 +9,7 @@
 #include "GYTimeStamp.h"
 
 static GYServer* ServerSingleton = GYNULL;
+const GYCHAR* AddrStr = "127.0.0.1";
 
 GYServer::GYServer()
 {
@@ -43,7 +44,7 @@ GYINT32 GYServer::Init()
 			break;
 		}
 		GYNetAddress listenAddress;
-		listenAddress.SetAddr("192.168.1.100");
+		listenAddress.SetAddr(AddrStr);
 		listenAddress.SetPort(5556);
 		if (0 != m_networkManager.Init(listenAddress))
 		{

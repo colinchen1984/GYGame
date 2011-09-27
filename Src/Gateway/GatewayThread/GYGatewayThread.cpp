@@ -151,10 +151,9 @@ GYVOID GYGatewayThread::_ConnectLogicServer()
 	}
 	m_event4Logic.m_accept = GYFALSE;
 	m_event4Logic.m_fd = &m_connection2Logic;
-	m_event4Logic.m_eventType = GY_NET_EVENT_TYPE_READ;
 	m_event4Logic.m_busy = GYFALSE;
 	m_event4Logic.m_data = this;
-	m_event4Logic.m_eventHandler = LogicServerConnectionEventHandler;
+	m_event4Logic.SetEventHandler(GY_NET_EVENT_TYPE_READ, LogicServerConnectionEventHandler);
 	if (0 != m_reactor.AddEvent(m_event4Logic))
 	{
 		m_connection2Logic.Close();

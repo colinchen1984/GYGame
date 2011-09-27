@@ -15,6 +15,7 @@
 const GYINT32 GatewayThreadCount = 5;
 const GYINT32 GatewayClientSessionCount = GatewayThreadCount * (CLIENT_FOR_PER_THREAD - 1) ;
 const GYINT32 GateListenReactorMaxCount = CLIENT_FOR_PER_THREAD;
+const GYCHAR* AddrStr = "127.0.0.1";
 GYServer::GYServer()
 {
 	m_gateThread = GYNULL;
@@ -43,7 +44,7 @@ GYINT32 GYServer::Init()
 	do 
 	{
 		GYNetAddress listenAddress;
-		listenAddress.SetAddr("192.168.1.100");
+		listenAddress.SetAddr(AddrStr);
 		listenAddress.SetPort(5555);
 		m_usingClientSession.CleanUp();
 		m_freeClientSession.CleanUp();
@@ -65,9 +66,8 @@ GYINT32 GYServer::Init()
 		m_listenEvent.m_data = static_cast<GYVOID*>(this);
 		m_listenEvent.m_accept = GYTRUE;
 		m_listenEvent.m_busy = GYFALSE;
-		m_listenEvent.m_eventType = GY_NET_EVENT_TYPE_READ;
 		m_listenEvent.m_fd = &m_acceptorSocket;
-		m_listenEvent.m_eventHandler = AcceptEventHandler;
+		m_listenEvent.SetEventHandler(GY_NET_EVENT_TYPE_READ, AcceptEventHandler);
 		if (0 != m_reactor.AddEvent(m_listenEvent))
 		{
 			break;
@@ -82,7 +82,7 @@ GYINT32 GYServer::Init()
 			break;
 		}
 		GYNetAddress logicServerAddress;
-		logicServerAddress.SetAddr("192.168.1.100");
+		logicServerAddress.SetAddr(AddrStr);
 		logicServerAddress.SetPort(5556);
 		GYBOOL threadInit = GYTRUE;
 		GYThreadTask task;

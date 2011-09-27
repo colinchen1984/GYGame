@@ -56,9 +56,8 @@ GYINT32 GYNetWorkManager::Init( const GYNetAddress& listenAddress )
 
 		m_listenEvent.m_accept = GYTRUE;
 		m_listenEvent.m_data = this;
-		m_listenEvent.m_eventHandler = AcceptEventHandler;
+		m_listenEvent.SetEventHandler(GY_NET_EVENT_TYPE_READ, AcceptEventHandler);
 		m_listenEvent.m_fd = &m_acceptorSocket;
-		m_listenEvent.m_eventType = GY_NET_EVENT_TYPE_READ;
 		if (0 != m_reactor.AddEvent(m_listenEvent))
 		{
 			m_acceptorSocket.Close();

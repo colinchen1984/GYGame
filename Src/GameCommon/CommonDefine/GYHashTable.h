@@ -249,10 +249,9 @@ public:
 			GYUINT64 hash_value2 = _HashFunction2(key);
 			GYINT32 pos2 = hash_value2 % m_nBucketSize;
 			const GYUINT64 hash3Value = _HashFunction3(key);
-			if(m_pHashTable[pos1][pos2].HashValue3 == hash3Value&&
-				GYTRUE == m_pHashTable[pos1][pos2].bUsed)
+			if(hash3Value == m_pHashTable[pos1][pos2].HashValue3)
 			{
-				m_pHashTable[pos1][pos2].bUsed = GYFALSE;
+				m_pHashTable[pos1][pos2].HashValue3 = INVALID_VALUE;
 				err = 0;
 			}
 			else
@@ -316,8 +315,7 @@ public:
 			GYUINT64 hash_value2 = _HashFunction2(key);
 			GYINT32 pos2 = hash_value2 % m_nBucketSize;
 			const GYUINT64 hash3Value = _HashFunction3(key);
-			if(hash3Value == m_pHashTable[pos1][pos2].HashValue3
-				&& m_pHashTable[pos1][pos2].bUsed)
+			if(hash3Value == m_pHashTable[pos1][pos2].HashValue3)
 			{
 				ret = &m_pHashTable[pos1][pos2].value;
 			}

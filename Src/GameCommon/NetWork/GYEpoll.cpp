@@ -68,27 +68,24 @@ GYINT32 GYEpollReactor::_Release()
     return 0;
 }
 
-static GYINT32 EventMask2EpollEvent(GY_NET_EVNET_TYPE eventType)
+GYINT32 GYEpollReactor::EventMask2EpollEvent(const GYNetEvent& event)
 {
     GYINT32 result = 0;
-    switch(eventType)
-    {
-    case GY_NET_EVENT_TYPE_READ:
-    {
-        result |= EPOLLIN;
-    }
-    break;
-    case GY_NET_EVENT_TYPE_WRITE:
-    {
-        result |= EPOLLOUT;
-    }
-    break;
-    case GY_NET_EVENT_TYPE_EXCEPTION:
-    {
-        result |= EPOLLHUP | EPOLLERR | EPOLLPRI;
-    }
-    break;
-    }
+	if (GYNULL != event.m_eventHandler[GY_NET_EVENT_TYPE_READ])
+	{
+		result |= EPOLLIN;
+	}
+	
+	if (GYNULL != event.m_eventHandler[GY_NET_EVENT_TYPE_WRITE])
+	{
+		result |= EPOLLOUT;
+	}
+
+	if (GYNULL != event.m_eventHandler[GY_NET_EVENT_TYPE_EXCEPTION])
+	{
+		result |= EPOLLHUP | EPOLLERR | EPOLLPRI;
+	}
+
     return result;
 }
 
@@ -97,19 +94,10 @@ GYINT32 GYEpollReactor::_AddEvent(GYNetEvent& event)
     GYINT32 result = INVALID_VALUE;
     do
     {
-        if(GYTRUE == event.m_fd->IsRegisted())
-        {
-            break;
-        }
-        GYINT32 currentEventCount = m_reactor->GetCurrentEventCount();
-        if (currentEventCount >= m_reactor->GetMaxEventCount())
-        {
-            break;
-        }
         epoll_event operation;
         GYZeroMem(&operation, sizeof(operation));
         operation.events |= EPOLLET;
-        operation.events |= EventMask2EpollEvent(event.m_eventType);
+        operation.events |= EventMask2EpollEvent(event);
         operation.data.ptr = static_cast<GYVOID*>(&event);
 
         if(INVALID_VALUE == epoll_ctl(m_nFdForEpoll, EPOLL_CTL_ADD, event.m_fd->GetFD(), &operation))
@@ -127,17 +115,11 @@ GYINT32 GYEpollReactor::_DeleteEvent( GYNetEvent& event )
     GYINT32 result = INVALID_VALUE;
     do
     {
-        if(GYTRUE != event.m_fd->IsRegisted())
-        {
-            break;
-        }
-
         epoll_event operation;
         GYZeroMem(&operation, sizeof(operation));
         operation.events |= EPOLLET;
-        operation.events |= EventMask2EpollEvent(event.m_eventType);
+        operation.events |= EventMask2EpollEvent(event);
         operation.data.ptr = static_cast<GYVOID*>(&event);
-
         if(INVALID_VALUE == epoll_ctl(m_nFdForEpoll, EPOLL_CTL_DEL, event.m_fd->GetFD(), &operation))
         {
             break;
@@ -164,10 +146,6 @@ GYINT32 GYEpollReactor::_RunOnce(const GYTimeStamp& timeStamp)
         eventCount = epoll_wait(m_nFdForEpoll, m_pEvForWait, eventCount, timeStamp.m_termTime);
         if (INVALID_VALUE == eventCount)
         {
-            if (GYEINTR == GetLastNetWorkError())
-            {
-                result = 0;
-            }
             break;
         }
 
@@ -181,19 +159,24 @@ GYINT32 GYEpollReactor::_RunOnce(const GYTimeStamp& timeStamp)
         {
             epoll_event& eventData = m_pEvForWait[i];
             GYNetEvent& event = *static_cast<GYNetEvent*>(eventData.data.ptr);
-            if(eventData.events & EPOLLIN && GY_NET_EVENT_TYPE_READ == event.m_eventType)
+			event.m_eventType = 0;
+            if(eventData.events & EPOLLIN)
             {
-                m_reactor->PostEvent(event);
+                event.m_eventType |= GY_NET_EVENT_TYPE_READ;
             }
-            if (eventData.events & EPOLLOUT && GY_NET_EVENT_TYPE_WRITE == event.m_eventType)
+            if (eventData.events & EPOLLOUT)
             {
-                m_reactor->PostEvent(event);
+				event.m_eventType |= GY_NET_EVENT_TYPE_WRITE;
             }
-            if ((eventData.events & EPOLLHUP || eventData.events & EPOLLERR || eventData.events & EPOLLPRI) && GY_NET_EVENT_TYPE_EXCEPTION == event.m_eventType)
+            if ((eventData.events & ( EPOLLHUP | EPOLLERR))
             {
-                m_reactor->PostEvent(event);
+				event.m_eventType |= GY_NET_EVENT_TYPE_READ | GY_NET_EVENT_TYPE_EXCEPTION;
             }
-        }
+			if(0 != event.m_eventType)
+			{
+				m_reactor->PostEvent(event);
+			}
+		}
 
         result = 0;
     }
