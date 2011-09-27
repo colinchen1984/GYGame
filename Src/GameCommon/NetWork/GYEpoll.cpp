@@ -168,9 +168,9 @@ GYINT32 GYEpollReactor::_RunOnce(const GYTimeStamp& timeStamp)
             {
 				event.m_eventType |= GY_NET_EVENT_TYPE_WRITE;
             }
-            if ((eventData.events & ( EPOLLHUP | EPOLLERR))
+            if (eventData.events & ( EPOLLHUP | EPOLLERR))
             {
-				event.m_eventType |= GY_NET_EVENT_TYPE_READ | GY_NET_EVENT_TYPE_EXCEPTION;
+				event.m_eventType |= (GY_NET_EVENT_TYPE_READ | GY_NET_EVENT_TYPE_EXCEPTION);
             }
 			if(0 != event.m_eventType)
 			{
