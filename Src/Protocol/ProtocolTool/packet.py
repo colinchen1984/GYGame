@@ -29,15 +29,12 @@ def CreateData(valueConfig):
 			strings = data[2]
 			if(("{" not in strings) or ("}" not in strings)):
 				raise MyException("", ("Error Enmu type %s" % valueConfig["TypeName"]))
-			strings = strings.replace(" ", "")
-			strings = strings.replace("{", "")
-			strings = strings.replace("}", "")
-			strings = strings.replace("\t", "")
-			strings = strings.split(",")
-			dataCount = len(strings)
-			if(0 == dataCount):
+			strings = strings.replace(" ", "").replace("{", "").replace("}", "")replace("\t", "").split(",")
+			if(0 == len(strings)):
 				raise MyException("", ("Error Enmu type %s" % valueConfig["TypeName"]))
-			configItem =  DataEnum(dataTypeName, valueConfig["ValueName"], valueConfig["ExtraParam"], isLast, valueConfig["NoCheck"], strings)	
+			configItem =  DataEnum(dataTypeName, valueConfig["ValueName"], valueConfig["ExtraParam"], strings)	
+	elif("String" == valueConfig["DataType"]):
+		
 	elif("Struct" == valueConfig["DataType"]):
 		strings = valueConfig["TypeName"]
 		strings = strings.replace(" ", "")
@@ -84,7 +81,7 @@ def CreateDataElement(config, valueConfigs):
 	
 	for x in valueConfigs:
 		try:
-			config.logConfigItems.append(CreateData(x))
+			config.dataItems.append(CreateData(x))
 		except MyException, e:
 			raise e
 		
@@ -113,8 +110,10 @@ def ProcessConfig(lexer):
 		elif("Begin" == result["Type"]):
 			str = result["Value"]
 			config = PacketDefine()
-			config.structName = str.replace("[", "").replace("]", "")
-			config.structComment = comment
+			head = str.replace("[", "").replace("]", "").split(DataTypeSplitChar)
+			config.packetName = head[0]
+			config.packetID = head[1]
+			config.packetComment = comment
 		elif("Type" == result["Type"]):
 			valueConfig = result
 			valueConfig.pop("Type")
@@ -131,8 +130,7 @@ def ProcessConfig(lexer):
 		elif("ExtraParam" == result["Type"]):
 			valueConfig = valueConfigs.pop()
 			valueConfig["ExtraParam"] = result["Value"]
-			valueConfig["ExtraParam"] = valueConfig["ExtraParam"].replace("]", "");		
-			valueConfig["ExtraParam"] = valueConfig["ExtraParam"].replace("\n", "");		
+			valueConfig["ExtraParam"] = valueConfig["ExtraParam"].replace("]", "").replace("\n", "");		
 			valueConfigs.append(valueConfig)
 		else:
 			raise MyException("", ("Error token type %s" % ["Type"]))

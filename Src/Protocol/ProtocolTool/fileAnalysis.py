@@ -166,7 +166,7 @@ def t_SEARCHFORTYPTE_STRINGARRAY(t):
 	t.lexer.begin('SEARCHNAME')
 	# print "string\t%s|" % t.value		
 	# t.value = ["ValueType", "string", true]
-	t.value = {"Type":"Type", "DataType":"string", "Array":True, "TypeName":t.value}
+	t.value = {"Type":"Type", "DataType":"String", "Array":True, "TypeName":t.value}
 	return t
 	
 def t_SEARCHFORTYPTE_STRING(t):
@@ -174,7 +174,7 @@ def t_SEARCHFORTYPTE_STRING(t):
 	t.lexer.begin('SEARCHNAME')
 	# print "string\t%s|" % t.value		
 	# t.value = ["ValueType", "string", false]
-	t.value = {"Type":"Type", "DataType":"string", "Array":False, "TypeName":"string"}
+	t.value = {"Type":"Type", "DataType":"String", "Array":False, "TypeName":"String"}
 	return t
 	
 def t_SEARCHFORTYPTE_EM(t):

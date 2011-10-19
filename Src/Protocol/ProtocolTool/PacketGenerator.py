@@ -4,8 +4,9 @@ DataTypeSplitChar = ":"
 
 class PacketDefine():
 	def __init__(self):
-		self.structName = ""
-		self.structComment = ""
+		self.packetName = ""
+		self.packetID = ""
+		self.packetComment = ""
 		self.dataItems = []
 		return str
 		
@@ -49,6 +50,8 @@ class DataEnum(DataElement):
 	m_baseEnum = {}
 	def __init__(self, dataType, dataName, comment, enumDefine = None):
 		DataElement.__init__(self, dataType, dataName, comment)
+		if(None != enumDefine):
+			m_baseEnum[dataType] = enumDefine
 		
 class DataString(DataElement):
 	m_baseEnum = {}

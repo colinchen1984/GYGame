@@ -1,5 +1,5 @@
 #测试协议
-[GYTestPacket]
+[GYTestPacket:EM_PACKET_ID_SC_TEST_ID]
 GYGUID	m_userID		用户GUID
 GYString	m_name		用户名
 GYUINT64	m_gatewayReceiveTime	网关服务器收到包的时间
