@@ -46,6 +46,8 @@ public:
 				GYAssert(0 == m_buffer.Write(&value, size));
 			}
 			break;
+		case EM_SERIALIZAION_MODE_INVALID:
+		case EM_SERIALIZAION_MODE_COUNT:
 		default:
 			{
 				GYAssert(GYFALSE);

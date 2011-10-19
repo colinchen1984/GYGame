@@ -1,0 +1,32 @@
+﻿/////////////////////////////////////////////
+// create time:$TIME$
+// author:	colin chen
+// file name:	$FILENAME$
+// file type:	h
+////////////////////////////////////////////
+#ifndef __$FILEUPPERNAME$_H__
+#define __$FILEUPPERNAME$_H__
+#include "GYCommonDefine.h"
+#include "GYProtocolDefine.h"
+$INCLUDEFILE$
+
+class GYSerializationInteface;
+
+class $FILENAME$ : public GYPacketInteface
+{
+	$DATADECLARE$
+public:
+	$CONSTRACTOR$
+	~GYSCTest(){};
+
+	virtual GYPACKETID GetPacketID(){return $PACKETID$;}
+	virtual GYCHAR GetPacketFlags(){return 0;}
+
+	$DATASETGET$
+
+	virtual GYVOID Serializ(GYSerializationInteface& serializer);
+
+	virtual GYVOID CleanUp();
+
+};
+#endif

@@ -1,0 +1,20 @@
+﻿/////////////////////////////////////////////
+// create time: $TIME$
+// author:	colin chen
+// file name:	$FILENAME$
+// file type:	cpp
+////////////////////////////////////////////
+#include "$FILENAME$.h"
+#include "GYProtocolDefine.h"
+#include "GYSerialization.h"
+
+GYVOID $FILENAME$::Serializ( GYSerializationInteface& serializer )
+{
+	serializer << m_userID << m_name;
+}
+
+GYVOID GYTestPacket::CleanUp()
+{
+	m_userID = INVALID_VALUE;
+	m_name.CleanUp();
+}
