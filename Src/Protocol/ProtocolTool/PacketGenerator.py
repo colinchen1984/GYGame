@@ -8,7 +8,7 @@ class PacketDefine():
 		self.packetID = ""
 		self.packetComment = ""
 		self.dataItems = []
-		return str
+		
 		
 class MyException():
 	def __init__(self, reason, data):
@@ -34,7 +34,7 @@ class DataBase(DataElement):
 					"float":["GYFLOAT", "INVALID_VALUE"],
 					"uint":["GYUINT32", "INVALID_VALUE"],
 					"char":["GYCHAR", "INVALID_VALUE"],
-					"GUID":["GYGUID", "INVALID_VALUE"],
+					"guid":["GYGUID", "INVALID_VALUE"],
 					"int64":["GYINT64", "INVALID_VALUE"],
 					"uint64":["GYUINT64", "INVALID_VALUE"],
 					"bool":["GYBOOL", "INVALID_VALUE"],
@@ -47,11 +47,10 @@ class DataBase(DataElement):
 
 		
 class DataEnum(DataElement):
-	m_baseEnum = {}
+	
 	def __init__(self, dataType, dataName, comment, enumDefine = None):
 		DataElement.__init__(self, dataType, dataName, comment)
-		if(None != enumDefine):
-			m_baseEnum[dataType] = enumDefine
+		self.m_enumDefine = enumDefine
 		
 class DataString(DataElement):
 	m_baseEnum = {}

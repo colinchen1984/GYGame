@@ -12,8 +12,8 @@ def LoadTempFile(fileName):
 	
 def CreateData(valueConfig):
 	# print valueConfig
-	configItem = None
-	# print valueConfig
+	dataItem = None
+	print valueConfig
 	if("Enum" == valueConfig["DataType"]):
 		# 枚举类型的数组暂时不提供数组的支持
 		# 处理已经定义过的枚举类型
@@ -21,7 +21,7 @@ def CreateData(valueConfig):
 		dataCount = len(data)
 		# print data
 		if(2 == dataCount):
-			configItem = DataEnum(data[1], valueConfig["ValueName"], valueConfig["ExtraParam"])
+			dataItem = DataEnum(data[1], valueConfig["ValueName"], valueConfig["ExtraParam"])
 			
 		# 尚未定义的枚举类型
 		elif(3 == dataCount):
@@ -29,19 +29,19 @@ def CreateData(valueConfig):
 			strings = data[2]
 			if(("{" not in strings) or ("}" not in strings)):
 				raise MyException("", ("Error Enmu type %s" % valueConfig["TypeName"]))
-			strings = strings.replace(" ", "").replace("{", "").replace("}", "")replace("\t", "").split(",")
+			strings = strings.replace(" ", "").replace("{", "").replace("}", "").replace("\t", "").split(",")
 			if(0 == len(strings)):
 				raise MyException("", ("Error Enmu type %s" % valueConfig["TypeName"]))
-			configItem =  DataEnum(dataTypeName, valueConfig["ValueName"], valueConfig["ExtraParam"], strings)	
+			dataItem =  DataEnum(dataTypeName, valueConfig["ValueName"], valueConfig["ExtraParam"], strings)	
 	elif("String" == valueConfig["DataType"]):
-		
+		dataItem = DataString(valueConfig["ValueName"], valueConfig["ExtraParam"])
 	elif("Struct" == valueConfig["DataType"]):
 		strings = valueConfig["TypeName"]
 		strings = strings.replace(" ", "")
 		strings = strings.split(DataTypeSplitChar)
-		# print strings
 		typeName = strings[0]
 		strings = strings[1:]
+		print strings
 		maxCount = strings[-1]
 		param = None
 		if(len(strings) > 1):
@@ -60,35 +60,36 @@ def CreateData(valueConfig):
 						str = "Enum"
 					param.append([str, a, b])
 		# print valueConfig
-		configItem = DataArray("Struct", typeName, valueConfig["ValueName"], valueConfig["ExtraParam"], isLast, maxCount, valueConfig["NoCheck"], param)
+		dataItem = DataArray("Struct", typeName, valueConfig["ValueName"], valueConfig["ExtraParam"], isLast, maxCount, valueConfig["NoCheck"], param)
 		
 	elif(True == IsBasicType(valueConfig["DataType"])):
 		if(True == valueConfig["Array"]):
 			data = valueConfig["TypeName"].replace("\t", "")
 			data = data.replace(" ", "")
 			data = data.split(DataTypeSplitChar)
-			configItem = DataArray("Basic", data[0], valueConfig["ValueName"], valueConfig["ExtraParam"], isLast, data[1], valueConfig["NoCheck"], None)
+			dataItem = DataArray("Basic", data[0], valueConfig["ValueName"], valueConfig["ExtraParam"], isLast, data[1], valueConfig["NoCheck"], None)
 		elif(False == valueConfig["Array"]):
-			configItem = DataBase(valueConfig["TypeName"], valueConfig["ValueName"], valueConfig["ExtraParam"], isLast, valueConfig["NoCheck"])
+			dataItem = DataBase(valueConfig["TypeName"], valueConfig["ValueName"], valueConfig["ExtraParam"])
 		else:
-			raise MyException("", ("Error Data Element %s, Array config is wrong" % valueConfig["ValueName"]))
+			raise MyException("", ("Error Data Element %s, Array packet is wrong" % valueConfig["ValueName"]))
 	
-	if(None == configItem):
+	if(None == dataItem):
 		raise MyException("", ("Error Data Element %s" % valueConfig["ValueName"]))
-	return configItem
 	
-def CreateDataElement(config, valueConfigs):
+	return dataItem
+	
+def CreateDataElement(packet, valueConfigs):
 	
 	for x in valueConfigs:
 		try:
-			config.dataItems.append(CreateData(x))
+			packet.dataItems.append(CreateData(x))
 		except MyException, e:
 			raise e
 		
-	return config
+	return packet
 	
 def ProcessConfig(lexer):
-	config = None
+	packet = None
 	comment = ""
 	valueConfigs = []
 	while(True):
@@ -109,11 +110,11 @@ def ProcessConfig(lexer):
 			break;
 		elif("Begin" == result["Type"]):
 			str = result["Value"]
-			config = PacketDefine()
+			packet = PacketDefine()
 			head = str.replace("[", "").replace("]", "").split(DataTypeSplitChar)
-			config.packetName = head[0]
-			config.packetID = head[1]
-			config.packetComment = comment
+			packet.packetName = head[0]
+			packet.packetID = head[1]
+			packet.packetComment = comment
 		elif("Type" == result["Type"]):
 			valueConfig = result
 			valueConfig.pop("Type")
@@ -134,14 +135,14 @@ def ProcessConfig(lexer):
 			valueConfigs.append(valueConfig)
 		else:
 			raise MyException("", ("Error token type %s" % ["Type"]))
-	if(None == config):
-		return config
-	if(None != config and 0 >= len(valueConfigs)):
+	if(None == packet):
+		return packet
+	if(None != packet and 0 >= len(valueConfigs)):
 		raise MyException("", ("Error struct define"))
 	else:
 		# print config, valueConfigs
-		config = CreateDataElement(config, valueConfigs)
-	return config
+		packet = CreateDataElement(packet, valueConfigs)
+	return packet
 
 def OutPut(logConfig):
 	head = HeadFileTemplate.replace("$struct$", logConfig.structName)
@@ -185,14 +186,15 @@ if __name__ == "__main__":
 	logDefine = open("11", "r")
 	lexer = lex.lex(module = fileAnalysis)
 	lexer.input(logDefine.read())
-	HeadFileTemplate = LoadTempFile("./head")
-	CppFileTemplate = LoadTempFile("./cpp")
+	# HeadFileTemplate = LoadTempFile("./head")
+	# CppFileTemplate = LoadTempFile("./cpp")
 	while(True):
 		try:
 			logConfig = ProcessConfig(lexer)
 			if(None != logConfig):
 				# print logConfig
-				OutPut(logConfig)
+				# OutPut(logConfig)
+				pass
 			else:
 				break
 		except MyException, e:
