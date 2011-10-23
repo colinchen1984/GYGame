@@ -170,7 +170,7 @@ GYINT32 main()
 	testString2 = testString1;
 	GYCycleBuffer<1024> cycle;
 	GYTestPacket* packet = new GYTestPacket(*strManager);
-	packet->SetUserName(testString1);
+	packet->SetName(testString1);
 	GYStreamSerialization<1024> testRead(cycle, EM_SERIALIZAION_MODE_WRITE);
 	int testInt = 4;
 	testRead << testInt;

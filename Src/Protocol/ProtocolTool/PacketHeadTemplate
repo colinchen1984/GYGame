@@ -9,20 +9,24 @@
 #include "GYCommonDefine.h"
 #include "GYProtocolDefine.h"
 $INCLUDEFILE$
+$PREDECLARE$
 
 class GYSerializationInteface;
-
+$PACKETCOMMENT$
 class $FILENAME$ : public GYPacketInteface
 {
 	$DATADECLARE$
 public:
-	$CONSTRACTOR$
-	~GYSCTest(){};
+	$FILENAME$($CONSTRACTORPARAM$)$CONSTRACTOR$
+	{
+		
+	}
+	~$FILENAME$(){};
 
 	virtual GYPACKETID GetPacketID(){return $PACKETID$;}
 	virtual GYCHAR GetPacketFlags(){return 0;}
 
-	$DATASETGET$
+$DATASETGETDECLARE$
 
 	virtual GYVOID Serializ(GYSerializationInteface& serializer);
 

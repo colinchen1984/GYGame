@@ -10,11 +10,14 @@
 
 GYVOID $FILENAME$::Serializ( GYSerializationInteface& serializer )
 {
-	serializer << m_userID << m_name;
+	$SERIALIZ$
 }
 
-GYVOID GYTestPacket::CleanUp()
+GYVOID $FILENAME$::CleanUp()
 {
-	m_userID = INVALID_VALUE;
-	m_name.CleanUp();
+	$CLEANUP$
 }
+
+$DATASETGETDEFINE$
+
+

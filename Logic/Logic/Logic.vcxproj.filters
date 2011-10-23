@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Table">
+      <UniqueIdentifier>{063d031a-a254-44ef-af37-7ba118efe046}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NetWorkManager">
+      <UniqueIdentifier>{e1b98adf-efde-4169-bdf4-38aaed272090}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PacketHandler">
+      <UniqueIdentifier>{60deb7a1-57c3-49b1-a619-4387dfdd5198}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Packet">
+      <UniqueIdentifier>{a32f1710-7df2-49b3-a1da-fdab9c5140b4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Src\Logic\Table\GYTableDefine.cpp">
+      <Filter>Table</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Src\Logic\Table\GYTableManager.cpp">
+      <Filter>Table</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Src\Logic\NetWork\GYGatewaySession.cpp">
+      <Filter>NetWorkManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Src\Logic\NetWork\GYNetWorkManager.cpp">
+      <Filter>NetWorkManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Src\Logic\PacketHandler\GYTestPacketHandler.cpp">
+      <Filter>PacketHandler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Src\Logic\Packet\GYPacketFactoryManager.cpp">
+      <Filter>Packet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Src\Logic\Packet\GYPacketFactoryRegister.cpp">
+      <Filter>Packet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Src\Logic\GYServer.cpp" />
+    <ClCompile Include="..\..\Src\Logic\main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Src\Logic\Table\GYTableDefine.h">
+      <Filter>Table</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Src\Logic\Table\GYTableManager.h">
+      <Filter>Table</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Src\Logic\NetWork\GYGatewaySession.h">
+      <Filter>NetWorkManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Src\Logic\NetWork\GYNetWorkManager.h">
+      <Filter>NetWorkManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Src\Logic\PacketHandler\GYPacketHandler.h">
+      <Filter>PacketHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Src\Logic\PacketHandler\GYPacketHandlerCommon.h">
+      <Filter>PacketHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Src\Logic\Packet\GYPacketFactoryManager.h">
+      <Filter>Packet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Src\Logic\GYServer.h" />
+  </ItemGroup>
+</Project>

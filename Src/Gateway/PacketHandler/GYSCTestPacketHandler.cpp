@@ -11,7 +11,7 @@
 GYBOOL GYSCTestPacketHandler(GYClientSession& session, GYPacketInteface& packet)
 {
 	GYSCTest& testPacket = static_cast<GYSCTest&>(packet);
-	testPacket.m_gateReceiveLogicPacketTime = GYTimeController::GetCpuTime();
+	testPacket.SetGateReceiveLogicPacketTime(GYTimeController::GetCpuTime());
 	session.SendPacketToClient(testPacket);
 	return GYTRUE;
 }

@@ -1,41 +1,42 @@
 ﻿/////////////////////////////////////////////
-// create time: 2011/7/31 20:11
+// create time:2011/10/23 19:28
 // author:	colin chen
 // file name:	GYTestPacket
 // file type:	h
 ////////////////////////////////////////////
-
 #ifndef __GYTESTPACKET_H__
 #define __GYTESTPACKET_H__
 #include "GYCommonDefine.h"
-#include "GYString.h"
 #include "GYProtocolDefine.h"
+#include "GYString.h"
 
-class GYStringManager;
+
+
 class GYSerializationInteface;
-
+//测试协议
 class GYTestPacket : public GYPacketInteface
 {
-	GYGUID		m_userID;
-	GYString	m_name;
-	GYUINT64	m_gatewayReceiveTime;
+		GYGUID			UserID;			//用户GUID
+	GYString			Name;			//用户姓名
+	GYUINT64			GatewayReceiveTime;			//Gateway收到数据包时间
+	
 public:
-	GYTestPacket(GYStringManager& stringManager):m_name(stringManager)
+	GYTestPacket(GYStringManager& stringManager):Name(stringManager)
 	{
-	};
+		
+	}
 	~GYTestPacket(){};
 
 	virtual GYPACKETID GetPacketID(){return EM_PACKET_ID_TEST_ID;}
 	virtual GYCHAR GetPacketFlags(){return 0;}
 
-	GYVOID SetUserName(const GYString& name);
-	const GYString& GetName() const;
+	GYINLINE	GYVOID			SetUserID(GYGUID value){ UserID = value; };
+	GYINLINE	GYGUID			GetUserID() const { return UserID; };
+	GYINLINE	GYVOID			SetName(const GYString& value){ Name = value; };
+	GYINLINE	const GYString&			GetName() const { return Name; };
+	GYINLINE	GYVOID			SetGatewayReceiveTime(GYUINT64 value){ GatewayReceiveTime = value; };
+	GYINLINE	GYUINT64			GetGatewayReceiveTime() const { return GatewayReceiveTime; };
 
-	GYVOID SetUserID(const GYGUID& userID);
-	const GYGUID& GetUserID();
-
-	GYVOID SetGatewayReceiveTime(const GYUINT64& time);
-	const GYUINT64& GetGatewayReceiveTime() const;
 
 	virtual GYVOID Serializ(GYSerializationInteface& serializer);
 

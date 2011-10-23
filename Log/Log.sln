@@ -1,9 +1,9 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LogServer", "LogServer\LogServer.vcproj", "{E4D0507B-A144-47E3-A75E-42B873752021}"
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LogServer", "LogServer\LogServer.vcxproj", "{E4D0507B-A144-47E3-A75E-42B873752021}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LogClient", "LogClient\LogClient.vcproj", "{89B64F0E-2947-4A8A-874A-DBFC9792461C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LogClient", "LogClient\LogClient.vcxproj", "{89B64F0E-2947-4A8A-874A-DBFC9792461C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

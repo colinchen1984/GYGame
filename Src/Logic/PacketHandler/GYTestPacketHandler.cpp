@@ -14,10 +14,10 @@ GYBOOL GYTestPacketHandler(GYGatewaySession& gatewaySession, const GYGUID& guid,
 {
 	const GYTestPacket& tPacket = static_cast<GYTestPacket&>(packet);
 	GYSCTest replyPacket(GETSTRINGMANAGERSINGLETON);
-	replyPacket.SetUserName(tPacket.GetName());
+	replyPacket.SetName(tPacket.GetName());
 	replyPacket.SetUserID(guid);
-	replyPacket.m_gatewayReceiveClientPacketTime = tPacket.GetGatewayReceiveTime();
-	replyPacket.m_logicReceiveGatewayPacketTime = GYTimeController::GetCpuTime();
+	replyPacket.SetGatewayReceiveTime(tPacket.GetGatewayReceiveTime());
+	replyPacket.SetLogicReceiveGatewayPacketTime(GYTimeController::GetCpuTime());
 	gatewaySession.SendPacket(guid, replyPacket);
 	return GYTRUE;
 }

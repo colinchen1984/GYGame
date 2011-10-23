@@ -1,4 +1,4 @@
-﻿#coding=utf-8
+#coding=utf-8
 from PacketGenerator import *
 import ply.lex as lex
 import fileAnalysis
@@ -10,10 +10,10 @@ def LoadTempFile(fileName):
 		template += x
 	return template
 	
-def CreateData(valueConfig):
+def CreateData(packet, valueConfig):
 	# print valueConfig
 	dataItem = None
-	print valueConfig
+	# print valueConfig
 	if("Enum" == valueConfig["DataType"]):
 		# 枚举类型的数组暂时不提供数组的支持
 		# 处理已经定义过的枚举类型
@@ -21,55 +21,50 @@ def CreateData(valueConfig):
 		dataCount = len(data)
 		# print data
 		if(2 == dataCount):
-			dataItem = DataEnum(data[1], valueConfig["ValueName"], valueConfig["ExtraParam"])
+			dataItem = DataEnum(packet, data[1], valueConfig["ValueName"], valueConfig["ExtraParam"])
 			
 		# 尚未定义的枚举类型
 		elif(3 == dataCount):
 			dataTypeName = data[1]
 			strings = data[2]
 			if(("{" not in strings) or ("}" not in strings)):
-				raise MyException("", ("Error Enmu type %s" % valueConfig["TypeName"]))
+				raise MyException("", ("Error Enmu type %s\t%s" % (valueConfig["TypeName"], valueConfig["ValueName"])))
 			strings = strings.replace(" ", "").replace("{", "").replace("}", "").replace("\t", "").split(",")
 			if(0 == len(strings)):
 				raise MyException("", ("Error Enmu type %s" % valueConfig["TypeName"]))
-			dataItem =  DataEnum(dataTypeName, valueConfig["ValueName"], valueConfig["ExtraParam"], strings)	
+			dataItem =  DataEnum(packet, dataTypeName, valueConfig["ValueName"], valueConfig["ExtraParam"], strings)	
 	elif("String" == valueConfig["DataType"]):
-		dataItem = DataString(valueConfig["ValueName"], valueConfig["ExtraParam"])
+		
+		if(True == valueConfig["Array"]):
+			data = valueConfig["TypeName"].replace("\t", "")
+			data = data.replace(" ", "")
+			data = data.split(DataTypeSplitChar)
+			dataItem = DataArray(packet, "String", data[0], valueConfig["ValueName"], valueConfig["ExtraParam"], data[1])
+		elif(False == valueConfig["Array"]):
+			dataItem = DataString(packet, valueConfig["ValueName"], valueConfig["ExtraParam"])
+		else:
+			raise MyException("", ("Error Data Element %s, Array packet is wrong" % valueConfig["ValueName"]))
+			
 	elif("Struct" == valueConfig["DataType"]):
-		strings = valueConfig["TypeName"]
-		strings = strings.replace(" ", "")
-		strings = strings.split(DataTypeSplitChar)
-		typeName = strings[0]
-		strings = strings[1:]
-		print strings
-		maxCount = strings[-1]
-		param = None
-		if(len(strings) > 1):
-			strings = strings[:-1]
-			count = len(strings)
-			# print typeName, count % 2
-			if(0 == count % 2):
-				param = []
-				for x in range(count / 2):
-					a = strings[2 * x]
-					b = strings[2 * x + 1]
-					str = ""
-					if(IsBasicType(a)):
-						str = "Basic"
-					else:
-						str = "Enum"
-					param.append([str, a, b])
+		if(True == valueConfig["Array"]):
+			data = valueConfig["TypeName"].replace("\t", "")
+			data = data.replace(" ", "")
+			data = data.split(DataTypeSplitChar)
+			dataItem = DataArray(packet, "Struct", data[0], valueConfig["ValueName"], valueConfig["ExtraParam"], data[1])
+		elif(False == valueConfig["Array"]):
+			dataItem = DataStruct(packet, valueConfig["TypeName"], valueConfig["ValueName"], valueConfig["ExtraParam"])
+		else:
+			raise MyException("", ("Error Data Element %s, Array packet is wrong" % valueConfig["ValueName"]))
 		# print valueConfig
-		dataItem = DataArray("Struct", typeName, valueConfig["ValueName"], valueConfig["ExtraParam"], isLast, maxCount, valueConfig["NoCheck"], param)
 		
 	elif(True == IsBasicType(valueConfig["DataType"])):
 		if(True == valueConfig["Array"]):
 			data = valueConfig["TypeName"].replace("\t", "")
 			data = data.replace(" ", "")
 			data = data.split(DataTypeSplitChar)
-			dataItem = DataArray("Basic", data[0], valueConfig["ValueName"], valueConfig["ExtraParam"], isLast, data[1], valueConfig["NoCheck"], None)
+			dataItem = DataArray(packet, "Basic", data[0], valueConfig["ValueName"], valueConfig["ExtraParam"], data[1])
 		elif(False == valueConfig["Array"]):
-			dataItem = DataBase(valueConfig["TypeName"], valueConfig["ValueName"], valueConfig["ExtraParam"])
+			dataItem = DataBase(packet, valueConfig["TypeName"], valueConfig["ValueName"], valueConfig["ExtraParam"])
 		else:
 			raise MyException("", ("Error Data Element %s, Array packet is wrong" % valueConfig["ValueName"]))
 	
@@ -82,10 +77,9 @@ def CreateDataElement(packet, valueConfigs):
 	
 	for x in valueConfigs:
 		try:
-			packet.dataItems.append(CreateData(x))
+			packet.dataItems.append(CreateData(packet, x))
 		except MyException, e:
 			raise e
-		
 	return packet
 	
 def ProcessConfig(lexer):
@@ -114,7 +108,7 @@ def ProcessConfig(lexer):
 			head = str.replace("[", "").replace("]", "").split(DataTypeSplitChar)
 			packet.packetName = head[0]
 			packet.packetID = head[1]
-			packet.packetComment = comment
+			packet.packetComment = comment.replace("#", "//")
 		elif("Type" == result["Type"]):
 			valueConfig = result
 			valueConfig.pop("Type")
@@ -144,56 +138,68 @@ def ProcessConfig(lexer):
 		packet = CreateDataElement(packet, valueConfigs)
 	return packet
 
-def OutPut(logConfig):
-	head = HeadFileTemplate.replace("$struct$", logConfig.structName)
-	head = head.replace("$comment$", logConfig.LogEnumComment)
-	head = head.replace("$data$", logConfig.MakeStrcutDateDefine())
-	head = head.replace("$clean$", logConfig.MakeStructDataCleanUp())
-	head = head.replace("$prevdefine$", logConfig.MakePrevDefine())
-	
-	f = open("./head.h", "a+")
-	fileConten = f.readlines()
-	contentLen = len(fileConten)
-	if(0 == contentLen):
-		fileConten.append("[enum]\n")
-		fileConten.append("[struct]\n")
-		fileConten.append("[function]\n")
-	contentLen = len(fileConten)
-	for x in range(contentLen):
-		if("[struct]" in fileConten[x]):
-			# 插入枚举声明
-			fileConten[x-1] += "\n" + logConfig.logEnumName + "\t\t\t\t\t = " + logConfig.LogEnumNumber + ",\t\t\t\t\t//" + logConfig.LogEnumComment + "\n"
-		elif("[function]" in fileConten[x])	:
-			# 插入数据结构定义
-			fileConten[x-1] += "\n" + head + "\n"
-	f.truncate(0)
-	f.writelines(fileConten)
-	f.close()
-	f = open("./cpp.cpp", "a+")
-	cpp = CppFileTemplate.replace("$struct$", logConfig.structName)
-	cpp = cpp.replace("$function$", logConfig.logFunctionName)
-	cpp = cpp.replace("$logem$", logConfig.logEnumName)
-	cpp = cpp.replace("$logcheck$", logConfig.MakeCheck())
-	cpp = cpp.replace("$format$", logConfig.MakeFormat())
-	f.write(cpp)
-	f.close()
-	
-	
 HeadFileTemplate = None
 CppFileTemplate = None
+
+HeadFileCharacter = {"$TIME$":PacketDefine.GetCurrentTime, "$FILENAME$":PacketDefine.GetPacketName, "$FILEUPPERNAME$":PacketDefine.GetPacketUpperName, "$INCLUDEFILE$":PacketDefine.GetIncludeFile, "$PREDECLARE$":PacketDefine.GetPreDeclare, "$PACKETCOMMENT$":PacketDefine.GetPacketComment, "$DATADECLARE$":PacketDefine.GetDeclare, "$CONSTRACTORPARAM$":PacketDefine.GetConstractorParam, "$CONSTRACTOR$":PacketDefine.GetConstractor, "$PACKETID$":PacketDefine.GetPacketID, "$DATASETGETDECLARE$":PacketDefine.GetDataGetSetDeclare, "$DATASETGETDECLARE$":PacketDefine.GetDataGetSetDeclare}
+
+def OutPutHeadFile(packetConfig):
+	packetName = packetConfig.GetPacketName()
+	str = HeadFileTemplate
+	for x in HeadFileCharacter.keys():
+		str = str.replace(x, HeadFileCharacter[x](packetConfig))
+	
+	f = open(("../%s.h" % packetName), "wb")
+	f.write(str)
+	f.close()
+	
+CppFileCharacter = {"$TIME$":PacketDefine.GetCurrentTime, "$FILENAME$":PacketDefine.GetPacketName, "$SERIALIZ$":PacketDefine.GetSerializ, "$CLEANUP$":PacketDefine.GetCleanUp, "$DATASETGETDEFINE$":PacketDefine.GetDataGetSetDefine}
+
+def OutPutCppFile(packetConfig):
+	packetName = packetConfig.GetPacketName()
+	str = CppFileTemplate
+	for x in CppFileCharacter.keys():
+		str = str.replace(x, CppFileCharacter[x](packetConfig))
+	
+	f = open(("../%s.cpp" % packetName), "wb")
+	f.write(str)
+	f.close()
+	
+def AddToVcproj(packetConfig):
+	headFile = "\t\t<File\n\t\t\tRelativePath=\"..\..\Src\Protocol\%s.h\"\n\t\t\t>\n\t\t</File>" % packetConfig.GetPacketName()
+	cppFile = "\t\t<File\n\t\t\tRelativePath=\"..\..\Src\Protocol\%s.cpp\"\n\t\t\t>\n\t\t</File>" % packetConfig.GetPacketName()
+	filePath = "../../../Protocol/Protocol/Protocol.vcproj"
+	tag = "\t</Files>"
+	str = headFile + cppFile
+	f = open(filePath, "r")
+	data = f.read()
+	f.close()
+	if(-1 != data.find(packetConfig.GetPacketName())):
+		print packetConfig.GetPacketName()
+		return
+		
+	data = data.replace(tag, str)
+	f = open(filePath, "w")
+	f.write(data)
+	f.close()
+	
+def OutPut(packetConfig):
+	OutPutHeadFile(packetConfig)
+	OutPutCppFile(packetConfig)
+	AddToVcproj(packetConfig)
 
 if __name__ == "__main__":
 	logDefine = open("11", "r")
 	lexer = lex.lex(module = fileAnalysis)
 	lexer.input(logDefine.read())
-	# HeadFileTemplate = LoadTempFile("./head")
-	# CppFileTemplate = LoadTempFile("./cpp")
+	HeadFileTemplate = LoadTempFile("./PacketHeadTemplate")
+	CppFileTemplate = LoadTempFile("./PacketCppTemplate")
 	while(True):
 		try:
-			logConfig = ProcessConfig(lexer)
-			if(None != logConfig):
-				# print logConfig
-				# OutPut(logConfig)
+			packetConfig = ProcessConfig(lexer)
+			if(None != packetConfig):
+				# print packetConfig
+				OutPut(packetConfig)
 				pass
 			else:
 				break

@@ -1,7 +1,15 @@
-#����Э��
-[GYTestPacket:EM_PACKET_ID_SC_TEST_ID]
-guid	m_userID		�û�GUID
-string	m_name		�û���
-uint64	m_gatewayReceiveTime	���ط������յ�����ʱ��
+#测试协议
+[GYTestPacket:EM_PACKET_ID_TEST_ID]
+guid	UserID		用户GUID
+string	Name		用户姓名
+uint64	GatewayReceiveTime	Gateway收到数据包时间
 end
 
+#测试协议
+[GYSCTest:EM_PACKET_ID_SC_TEST_ID]
+guid	UserID		用户GUID
+string	Name		用户姓名
+uint64	GatewayReceiveTime	Gateway收到数据包时间
+uint64	LogicReceiveGatewayPacketTime	逻辑服务器收到数据包时间
+uint64	GateReceiveLogicPacketTime	Gateway收到逻辑服务器数据包时间
+end

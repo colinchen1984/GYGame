@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="String">
+      <UniqueIdentifier>{941bad60-3c6d-43b9-8045-4ee3136a0d14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TimeController">
+      <UniqueIdentifier>{707857f6-272b-4a00-84b5-477efe74080b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Src\GameCommon\CommonDefine\String\GYString.cpp">
+      <Filter>String</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Src\GameCommon\CommonDefine\String\GYStringManger.cpp">
+      <Filter>String</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Src\GameCommon\CommonDefine\TimeController\GYTimeController.cpp">
+      <Filter>TimeController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Src\GameCommon\CommonDefine\GYCommonDefine.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Src\GameCommon\CommonDefine\String\GYString.h">
+      <Filter>String</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Src\GameCommon\CommonDefine\String\GYStringManger.h">
+      <Filter>String</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Src\GameCommon\CommonDefine\TimeController\GYTimeController.h">
+      <Filter>TimeController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Src\GameCommon\CommonDefine\GYArray.h" />
+    <ClInclude Include="..\..\Src\GameCommon\CommonDefine\GYCommonDefine.h" />
+    <ClInclude Include="..\..\Src\GameCommon\CommonDefine\GYCycleBuffer.h" />
+    <ClInclude Include="..\..\Src\GameCommon\CommonDefine\GYHashTable.h" />
+    <ClInclude Include="..\..\Src\GameCommon\CommonDefine\GYList.h" />
+    <ClInclude Include="..\..\Src\GameCommon\CommonDefine\GYObject.h" />
+    <ClInclude Include="..\..\Src\GameCommon\CommonDefine\GYSerialization.h" />
+    <ClInclude Include="..\..\Src\GameCommon\CommonDefine\GYTimeStamp.h" />
+  </ItemGroup>
+</Project>

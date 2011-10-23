@@ -1,5 +1,5 @@
 ﻿/////////////////////////////////////////////
-// create time:2011/9/7 14:54
+// create time:2011/10/23 19:28
 // author:	colin chen
 // file name:	GYSCTest
 // file type:	h
@@ -7,34 +7,42 @@
 #ifndef __GYSCTEST_H__
 #define __GYSCTEST_H__
 #include "GYCommonDefine.h"
-#include "GYString.h"
 #include "GYProtocolDefine.h"
+#include "GYString.h"
+
+
 
 class GYSerializationInteface;
-
+//测试协议
 class GYSCTest : public GYPacketInteface
 {
+		GYGUID			UserID;			//用户GUID
+	GYString			Name;			//用户姓名
+	GYUINT64			GatewayReceiveTime;			//Gateway收到数据包时间
+	GYUINT64			LogicReceiveGatewayPacketTime;			//逻辑服务器收到数据包时间
+	GYUINT64			GateReceiveLogicPacketTime;			//Gateway收到逻辑服务器数据包时间
+	
 public:
-	GYGUID		m_userID;
-	GYString	m_name;
-	GYUINT64	m_gatewayReceiveClientPacketTime;
-	GYUINT64	m_logicReceiveGatewayPacketTime;
-	GYUINT64	m_gateReceiveLogicPacketTime;
-
-public:
-	GYSCTest(GYStringManager& stringManager):m_name(stringManager)
+	GYSCTest(GYStringManager& stringManager):Name(stringManager)
 	{
-	};
+		
+	}
 	~GYSCTest(){};
 
 	virtual GYPACKETID GetPacketID(){return EM_PACKET_ID_SC_TEST_ID;}
 	virtual GYCHAR GetPacketFlags(){return 0;}
 
-	GYVOID SetUserName(const GYString& name);
-	const GYString& GetUserName();
+	GYINLINE	GYVOID			SetUserID(GYGUID value){ UserID = value; };
+	GYINLINE	GYGUID			GetUserID() const { return UserID; };
+	GYINLINE	GYVOID			SetName(const GYString& value){ Name = value; };
+	GYINLINE	const GYString&			GetName() const { return Name; };
+	GYINLINE	GYVOID			SetGatewayReceiveTime(GYUINT64 value){ GatewayReceiveTime = value; };
+	GYINLINE	GYUINT64			GetGatewayReceiveTime() const { return GatewayReceiveTime; };
+	GYINLINE	GYVOID			SetLogicReceiveGatewayPacketTime(GYUINT64 value){ LogicReceiveGatewayPacketTime = value; };
+	GYINLINE	GYUINT64			GetLogicReceiveGatewayPacketTime() const { return LogicReceiveGatewayPacketTime; };
+	GYINLINE	GYVOID			SetGateReceiveLogicPacketTime(GYUINT64 value){ GateReceiveLogicPacketTime = value; };
+	GYINLINE	GYUINT64			GetGateReceiveLogicPacketTime() const { return GateReceiveLogicPacketTime; };
 
-	GYVOID SetUserID(const GYGUID& userID);
-	const GYGUID& GetUserID();
 
 	virtual GYVOID Serializ(GYSerializationInteface& serializer);
 

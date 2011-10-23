@@ -1,21 +1,15 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NetWork", "NetWork\NetWork.vcproj", "{D63B124B-4428-4033-990F-81F6A30D9DB9}"
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NetWork", "NetWork\NetWork.vcxproj", "{D63B124B-4428-4033-990F-81F6A30D9DB9}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "test\test.vcproj", "{A1EDF7F1-EF41-4C00-80D2-93A809D9D90A}"
-	ProjectSection(ProjectDependencies) = postProject
-		{D63B124B-4428-4033-990F-81F6A30D9DB9} = {D63B124B-4428-4033-990F-81F6A30D9DB9}
-		{29C2AD56-1725-4CCC-B25B-6FD5ED584696} = {29C2AD56-1725-4CCC-B25B-6FD5ED584696}
-		{748DBA7F-BCA6-40E0-B987-692FA66F9188} = {748DBA7F-BCA6-40E0-B987-692FA66F9188}
-		{BDC69096-3762-4417-AE96-0C96DA6EC628} = {BDC69096-3762-4417-AE96-0C96DA6EC628}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "test\test.vcxproj", "{A1EDF7F1-EF41-4C00-80D2-93A809D9D90A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Thread", "Thread\Thread.vcproj", "{BDC69096-3762-4417-AE96-0C96DA6EC628}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Thread", "Thread\Thread.vcxproj", "{BDC69096-3762-4417-AE96-0C96DA6EC628}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameCommon", "GameCommon\GameCommon.vcproj", "{748DBA7F-BCA6-40E0-B987-692FA66F9188}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameCommon", "GameCommon\GameCommon.vcxproj", "{748DBA7F-BCA6-40E0-B987-692FA66F9188}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Table", "Table\Table.vcproj", "{29C2AD56-1725-4CCC-B25B-6FD5ED584696}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Table", "Table\Table.vcxproj", "{29C2AD56-1725-4CCC-B25B-6FD5ED584696}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,5 +1,5 @@
 ﻿/////////////////////////////////////////////
-// create time: 2011/7/31 20:14
+// create time: 2011/10/23 19:28
 // author:	colin chen
 // file name:	GYTestPacket
 // file type:	cpp
@@ -8,44 +8,22 @@
 #include "GYProtocolDefine.h"
 #include "GYSerialization.h"
 
-GYVOID GYTestPacket::SetUserName( const GYString& name )
-{
-	m_name = name;
-}
-
-const GYString& GYTestPacket::GetName() const
-{
-	return m_name;
-}
-
 GYVOID GYTestPacket::Serializ( GYSerializationInteface& serializer )
 {
-	serializer << m_userID << m_name << m_gatewayReceiveTime;
-}
+		serializer << UserID;
+	serializer << Name;
+	serializer << GatewayReceiveTime;
 
-GYVOID GYTestPacket::SetUserID(const GYGUID& userID)
-{
-	m_userID = userID;
-}
-
-const GYGUID& GYTestPacket::GetUserID()
-{
-	return m_userID;
 }
 
 GYVOID GYTestPacket::CleanUp()
 {
-	m_userID = INVALID_VALUE;
-	m_name.CleanUp();
-	m_gatewayReceiveTime = INVALID_VALUE;
+		UserID = INVALID_VALUE;
+	Name.CleanUp();
+	GatewayReceiveTime = INVALID_VALUE;
+	
 }
 
-GYVOID GYTestPacket::SetGatewayReceiveTime( const GYUINT64& time )
-{
-	m_gatewayReceiveTime = time;
-}
 
-const GYUINT64& GYTestPacket::GetGatewayReceiveTime() const
-{
-	return m_gatewayReceiveTime;
-}
+
+

@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="GatewayThread">
+      <UniqueIdentifier>{d178ba5c-bdcf-4be1-aaa6-35b88e23567c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Packet">
+      <UniqueIdentifier>{0f100206-c8ec-43a6-aab1-14cb0fdef6d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PacketHandler">
+      <UniqueIdentifier>{a6af4d0b-e670-472f-94d4-16e74847fce2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Src\Gateway\GatewayThread\GYClientProcessData.cpp">
+      <Filter>GatewayThread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Src\Gateway\GatewayThread\GYClientSession.cpp">
+      <Filter>GatewayThread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Src\Gateway\GatewayThread\GYGatewayThread.cpp">
+      <Filter>GatewayThread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Src\Gateway\Packet\GYPacketFactoryManager.cpp">
+      <Filter>Packet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Src\Gateway\Packet\GYPacketFactoryRegister.cpp">
+      <Filter>Packet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Src\Gateway\PacketHandler\GYSCTestPacketHandler.cpp">
+      <Filter>PacketHandler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Src\Gateway\PacketHandler\GYTestPacketHandler.cpp">
+      <Filter>PacketHandler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Src\Gateway\GYServer.cpp" />
+    <ClCompile Include="..\..\Src\Gateway\main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Src\Gateway\GatewayThread\GYClientSession.h">
+      <Filter>GatewayThread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Src\Gateway\GatewayThread\GYGatewayThread.h">
+      <Filter>GatewayThread</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Src\Gateway\Packet\GYPacketFactoryManager.h">
+      <Filter>Packet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Src\Gateway\PacketHandler\GYPacketHandler.h">
+      <Filter>PacketHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Src\Gateway\PacketHandler\GYPacketHandlerCommon.h">
+      <Filter>PacketHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Src\Gateway\GYServer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Src\Gateway\CMakeLists.txt" />
+  </ItemGroup>
+</Project>
