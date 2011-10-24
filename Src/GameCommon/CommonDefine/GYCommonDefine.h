@@ -55,7 +55,6 @@ GYStaticAssert(4 == sizeof(GYINT32), "sizeof GYINT32 isn't 4");
 GYStaticAssert(4 == sizeof(GYUINT32), "sizeof GYUINT32 isn't 4");
 GYStaticAssert(8 == sizeof(GYINT64), "sizeof GYINT64 isn't 8");
 GYStaticAssert(8 == sizeof(GYUINT64), "sizeof GYUINT64 isn't 8");
-GYStaticAssert(8 == sizeof(GYUINT64), "sizeof GYUINT64 isn't 8");
 
 #define GYGUID					GYUINT64
 #define INVALID_VALUE			-1
