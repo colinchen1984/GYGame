@@ -3,7 +3,7 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug")
 endif()
 
-SET(CMAKE_CXX_COMPILER "g++")
+SET(CMAKE_CXX_COMPILER "g++ -std=c++0x")
 
 #ADD_SUBDIRECTORY(./ ./Test)
 INCLUDE_DIRECTORIES(../CommonDefine)
