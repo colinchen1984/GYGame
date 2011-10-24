@@ -3,7 +3,7 @@ import time
 import struct
 import random
 G_LoopCount = 1
-G_ClientCount = 44
+G_ClientCount = 100
 G_ServerAddress = ("192.168.1.100", 5555)
 s = []
 gGUID = []
