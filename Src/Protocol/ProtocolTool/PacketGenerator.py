@@ -184,7 +184,7 @@ class DataEnum(DataElement):
 		self.m_enumDefine = enumDefine
 		
 	def GetDeclare(self):
-		str = "GYStaticAssert(%s_COUNT <= 127, \"Can't put enum %s in to char\");\n\t" % (self.m_dataType, self.m_dataName)
+		str = "GYStaticAssert(%s_COUNT <= MAX_CHAR, \"Can't put enum %s in to char\");\n\t" % (self.m_dataType, self.m_dataName)
 		str += "GYCHAR"
 		str += "\t\t\t"
 		str += self.m_dataName + ";"

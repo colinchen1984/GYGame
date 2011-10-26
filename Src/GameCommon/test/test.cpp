@@ -104,15 +104,26 @@ struct TestStructTable
 
 #ifdef WIN32
 #include <hash_set>
+#include <iostream>
+#include <limits>
 using namespace stdext;
+using namespace std;
 #endif 
 #include "GYHashTable.h"
 GYINT32 main()
 {
+	cout << boolalpha;
+	cout << "Minimum value for int: " << numeric_limits<int>::min() << endl;
+	cout << "Maximum value for int: " << numeric_limits<int>::max() << endl;
+	cout << "int is signed: " << numeric_limits<int>::is_signed << endl;
+	cout << "Non-sign bits in int: " << numeric_limits<int>::digits << endl;
+	cout << "int has infinity: " << numeric_limits<int>::has_infinity << endl;
+
 #ifdef WIN32
 	hash_set<GYINT32> testSet;
 	testSet.insert(3);
 #endif 
+
 	strManager->Init();
 	GYTableSerialization testOs;
 	const char* name = "test.tab";

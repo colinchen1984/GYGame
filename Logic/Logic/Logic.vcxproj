@@ -47,7 +47,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../../Src/GameCommon/NetWork;../../Src/GameCommon/CommonDefine;../../Src/GameCommon/CommonDefine/String;../../Src/GameCommon/CommonDefine/TimeController;../../Src/GameCommon/Table;../../Src/Protocol;../../Src/Logic/Table;../../Src/Logic/NetWork;../../Src/Logic/PacketHandler;../../Src/Logic/Packet;../../Src/Logic;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../Src/GameCommon/NetWork;../../Src/GameCommon/CommonDefine;../../Src/GameCommon/CommonDefine/String;../../Src/GameCommon/CommonDefine/TimeController;../../Src/GameCommon/Table;../../Src/GameLogicCommon/;../../Src/GameLogicCommon/GameTableDefine;../../Src/Protocol;../../Src/Logic/Table;../../Src/Logic/NetWork;../../Src/Logic/PacketHandler;../../Src/Logic/Packet;../../Src/Logic;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -87,7 +87,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Src\Logic\Table\GYTableDefine.cpp" />
     <ClCompile Include="..\..\Src\Logic\Table\GYTableManager.cpp" />
     <ClCompile Include="..\..\Src\Logic\NetWork\GYGatewaySession.cpp" />
     <ClCompile Include="..\..\Src\Logic\NetWork\GYNetWorkManager.cpp" />
@@ -98,7 +97,9 @@
     <ClCompile Include="..\..\Src\Logic\main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Src\Logic\Table\GYTableDefine.h" />
+    <ClInclude Include="..\..\Src\GameLogicCommon\GameTableDefine\GYGameTableDefine.h" />
+    <ClInclude Include="..\..\Src\GameLogicCommon\GYObjectCommenDefine.h" />
+    <ClInclude Include="..\..\Src\Logic\Object\GYGameObject.h" />
     <ClInclude Include="..\..\Src\Logic\Table\GYTableManager.h" />
     <ClInclude Include="..\..\Src\Logic\NetWork\GYGatewaySession.h" />
     <ClInclude Include="..\..\Src\Logic\NetWork\GYNetWorkManager.h" />

@@ -10,7 +10,7 @@
 #include "GYCommonDefine.h"
 #include "GYStringManger.h"
 #include "GYTable.h"
-#include "GYTableDefine.h"
+#include "GYGameTableDefine.h"
 
 class GYTableManager
 {

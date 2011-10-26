@@ -16,12 +16,26 @@ struct GYSceneDefine
 	GYINT32		testArray[5];
 	GYString	testArrayString;
 
-	GYSceneDefine();
+	GYSceneDefine():testArrayString(GETSTRINGMANAGERSINGLETON)
+	{
 
-	~GYSceneDefine();
+	};
 
-	GYVOID Serializ(GYSerializationInteface& seralizer);
+	~GYSceneDefine(){};
 
-	static const GYCHAR* GetTableFileName();
+	GYVOID Serializ(GYSerializationInteface& seralizer)
+	{
+		for (GYINT32 i = 0; i < 5; ++i)
+		{
+			seralizer << testArray[i];
+		}
+		seralizer << testArrayString;
+	}
+
+	static const GYCHAR* GetTableFileName()
+	{
+		static const GYCHAR* pTableName = "../Game/Table/GYSceneDefin.tab";
+		return pTableName;
+	}
 };
 #endif

@@ -15,6 +15,9 @@
 #define GYStaticAssert			static_assert
 
 #ifdef WIN32
+#ifdef LINUX64
+GYStaticAssert(0, "Can't define both WIN32 and LINUX64");
+#endif
 typedef char 					GYCHAR;
 typedef char					GYINT8;
 typedef unsigned char			GYUINT8;
@@ -31,6 +34,9 @@ GYStaticAssert(4 == sizeof(GYVOID*), "WIN32 micro is for 32-bit platform only");
 #endif
 
 #ifdef LINUX64
+#ifdef WIN32
+GYStaticAssert(0, "Can't define both WIN32 and LINUX64");
+#endif
 typedef char 					GYCHAR;
 typedef char					GYINT8;
 typedef unsigned char			GYUINT8;
@@ -55,6 +61,21 @@ GYStaticAssert(4 == sizeof(GYINT32), "sizeof GYINT32 isn't 4");
 GYStaticAssert(4 == sizeof(GYUINT32), "sizeof GYUINT32 isn't 4");
 GYStaticAssert(8 == sizeof(GYINT64), "sizeof GYINT64 isn't 8");
 GYStaticAssert(8 == sizeof(GYUINT64), "sizeof GYUINT64 isn't 8");
+
+extern const GYCHAR MAX_CHAR;
+extern const GYCHAR MIN_CHAR;
+extern const GYINT8 MAX_INT8;
+extern const GYINT8 MIN_INT8;
+extern const GYUINT8 MAX_UINT8;
+extern const GYINT16 MAX_INT16;
+extern const GYINT16 MIN_INT16;
+extern const GYUINT16 MAX_UINT16;
+extern const GYINT32 MAX_INT32;
+extern const GYINT32 MIN_INT32;
+extern const GYUINT32 MAX_UINT32;
+extern const GYINT64 MAX_INT64;
+extern const GYINT64 MIN_INT64;
+extern const GYUINT64 MAX_UINT64;
 
 #define GYGUID					GYUINT64
 #define INVALID_VALUE			-1
