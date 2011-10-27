@@ -8,6 +8,7 @@
 #ifndef __GYGAMEOBJECT_H__
 #define __GYGAMEOBJECT_H__
 #include "GYObject.h"
+enum EM_GAME_OBJECT_TYPE;
 
 class GYGameObject : public GYObject
 {
@@ -16,6 +17,7 @@ protected:
 	~GYGameObject(){};
 public:
 	virtual const GYGUID&	GetGUID() const = 0;
+	virtual const EM_GAME_OBJECT_TYPE& GetObjectType() const = 0;
 };
 
 #endif

@@ -13,10 +13,13 @@ class GYSerializationInteface;
 
 struct GYSceneDefine
 {
-	GYINT32		testArray[5];
-	GYString	testArrayString;
+	GYINT32		SceneID;			// 场景ID
+	GYINT32		SceneLength;		// 场景长度
+	GYINT32		SceneWight;			// 场景宽度
+	GYINT32		ZoneSize;			// 场景内区域的宽度
+	GYString	AreaConfigFileName;	// 场景内事件区域配置文件名
 
-	GYSceneDefine():testArrayString(GETSTRINGMANAGERSINGLETON)
+	GYSceneDefine():AreaConfigFileName(GETSTRINGMANAGERSINGLETON)
 	{
 
 	};
@@ -25,11 +28,11 @@ struct GYSceneDefine
 
 	GYVOID Serializ(GYSerializationInteface& seralizer)
 	{
-		for (GYINT32 i = 0; i < 5; ++i)
-		{
-			seralizer << testArray[i];
-		}
-		seralizer << testArrayString;
+		seralizer << SceneID;
+		seralizer << SceneLength;
+		seralizer << SceneWight;
+		seralizer << ZoneSize;
+		seralizer << AreaConfigFileName;
 	}
 
 	static const GYCHAR* GetTableFileName()

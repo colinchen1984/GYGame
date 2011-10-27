@@ -76,6 +76,7 @@ extern const GYUINT32 MAX_UINT32;
 extern const GYINT64 MAX_INT64;
 extern const GYINT64 MIN_INT64;
 extern const GYUINT64 MAX_UINT64;
+extern const GYFLOAT GYFLT_EPSILON;
 
 #define GYGUID					GYUINT64
 #define INVALID_VALUE			-1
