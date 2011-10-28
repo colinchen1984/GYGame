@@ -11,6 +11,7 @@
 #include "GYPacketFactoryManager.h"
 #include "GYTableManager.h"
 #include "GYNetWorkManager.h"
+#include "GYScene.h"
 
 class GYServer
 {
@@ -18,6 +19,7 @@ class GYServer
 	GYPacketFactoryManager		m_packetFactoryManager;
 	GYTableManager				m_tableManger;
 	GYNetWorkManager			m_networkManager;
+	GYScene						m_scene;
 public:
 	GYServer();
 

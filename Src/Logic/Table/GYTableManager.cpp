@@ -36,3 +36,8 @@ GYINT32 GYTableManager::Init()
 	} while (GYFALSE);
 	return result;
 }
+
+GYINT32 GYTableManager::Release()
+{
+	return 0;
+}

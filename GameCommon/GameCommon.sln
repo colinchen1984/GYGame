@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameCommon", "GameCommon\Ga
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Table", "Table\Table.vcxproj", "{29C2AD56-1725-4CCC-B25B-6FD5ED584696}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameLogicCommon", "GameLogicCommon\GameLogicCommon.vcxproj", "{5FD31C0C-7462-4DAF-8DB0-16C084F2FCD0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -37,6 +39,10 @@ Global
 		{29C2AD56-1725-4CCC-B25B-6FD5ED584696}.Debug|Win32.Build.0 = Debug|Win32
 		{29C2AD56-1725-4CCC-B25B-6FD5ED584696}.Release|Win32.ActiveCfg = Release|Win32
 		{29C2AD56-1725-4CCC-B25B-6FD5ED584696}.Release|Win32.Build.0 = Release|Win32
+		{5FD31C0C-7462-4DAF-8DB0-16C084F2FCD0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5FD31C0C-7462-4DAF-8DB0-16C084F2FCD0}.Debug|Win32.Build.0 = Debug|Win32
+		{5FD31C0C-7462-4DAF-8DB0-16C084F2FCD0}.Release|Win32.ActiveCfg = Release|Win32
+		{5FD31C0C-7462-4DAF-8DB0-16C084F2FCD0}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

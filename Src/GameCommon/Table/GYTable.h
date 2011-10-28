@@ -67,7 +67,14 @@ public:
 		} while (GYFALSE);
 		return result;
 	}
-
+	GYINT32 Release()
+	{
+		GYDelete[] m_tableRow;
+		m_tableRow = GYNULL;
+		m_tableRowCount = 0;
+		m_tableColumCount = 0;
+		return m_fileLoader.Release();
+	}
 	const T* GetRowByIndex(GYINT32 index)
 	{
 		const T* pResult = GYNULL;

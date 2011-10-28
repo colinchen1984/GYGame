@@ -15,13 +15,15 @@
 class GYTableManager
 {
 public:
-	GYTable<GYSceneDefine>		m_sceneDefine;
+	GYTable<GYSceneConfig>		m_sceneDefine;
 public:
 	GYTableManager();
 
 	~GYTableManager();
 
 	GYINT32 Init();
+
+	GYINT32	Release();
 
 	static GYTableManager& GetSingleton();
 };

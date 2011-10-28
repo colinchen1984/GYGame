@@ -28,9 +28,9 @@ public:
 
 	GYINLINE const GYCHAR* c_str()const{return m_stringBuffer;}
 	
-	GYINLINE GYINT32 length(){return m_stringLength;}
+	GYINLINE GYINT32 length()const{return m_stringLength;}
 	
-	GYINLINE GYBOOL empty(){return m_stringLength > 0 ? GYFALSE : GYTRUE;}
+	GYINLINE GYBOOL empty()const{return m_stringLength > 0 ? GYFALSE : GYTRUE;}
 	
 	GYVOID	CleanUp();
 

@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="..\..\Src\GameCommon\GameLogicCommon\GYObjectCommenDefine.h" />
+    <ClInclude Include="..\..\Src\GameCommon\GameLogicCommon\GYPosition.h" />
+    <ClInclude Include="..\..\Src\GameCommon\GameLogicCommon\GYRect.h" />
+    <ClInclude Include="..\..\Src\GameCommon\GameLogicCommon\Scene\GYZone.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Src\GameCommon\GameLogicCommon\Scene\GYArea.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Src\GameCommon\GameLogicCommon\Scene\GYScene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Src\GameCommon\GameLogicCommon\GameTableDefine\GYGameTableDefine.h">
+      <Filter>GameTableDefine</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{85ffe14c-f6a4-42f9-bf67-709f17c74f0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameTableDefine">
+      <UniqueIdentifier>{95253cfc-300c-4ac6-9a15-40a96b0d43b8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Src\GameCommon\GameLogicCommon\Scene\GYArea.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Src\GameCommon\GameLogicCommon\Scene\GYScene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Src\GameCommon\GameLogicCommon\Scene\GYZone.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Src\GameCommon\GameLogicCommon\GameTableDefine\GYGameTableDefine.cpp">
+      <Filter>GameTableDefine</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

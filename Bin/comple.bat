@@ -8,6 +8,11 @@ rm -rf *
 cmake ../../Src/GameCommon/CommonDefine
 make clean
 make
+cd ./GameLogicCommon
+rm -rf *
+cmake ../../Src/GameCommon/GameLogicCommon
+make clean
+make
 cd ../NetWork
 rm -rf * 
 cmake ../../Src/GameCommon/NetWork

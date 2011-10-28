@@ -47,7 +47,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../../Src/GameCommon/NetWork;../../Src/GameCommon/CommonDefine;../../Src/GameCommon/CommonDefine/String;../../Src/GameCommon/CommonDefine/TimeController;../../Src/GameCommon/Table;../../Src/GameLogicCommon/;../../Src/GameLogicCommon/Scene;../../Src/GameLogicCommon/GameTableDefine;../../Src/Protocol;../../Src/Logic/Table;../../Src/Logic/NetWork;../../Src/Logic/PacketHandler;../../Src/Logic/Object;../../Src/Logic/Packet;../../Src/Logic;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../Src/GameCommon/NetWork;../../Src/GameCommon/CommonDefine;../../Src/GameCommon/CommonDefine/String;../../Src/GameCommon/CommonDefine/TimeController;../../Src/GameCommon/Table;../../Src/GameCommon/GameLogicCommon/;../../Src/GameCommon/GameLogicCommon/Scene;../../Src/GameCommon/GameLogicCommon/GameTableDefine;../../Src/Protocol;../../Src/Logic/Table;../../Src/Logic/NetWork;../../Src/Logic/PacketHandler;../../Src/Logic/Object;../../Src/Logic/Packet;../../Src/Logic;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -59,8 +59,8 @@
     </ClCompile>
     <Link>
       <AdditionalOptions> /PROFILE %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>Table.lib;NetWork.lib;GameCommon.lib;Protocol.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../Bin/NetWork;../../Bin/Protocol;../../Bin/Table;../../Bin/GameCommon;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Table.lib;NetWork.lib;GameCommon.lib;GameLogicCommon.lib;Protocol.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../Bin/NetWork;../../Bin/Protocol;../../Bin/Table;../../Bin/GameCommon;../../Bin/GameLogicCommon;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -87,9 +87,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Src\GameLogicCommon\Scene\GYArea.cpp" />
-    <ClCompile Include="..\..\Src\GameLogicCommon\Scene\GYScene.cpp" />
-    <ClCompile Include="..\..\Src\GameLogicCommon\Scene\GYZone.cpp" />
     <ClCompile Include="..\..\Src\Logic\Table\GYTableManager.cpp" />
     <ClCompile Include="..\..\Src\Logic\NetWork\GYGatewaySession.cpp" />
     <ClCompile Include="..\..\Src\Logic\NetWork\GYNetWorkManager.cpp" />
@@ -102,11 +99,6 @@
   <ItemGroup>
     <ClInclude Include="..\..\Src\GameLogicCommon\GameTableDefine\GYGameTableDefine.h" />
     <ClInclude Include="..\..\Src\GameLogicCommon\GYObjectCommenDefine.h" />
-    <ClInclude Include="..\..\Src\GameLogicCommon\GYPosition.h" />
-    <ClInclude Include="..\..\Src\GameLogicCommon\GYRect.h" />
-    <ClInclude Include="..\..\Src\GameLogicCommon\Scene\GYArea.h" />
-    <ClInclude Include="..\..\Src\GameLogicCommon\Scene\GYScene.h" />
-    <ClInclude Include="..\..\Src\GameLogicCommon\Scene\GYZone.h" />
     <ClInclude Include="..\..\Src\Logic\Object\GYGameObject.h" />
     <ClInclude Include="..\..\Src\Logic\Table\GYTableManager.h" />
     <ClInclude Include="..\..\Src\Logic\NetWork\GYGatewaySession.h" />

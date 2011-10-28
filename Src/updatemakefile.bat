@@ -2,6 +2,8 @@
 cd ./GameCommon
 cd ./CommonDefine
 python ../../CMakeListsGenerator.py
+cd ../GameLogicCommon
+python ../../CMakeListsGenerator.py
 cd ../NetWork
 python ../../CMakeListsGenerator.py
 cd ../Thread

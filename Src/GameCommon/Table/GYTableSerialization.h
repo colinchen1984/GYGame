@@ -33,6 +33,8 @@ public:
 	
 	GYINT32 Init(const GYCHAR* fileName);
 
+	GYINT32 Release();
+
 	GYINLINE GYINT32 GetTableDataRowCount(){return m_tableRowCount - 2;};
 
 	GYINLINE GYINT32 GetTableDataColumCount(){return m_tableColumCount;};
@@ -70,4 +72,33 @@ private:
 
 	GYVOID _CleanUp();
 };
+
+class GYTableInitSerialization : public GYSerializationInteface
+{
+public:
+	explicit GYTableInitSerialization();
+
+	virtual ~GYTableInitSerialization();
+
+	virtual GYSerializationInteface& operator<<(GYCHAR& value);
+
+	virtual GYSerializationInteface& operator<<(GYUINT8& value);
+
+	virtual GYSerializationInteface& operator<<(GYINT16& value);
+
+	virtual GYSerializationInteface& operator<<(GYUINT16& value);
+
+	virtual GYSerializationInteface& operator<<(GYINT32& value);
+
+	virtual GYSerializationInteface& operator<<(GYUINT32& value);
+
+	virtual GYSerializationInteface& operator<<(GYINT64& value);
+
+	virtual GYSerializationInteface& operator<<(GYUINT64& value);
+
+	virtual GYSerializationInteface& operator<<(GYFLOAT& value);
+
+	virtual GYSerializationInteface& operator<<(GYString& value);
+};
+
 #endif

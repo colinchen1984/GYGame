@@ -19,9 +19,6 @@
     <Filter Include="GameLogicCommon">
       <UniqueIdentifier>{c69a7ff5-dd29-438c-9a99-b00fc06cec11}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Scene">
-      <UniqueIdentifier>{5d6f95c7-98d5-432d-a128-9c68ded348d7}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Src\Logic\Table\GYTableManager.cpp">
@@ -44,15 +41,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Src\Logic\GYServer.cpp" />
     <ClCompile Include="..\..\Src\Logic\main.cpp" />
-    <ClCompile Include="..\..\Src\GameLogicCommon\Scene\GYArea.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Src\GameLogicCommon\Scene\GYScene.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Src\GameLogicCommon\Scene\GYZone.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Src\Logic\Table\GYTableManager.h">
@@ -82,21 +70,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Src\Logic\Object\GYGameObject.h">
       <Filter>Object</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Src\GameLogicCommon\Scene\GYArea.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Src\GameLogicCommon\Scene\GYScene.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Src\GameLogicCommon\Scene\GYZone.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Src\GameLogicCommon\GYPosition.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Src\GameLogicCommon\GYRect.h">
-      <Filter>Scene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

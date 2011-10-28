@@ -43,6 +43,13 @@ GYINT32 GYServer::Init()
 			m_packetFactoryManager.Release();
 			break;
 		}
+		if (0 != m_scene.Init(*m_tableManger.m_sceneDefine.GetRowByIndex(0)))
+		{
+			m_packetFactoryManager.Release();
+			m_tableManger.Release();
+			break;
+		}
+		
 		GYNetAddress listenAddress;
 		listenAddress.SetAddr(AddrStr);
 		listenAddress.SetPort(5556);

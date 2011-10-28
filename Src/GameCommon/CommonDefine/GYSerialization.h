@@ -15,7 +15,9 @@ enum EM_SERIALIZAION_MODE
 	EM_SERIALIZAION_MODE_WRITE,
 	EM_SERIALIZAION_MODE_COUNT,
 };
+
 class GYString;
+
 class GYSerializationInteface
 {
 protected:

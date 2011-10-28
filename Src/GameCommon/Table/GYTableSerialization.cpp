@@ -147,6 +147,16 @@ GYINT32 GYTableSerialization::Init( const GYCHAR* fileName )
 	return result;
 }
 
+
+GYINT32 GYTableSerialization::Release()
+{
+#ifdef CHECK_DATA_TYPE
+	GYDelete[] m_dataType;
+#endif
+	_CleanUp();
+	return 0;
+}
+
 GYSerializationInteface& GYTableSerialization::operator<<(GYCHAR& value)
 {
 	GYAssert(GYFALSE);
@@ -348,7 +358,7 @@ const GYCHAR* GYTableSerialization::_GetDataString( const GYCHAR* pStart, const 
 				--pEnd;
 			}
 			GYINT32 datalen = pEnd - pStart;
-			GYAssert(datalen > 0 && datalen < StringToDataBufferLen);
+			GYAssert(datalen >= 0 && datalen < StringToDataBufferLen);
 			GYMemcpy(StringToDataBuffer, pStart, datalen);
 			StringToDataBuffer[datalen] = 0;
 			pResult = StringToDataBuffer;
@@ -372,4 +382,74 @@ GYVOID GYTableSerialization::_CleanUp()
 	m_dataType = GYNULL;
 	m_loadColumCount = 0;
 #endif
+}
+
+GYSerializationInteface& GYTableInitSerialization::operator<<(GYCHAR& value)
+{
+	GYAssert(GYFALSE);
+	return *this;
+}
+
+GYSerializationInteface& GYTableInitSerialization::operator<<(GYUINT8& value)
+{
+	GYAssert(GYFALSE);
+	return *this;
+}
+
+GYSerializationInteface& GYTableInitSerialization::operator<<(GYINT16& value)
+{
+	GYAssert(GYFALSE);
+	return *this;
+}
+
+GYSerializationInteface& GYTableInitSerialization::operator<<(GYUINT16& value)
+{
+	GYAssert(GYFALSE);
+	return *this;
+}
+
+GYSerializationInteface& GYTableInitSerialization::operator<<(GYINT32& value)
+{
+	value = INVALID_VALUE;
+	return *this;
+}
+
+GYSerializationInteface& GYTableInitSerialization::operator<<(GYUINT32& value)
+{
+	value = INVALID_VALUE;
+	return *this;
+}
+
+GYSerializationInteface& GYTableInitSerialization::operator<<(GYINT64& value)
+{
+	value = INVALID_VALUE;
+	return *this;
+}
+
+GYSerializationInteface& GYTableInitSerialization::operator<<( GYUINT64& value )
+{
+	value = INVALID_VALUE;
+	return *this;
+}
+
+GYSerializationInteface& GYTableInitSerialization::operator<<(GYFLOAT& value)
+{
+	value = INVALID_VALUE;
+	return *this;
+}
+
+GYSerializationInteface& GYTableInitSerialization::operator<<( GYString& value )
+{
+	value.CleanUp();
+	return *this;
+}
+
+GYTableInitSerialization::GYTableInitSerialization()
+{
+
+}
+
+GYTableInitSerialization::~GYTableInitSerialization()
+{
+
 }
