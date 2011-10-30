@@ -13,3 +13,15 @@ uint64	GatewayReceiveTime	Gateway收到数据包时间
 uint64	LogicReceiveGatewayPacketTime	逻辑服务器收到数据包时间
 uint64	GateReceiveLogicPacketTime	Gateway收到逻辑服务器数据包时间
 end
+
+#登录协议
+[GYLogin:EM_PACKET_ID_CS_LOGIN]
+guid	UserID		用户GUID
+string	Name		用户姓名
+int	SceneID		场景ID
+end
+
+#登出协议
+[GYLogout:EM_PACKET_ID_CS_LOGOUT]
+guid	UserID		用户GUID
+end

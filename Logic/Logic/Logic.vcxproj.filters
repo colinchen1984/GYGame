@@ -19,6 +19,12 @@
     <Filter Include="GameLogicCommon">
       <UniqueIdentifier>{c69a7ff5-dd29-438c-9a99-b00fc06cec11}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ObjectPool">
+      <UniqueIdentifier>{c1d1f03d-7985-4dde-8420-67336df2038c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{5515f65d-6eb2-4f28-a82f-40e08f1b5cf1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Src\Logic\Table\GYTableManager.cpp">
@@ -41,6 +47,24 @@
     </ClCompile>
     <ClCompile Include="..\..\Src\Logic\GYServer.cpp" />
     <ClCompile Include="..\..\Src\Logic\main.cpp" />
+    <ClCompile Include="..\..\Src\Logic\Object\GYGameHuman.cpp">
+      <Filter>Object</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Src\Logic\PacketHandler\GYLoginPacketHandler.cpp">
+      <Filter>PacketHandler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Src\Logic\Scene\GYArea.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Src\Logic\Scene\GYScene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Src\Logic\Scene\GYZone.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Src\Logic\PacketHandler\GYLogoutPacketHandler.cpp">
+      <Filter>PacketHandler</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Src\Logic\Table\GYTableManager.h">
@@ -70,6 +94,24 @@
     </ClInclude>
     <ClInclude Include="..\..\Src\Logic\Object\GYGameObject.h">
       <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Src\Logic\ObjectPool\GYObjectPool.h">
+      <Filter>ObjectPool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Src\Logic\Object\GYGameCreature.h">
+      <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Src\Logic\Object\GYGameHuman.h">
+      <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Src\Logic\Scene\GYArea.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Src\Logic\Scene\GYScene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Src\Logic\Scene\GYZone.h">
+      <Filter>Scene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -78,12 +78,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Src\GameCommon\CommonDefine\GYINIReader.cpp" />
     <ClCompile Include="..\..\Src\GameCommon\CommonDefine\String\GYString.cpp" />
     <ClCompile Include="..\..\Src\GameCommon\CommonDefine\String\GYStringManger.cpp" />
     <ClCompile Include="..\..\Src\GameCommon\CommonDefine\TimeController\GYTimeController.cpp" />
     <ClCompile Include="..\..\Src\GameCommon\CommonDefine\GYCommonDefine.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Src\GameCommon\CommonDefine\GYINIReader.h" />
+    <ClInclude Include="..\..\Src\GameCommon\CommonDefine\GYMath.h" />
+    <ClInclude Include="..\..\Src\GameCommon\CommonDefine\GYMisc.h" />
     <ClInclude Include="..\..\Src\GameCommon\CommonDefine\String\GYString.h" />
     <ClInclude Include="..\..\Src\GameCommon\CommonDefine\String\GYStringManger.h" />
     <ClInclude Include="..\..\Src\GameCommon\CommonDefine\TimeController\GYTimeController.h" />

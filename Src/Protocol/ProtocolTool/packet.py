@@ -175,19 +175,40 @@ def AddToVcproj(packetConfig):
 	data = f.read()
 	f.close()
 	if(-1 != data.find(packetConfig.GetPacketName())):
-		print packetConfig.GetPacketName()
+		# print packetConfig.GetPacketName()
 		return
 		
 	data = data.replace(tag, str)
 	f = open(filePath, "w")
 	f.write(data)
 	f.close()
-	
+
+def OutPutPacketID(packetConfig):
+	packetID = packetConfig.GetPacketID()
+	f = open("../GYProtocolID.h", "r")
+	data = f.read()
+	f.close()
+	print packetID
+	if(packetID not in data):
+		replacStr = "//ADD_MOREPACKET_ID"
+		data = data.replace(replacStr, (("%s,\n\t%s") % (packetID, replacStr)))
+		f = open("../GYProtocolID.h", "w")
+		f.write(data)
+		f.close()
+		
+import os
+def AddToSvn(packetConfig):
+	packetName = packetConfig.GetPacketName()
+	os.system(("svn add ../%s.h") % packetName)
+	os.system(("svn add ../%s.cpp") % packetName)
+		
 def OutPut(packetConfig):
 	OutPutHeadFile(packetConfig)
 	OutPutCppFile(packetConfig)
-	AddToVcproj(packetConfig)
-
+	# AddToVcproj(packetConfig)
+	OutPutPacketID(packetConfig)
+	AddToSvn(packetConfig)
+	
 if __name__ == "__main__":
 	logDefine = open("11", "r")
 	lexer = lex.lex(module = fileAnalysis)

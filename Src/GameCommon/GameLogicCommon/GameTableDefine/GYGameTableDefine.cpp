@@ -28,6 +28,7 @@ GYVOID GYSceneConfig::Serializ( GYSerializationInteface& seralizer )
 	seralizer << SceneLength;
 	seralizer << SceneWight;
 	seralizer << ZoneSize;
+	seralizer << MaxHumanInScene;
 	seralizer << AreaConfigFileName;
 }
 
@@ -56,3 +57,4 @@ GYVOID GYAreaConfig::Serializ( GYSerializationInteface& seralizer )
 	seralizer << AreaType;
 	seralizer << ScriptID;
 }
+

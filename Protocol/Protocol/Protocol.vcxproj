@@ -36,7 +36,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../Bin/$(ProjectName)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../Output/$(ProjectName)/$(Configuration)\</IntDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
@@ -70,11 +70,15 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Src\Protocol\GYLogout.cpp" />
+    <ClCompile Include="..\..\Src\Protocol\GYLogin.cpp" />
     <ClCompile Include="..\..\Src\Protocol\GYProtocolDefine.cpp" />
     <ClCompile Include="..\..\Src\Protocol\GYSCTest.cpp" />
     <ClCompile Include="..\..\Src\Protocol\GYTestPacket.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Src\Protocol\GYLogout.h" />
+    <ClInclude Include="..\..\Src\Protocol\GYLogin.h" />
     <ClInclude Include="..\..\Src\Protocol\GYProtocolDefine.h" />
     <ClInclude Include="..\..\Src\Protocol\GYProtocolID.h" />
     <ClInclude Include="..\..\Src\Protocol\GYSCTest.h" />

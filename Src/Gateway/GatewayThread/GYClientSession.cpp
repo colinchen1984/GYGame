@@ -10,6 +10,7 @@
 #include "GYProtocolDefine.h"
 #include "GYStreamSerialization.h"
 #include "GYServer.h"
+#include "GYLogout.h"
 #include <stdio.h>
 GYClientSession::GYClientSession()
 {
@@ -125,6 +126,7 @@ GYVOID GYClientSession::_OnReceiveWithServer()
 		|| GY_SOCKET_OPERATION_ERROR_CODE_FAIL_TO_CHECK_SOCKET_CORE_BUFFER == result
 		|| GY_SOCKET_OPERATION_ERROR_CODE_CONNECTION_CLOSED == result)
 	{
+		_ConnectionClose();
 		Release();
 		return;
 	}
@@ -252,6 +254,13 @@ GYVOID GYClientSession::SetGUID( const GYGUID& guid )
 	m_clientGUID = guid;
 	GYGatewayThread& gatewayThread = *static_cast<GYGatewayThread*>(m_server);
 	gatewayThread.RegisteSession(*this);
+}
+
+GYVOID GYClientSession::_ConnectionClose()
+{
+	GYLogout packet;
+	packet.SetUserID(GetGUID());
+	SendPacketToLogic(packet);
 }
 
 

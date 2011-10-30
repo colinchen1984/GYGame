@@ -11,7 +11,11 @@
 class GYClientSession;
 class GYPacketInteface;
 
+//测试包
 extern GYBOOL GYTestPacketHandler(GYClientSession& session, GYPacketInteface& packet);
 extern GYBOOL GYSCTestPacketHandler(GYClientSession& session, GYPacketInteface& packet);
+
+//登陆包
+extern GYBOOL GYLoginPacketHandler(GYClientSession& session, GYPacketInteface& packet);
 
 #endif

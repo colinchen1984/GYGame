@@ -1,5 +1,5 @@
 ﻿/////////////////////////////////////////////
-// create time: 2011/10/26 20:20
+// create time: 2011/10/30 21:44
 // author:	colin chen
 // file name:	GYSCTest
 // file type:	cpp

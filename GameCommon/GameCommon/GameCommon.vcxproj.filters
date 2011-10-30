@@ -19,6 +19,7 @@
       <Filter>TimeController</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Src\GameCommon\CommonDefine\GYCommonDefine.cpp" />
+    <ClCompile Include="..\..\Src\GameCommon\CommonDefine\GYINIReader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Src\GameCommon\CommonDefine\String\GYString.h">
@@ -38,5 +39,8 @@
     <ClInclude Include="..\..\Src\GameCommon\CommonDefine\GYObject.h" />
     <ClInclude Include="..\..\Src\GameCommon\CommonDefine\GYSerialization.h" />
     <ClInclude Include="..\..\Src\GameCommon\CommonDefine\GYTimeStamp.h" />
+    <ClInclude Include="..\..\Src\GameCommon\CommonDefine\GYMath.h" />
+    <ClInclude Include="..\..\Src\GameCommon\CommonDefine\GYMisc.h" />
+    <ClInclude Include="..\..\Src\GameCommon\CommonDefine\GYINIReader.h" />
   </ItemGroup>
 </Project>

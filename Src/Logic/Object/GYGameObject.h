@@ -14,10 +14,12 @@ class GYGameObject : public GYObject
 {
 protected:
 	GYGameObject(){};
-	~GYGameObject(){};
+	virtual ~GYGameObject(){};
 public:
 	virtual const GYGUID&	GetGUID() const = 0;
 	virtual EM_GAME_OBJECT_TYPE GetObjectType() const = 0;
+	virtual GYINT32 Init() = 0;
 };
 
 #endif
+

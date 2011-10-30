@@ -18,6 +18,7 @@ struct GYSceneConfig
 	GYINT32		SceneLength;		// 场景长度
 	GYINT32		SceneWight;			// 场景宽度
 	GYINT32		ZoneSize;			// 场景内区域的宽度
+	GYINT32		MaxHumanInScene;	// 场景内最大玩家数目
 	GYString	AreaConfigFileName;	// 场景内事件区域配置文件名
 
 	GYSceneConfig();
@@ -45,3 +46,4 @@ struct GYAreaConfig
 	GYVOID Serializ(GYSerializationInteface& seralizer);
 };
 #endif
+

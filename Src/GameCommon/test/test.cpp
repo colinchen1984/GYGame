@@ -14,6 +14,7 @@
 #include "GYEvent.h"
 #include "GYReactor.h"
 #include "GYTable.h"
+#include "GYINIReader.h"
 #include <list>
 #include <set>
 #include <stdio.h>
@@ -119,6 +120,8 @@ GYINT32 main()
 #endif 
 
 	strManager->Init();
+	GYString value(*strManager);
+	GYINT32 result = ReadINIStringValue("./ex.ini", "Test", "   id   ", value);
 	GYTableSerialization testOs;
 	const char* name = "test.tab";
 	GYString testString1(name, strlen(name), *strManager);
@@ -127,7 +130,7 @@ GYINT32 main()
 	tableFile.Load(testString1.c_str());
 	GYUINT64 end = GYTimeController::GetCpuTime() - begin;
 	GYHashTable<GYINT32> testHash;
-	testHash.Init(32 * 4, 1024);
+	testHash.Init(32 * 2, 1024);
 	GYINT32 allCOunt = 0;
 	begin = GYTimeController::GetCpuTime();
 	for (GYINT32 i = 3; i < tableFile.GetTableRowCount(); ++i)
@@ -144,7 +147,23 @@ GYINT32 main()
 		}
 		
 	}
-	end = GYTimeController::GetCpuTime();
+
+	for (GYINT32 i = 3; i < tableFile.GetTableRowCount(); ++i)
+	{
+		const TestStructTable& row = *tableFile.GetRowByIndex(i);
+		for (GYINT32 t = 0; t < 4; ++t)
+		{
+			GYINT32* result = testHash.Find(row.testArray[t]);
+			if(t != *result)
+			{
+				printf("%llu is in hash already and count is %d\n", row.testArray[t], ++allCOunt);
+
+			}
+		}
+
+	}
+
+	end = GYTimeController::GetCpuTime() - begin;
 	printf("\n\n\n\n%llu", end);
 	return 0;
 	tableFile[2];
@@ -209,6 +228,7 @@ GYINT32 main()
 		t.m_termTime = 30;
 		reactor.RunOnce(t);
 	}
+
 	return 0;
 }
 

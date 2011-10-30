@@ -91,6 +91,7 @@
     <ClCompile Include="..\..\Src\Gateway\GatewayThread\GYClientProcessData.cpp" />
     <ClCompile Include="..\..\Src\Gateway\GatewayThread\GYClientSession.cpp" />
     <ClCompile Include="..\..\Src\Gateway\GatewayThread\GYGatewayThread.cpp" />
+    <ClCompile Include="..\..\Src\Gateway\PacketHandler\GYLoginPacketHandler.cpp" />
     <ClCompile Include="..\..\Src\Gateway\Packet\GYPacketFactoryManager.cpp" />
     <ClCompile Include="..\..\Src\Gateway\Packet\GYPacketFactoryRegister.cpp" />
     <ClCompile Include="..\..\Src\Gateway\PacketHandler\GYSCTestPacketHandler.cpp" />

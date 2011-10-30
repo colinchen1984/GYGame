@@ -15,15 +15,9 @@
     <ClInclude Include="..\..\Src\GameCommon\GameLogicCommon\GYObjectCommenDefine.h" />
     <ClInclude Include="..\..\Src\GameCommon\GameLogicCommon\GYPosition.h" />
     <ClInclude Include="..\..\Src\GameCommon\GameLogicCommon\GYRect.h" />
-    <ClInclude Include="..\..\Src\GameCommon\GameLogicCommon\Scene\GYArea.h" />
-    <ClInclude Include="..\..\Src\GameCommon\GameLogicCommon\Scene\GYScene.h" />
-    <ClInclude Include="..\..\Src\GameCommon\GameLogicCommon\Scene\GYZone.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Src\GameCommon\GameLogicCommon\GameTableDefine\GYGameTableDefine.cpp" />
-    <ClCompile Include="..\..\Src\GameCommon\GameLogicCommon\Scene\GYArea.cpp" />
-    <ClCompile Include="..\..\Src\GameCommon\GameLogicCommon\Scene\GYScene.cpp" />
-    <ClCompile Include="..\..\Src\GameCommon\GameLogicCommon\Scene\GYZone.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5FD31C0C-7462-4DAF-8DB0-16C084F2FCD0}</ProjectGuid>

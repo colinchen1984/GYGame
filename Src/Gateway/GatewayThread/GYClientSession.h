@@ -71,6 +71,8 @@ private:
 	GYVOID	_OnReceiveWithNoServer();
 
 	GYVOID	_ProcessInputData(GYPacketFactoryManager& packetFactory, const GYPacketHead& packetHead);
+
+	GYVOID _ConnectionClose();
 };
 
 #endif

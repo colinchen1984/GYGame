@@ -35,6 +35,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Src\Gateway\GYServer.cpp" />
     <ClCompile Include="..\..\Src\Gateway\main.cpp" />
+    <ClCompile Include="..\..\Src\Gateway\PacketHandler\GYLoginPacketHandler.cpp">
+      <Filter>PacketHandler</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Src\Gateway\GatewayThread\GYClientSession.h">

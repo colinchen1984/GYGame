@@ -8,12 +8,13 @@
 #ifndef __GYAREA_H__
 #define __GYAREA_H__
 #include "GYCommonDefine.h"
+#include "GYObject.h"
 class GYObjectHuman;
 class GYCreature;
 class GYScene;
 struct GYAreaConfig;
 
-class GYArea 
+class GYArea : public GYObject
 {
 	GYScene*					m_scene;						//所在场景
 	const GYAreaConfig*			m_areaConfig;					//事件区域配置
@@ -28,3 +29,4 @@ public:
 };
 
 #endif
+

@@ -11,17 +11,17 @@
 #include "GYArray.h"
 class GYScene;
 class GYArea;
-class GYObjectHuman;
+class GYHuman;
 class GYCreature;
 
 class GYZone
 {
-	GYPointArray<GYArea> m_area;
-// 	GYPointArray<GYObjectHuman> m_objectHumanSet;
-// 	GYPointArray<GYCreature> m_objectGYCreatureSet;
-	GYRect		m_rect;
-	GYScene*	m_scene;
-	GYINT32		m_id;
+	GYPointArray<GYArea>			m_area;
+ 	GYPointArray<GYHuman>			m_objectHumanSet;
+// 	GYPointArray<GYCreature>		m_objectGYCreatureSet;
+	GYRect							m_rect;
+	GYScene*						m_scene;
+	GYINT32							m_id;
 public:
 	GYZone();
 	~GYZone();
@@ -29,6 +29,11 @@ public:
 	GYINT32 Init(GYScene& scene, GYINT32 id, const GYRect& rect);
 
 	GYINT32 AddArea(GYArea& area);
+
+	GYINT32 AddHuman(GYHuman& human);
+
+	GYINT32 RemoveHuman(GYHuman& human);
 };
 
 #endif
+

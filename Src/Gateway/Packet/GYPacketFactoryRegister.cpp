@@ -8,6 +8,8 @@
 #include "GYTestPacket.h"
 #include "GYPacketHandler.h"
 #include "GYSCTest.h"
+#include "GYLogin.h"
+
 GYVOID GYPacketFactoryManager::_RegisterPacket()
 {
 	GYPacketInteface* pPacket =GYNULL;
@@ -22,5 +24,8 @@ GYVOID GYPacketFactoryManager::_RegisterPacket()
 	m_packetFactoryBit[pPacket->GetPacketID()] = GYTRUE;
 	m_packetHandler[pPacket->GetPacketID()] = GYSCTestPacketHandler;
 
-	
+	pPacket = GYNew GYLogin(*m_stringManager);
+	m_packetFactory[pPacket->GetPacketID()] = pPacket;
+	m_packetFactoryBit[pPacket->GetPacketID()] = GYTRUE;
+	m_packetHandler[pPacket->GetPacketID()] = GYLoginPacketHandler;
 }

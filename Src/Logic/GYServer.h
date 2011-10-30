@@ -12,14 +12,17 @@
 #include "GYTableManager.h"
 #include "GYNetWorkManager.h"
 #include "GYScene.h"
+#include "GYObjectPool.h"
+#include "GYGameHuman.h"
 
 class GYServer
 {
-	StringMangerSingleton		m_stringManager;
-	GYPacketFactoryManager		m_packetFactoryManager;
-	GYTableManager				m_tableManger;
-	GYNetWorkManager			m_networkManager;
-	GYScene						m_scene;
+	StringMangerSingleton				m_stringManager;			//字符串管理器
+	GYPacketFactoryManager				m_packetFactoryManager;		//网络包工厂管理器
+	GYTableManager						m_tableManger;				//表格管理器
+	GYNetWorkManager					m_networkManager;			//网络管理器
+	GYScene								m_scene;					//场景
+	GYObjectPool<GYGUID, GYHuman>		m_humanPool;				//玩家对象池
 public:
 	GYServer();
 
@@ -31,8 +34,13 @@ public:
 
 	GYVOID	RunOnce();
 
+	GYINT32 AddHumanToScene(const GYGUID& guid, GYINT32 secneID);
+
+	GYINT32 RemoveHumanFromScene(const GYGUID& guid);
+
 	static GYServer& GetSingleton();
 };
 
 #define GETLOGICSERVER GYServer::GetSingleton()
 #endif
+

@@ -1,26 +1,26 @@
 ﻿/////////////////////////////////////////////
 // create time: 2011/10/30 21:44
 // author:	colin chen
-// file name:	GYTestPacket
+// file name:	GYLogin
 // file type:	cpp
 ////////////////////////////////////////////
-#include "GYTestPacket.h"
+#include "GYLogin.h"
 #include "GYProtocolDefine.h"
 #include "GYSerialization.h"
 
-GYVOID GYTestPacket::Serializ( GYSerializationInteface& serializer )
+GYVOID GYLogin::Serializ( GYSerializationInteface& serializer )
 {
 		serializer << UserID;
 	serializer << Name;
-	serializer << GatewayReceiveTime;
+	serializer << SceneID;
 
 }
 
-GYVOID GYTestPacket::CleanUp()
+GYVOID GYLogin::CleanUp()
 {
 		UserID = INVALID_VALUE;
 	Name.CleanUp();
-	GatewayReceiveTime = INVALID_VALUE;
+	SceneID = INVALID_VALUE;
 	
 }
 
