@@ -210,7 +210,7 @@ GYSerializationInteface& GYTableSerialization::operator<<(GYUINT32& value)
 	GYAssert(readDataCount > 1);
 	const GYCHAR* pData = _GetDataString(pDataStart, pDataEnd);
 	GYAssert(GYNULL != pData);
-	sscanf(pDataStart, "%llu", &value);
+	sscanf(pDataStart, "%u", &value);
 	m_serializationDataCount += readDataCount;
 	return *this;
 }
@@ -227,7 +227,11 @@ GYSerializationInteface& GYTableSerialization::operator<<(GYINT64& value)
 	GYAssert(readDataCount > 1);
 	const GYCHAR* pData = _GetDataString(pDataStart, pDataEnd);
 	GYAssert(GYNULL != pData);
-	sscanf(pDataStart, "%ll", &value);
+#ifdef WIN32
+	value = _atoi64(pData);
+#else 
+	value = strtoll(pData, GYNULL, 10);
+#endif
 	m_serializationDataCount += readDataCount;
 	return *this;
 }
@@ -246,7 +250,7 @@ GYSerializationInteface& GYTableSerialization::operator<<( GYUINT64& value )
 	const GYCHAR* pData = _GetDataString(pDataStart, pDataEnd);
 	GYAssert(GYNULL != pData);
 #ifdef WIN32
-	value = _atoi64(pData);
+	value = _atoui64(pData);
 #else 
 	value = strtoull(pData, GYNULL, 10);
 #endif

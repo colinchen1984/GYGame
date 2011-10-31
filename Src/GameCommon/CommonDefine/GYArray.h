@@ -34,7 +34,7 @@ public:
 
 	T&	operator[](GYINT32 index)
 	{
-		GYAssert(index >= 0 && index < m_currentCount)
+		GYAssert(index >= 0 && index < m_currentCount);
 		return m_dataArray[index];
 	}
 };

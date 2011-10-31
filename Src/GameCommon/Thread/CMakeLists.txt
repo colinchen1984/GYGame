@@ -8,7 +8,7 @@ SET(CMAKE_CXX_COMPILER "g++")
 #ADD_SUBDIRECTORY(./ ./Test)
 INCLUDE_DIRECTORIES(../CommonDefine ../CommonDefine/String ../CommonDefine/TimeController)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/Lib)
-SET(SOURCE_DEFULT ./GYThread.cpp ./GYThreadCommon.cpp ./GYThreadPool.cpp ./GYMutex.cpp ./GYCondition.cpp ./GYFastMutex.cpp)
+SET(SOURCE_DEFULT ./GYThread.cpp ./GYFastMutex.cpp ./GYMutex.cpp ./GYThreadPool.cpp ./GYCondition.cpp ./GYThreadCommon.cpp)
 
 ADD_LIBRARY(Thread ${SOURCE_DEFULT} )
 TARGET_LINK_LIBRARIES(Thread pthread)

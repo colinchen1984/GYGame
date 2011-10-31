@@ -10,7 +10,7 @@ INCLUDE_DIRECTORIES(../GameCommon/CommonDefine)
 INCLUDE_DIRECTORIES(../GameCommon/CommonDefine/String)
 INCLUDE_DIRECTORIES(../GameCommon/CommonDefine/TimeController)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/Lib)
-SET(SOURCE_DEFULT ./GYProtocolDefine.cpp ./GYTestPacket.cpp ./GYSCTest.cpp)
+SET(SOURCE_DEFULT ./GYProtocolDefine.cpp ./GYSCTest.cpp ./GYLogin.cpp ./GYLogout.cpp ./GYTestPacket.cpp)
 SET(PROTOCOLTOOL )
 
 ADD_LIBRARY(Protocol ${SOURCE_DEFULT} ${PROTOCOLTOOL} )

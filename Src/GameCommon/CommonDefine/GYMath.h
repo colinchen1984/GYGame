@@ -8,7 +8,12 @@
 #ifndef __GYMATH_H__
 #define __GYMATH_H__
 #include "GYCommonDefine.h"
+#ifdef WIN32
 #include <math.h>
+#endif
+#ifdef LINUX64
+#include <stdlib.h>
+#endif
 
 class GYMath
 {

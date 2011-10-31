@@ -49,7 +49,7 @@ typedef unsigned long long		GYUINT64;
 typedef float					GYFLOAT;
 typedef void					GYVOID;
 typedef char					GYBOOL;
-GYStaticAssert(8 == sizeof(GYVOID*), "LINUX64 micro is for 64-bit platform only");
+//GYStaticAssert(8 == sizeof(GYVOID*), "LINUX64 micro is for 64-bit platform only");
 #endif
 GYStaticAssert(1 == sizeof(GYCHAR), "sizeof GYCHAR isn't 1");
 GYStaticAssert(1 == sizeof(GYBOOL), "sizeof GYBOOL isn't 1");

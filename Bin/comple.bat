@@ -8,7 +8,7 @@ rm -rf *
 cmake ../../Src/GameCommon/CommonDefine
 make clean
 make
-cd ./GameLogicCommon
+cd ../GameLogicCommon
 rm -rf *
 cmake ../../Src/GameCommon/GameLogicCommon
 make clean
