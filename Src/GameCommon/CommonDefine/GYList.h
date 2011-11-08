@@ -8,6 +8,8 @@
 #ifndef __GYLIST_H__
 #define __GYLIST_H__
 #include "GYCommonDefine.h"
+
+
 template<typename T>
 class GYList
 {
@@ -119,5 +121,16 @@ public:
 		return GYTRUE;
 	}
 	
+	typedef GYVOID (*ForEach)(T& element, GYVOID* param);
+
+	GYVOID ForEachElement(ForEach function, GYVOID* param)
+	{
+		T* element = m_list;
+		while (GYNULL != element)
+		{
+			function(*element, param);
+		}
+	}
+
 };
 #endif

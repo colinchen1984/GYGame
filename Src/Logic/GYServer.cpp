@@ -94,6 +94,7 @@ GYVOID GYServer::RunOnce()
 	GYTimeStamp time;
 	time.m_termTime = 30;
 	m_networkManager.RunOnce(time);
+	m_scene.Tick(30);
 }
 
 GYINT32 GYServer::AddHumanToScene( const GYGUID& guid, GYINT32 secneID )
@@ -112,9 +113,12 @@ GYINT32 GYServer::AddHumanToScene( const GYGUID& guid, GYINT32 secneID )
 		{
 			break;
 		}
+		pHuman->SetGUID(guid);
+		pHuman->Init();
 
 		GYPosition position(100.0f, 100.0f);
-		if(0 != m_scene.AddHuman(*pHuman, position))
+		pHuman->SetPosition(position);
+		if(0 != m_scene.AddCreature(*pHuman, position))
 		{
 			m_humanPool.ReleaseObject(guid, *pHuman);
 			break;
@@ -135,7 +139,7 @@ GYINT32 GYServer::RemoveHumanFromScene( const GYGUID& guid )
 			break;
 		}
 
-		if(0 != m_scene.RemoveHuman(*pHuman))
+		if(0 != m_scene.RemoveCreature(*pHuman))
 		{
 			m_humanPool.ReleaseObject(guid, *pHuman);
 			break;
@@ -146,4 +150,9 @@ GYINT32 GYServer::RemoveHumanFromScene( const GYGUID& guid )
 		result = 0;
 	} while (GYFALSE);
 	return result;
+}
+
+GYScene* GYServer::GetSceneByID( GYINT32 sceneID )
+{
+	return &m_scene;
 }

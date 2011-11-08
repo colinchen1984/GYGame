@@ -18,15 +18,28 @@ class GYHuman : public GYCreature
 public:
 	virtual	~GYHuman();
 
-	virtual const GYGUID&	GetGUID() const;
+	GYINLINE virtual const GYGUID&	GetGUID() const { return m_guid;};
 
-	virtual EM_GAME_OBJECT_TYPE GetObjectType() const;
+	GYINLINE virtual GYVOID	SetGUID(const GYGUID& guid){ m_guid = guid; };
+
+	GYINLINE virtual EM_GAME_OBJECT_TYPE GetObjectType() const{return EM_GAME_OBJECT_TYPE_HUMAN;};
 
 	virtual GYINT32 Init();
 
-	GYINLINE virtual GYVOID SetPosition(const GYPosition& position){ m_position = position;}
 
 	GYINLINE virtual const GYPosition& GetPosition() const { return m_position;}
+
+	virtual GYVOID Tick(GYUINT32 frameTime);
+
+	virtual GYVOID OnEnterScene(GYScene& scene);
+
+	virtual GYVOID OnLeaveScene(GYScene& scene);
+
+	GYINLINE virtual GYINT32 GetCurrentSceneID() const {return m_currentSceneID;};
+
+
+private:
+	GYINLINE virtual GYVOID _SetPosition(const GYPosition& position){ m_position = position;}
 
 protected:
 	GYHuman();
@@ -36,6 +49,7 @@ private:
 	//暂时采用下面的方式存放数据
 	GYGUID		m_guid;
 	GYPosition	m_position;
+	GYINT32		m_currentSceneID;
 };
 
 #endif

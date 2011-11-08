@@ -5,7 +5,7 @@
 // file type:	cpp
 ////////////////////////////////////////////
 #include "GYGameHuman.h"
-
+#include "GYScene.h"
 
 GYHuman::GYHuman()
 {
@@ -17,18 +17,23 @@ GYHuman::~GYHuman()
 
 }
 
-const GYGUID& GYHuman::GetGUID() const
-{
-	return m_guid;
-}
-
-EM_GAME_OBJECT_TYPE GYHuman::GetObjectType() const
-{
-	return EM_GAME_OBJECT_TYPE_HUMAN;
-}
-
 GYINT32 GYHuman::Init()
 {
 	return 0;
+}
+
+GYVOID GYHuman::Tick( GYUINT32 frameTime )
+{
+
+}
+
+GYVOID GYHuman::OnEnterScene( GYScene& scene )
+{
+	m_currentSceneID = scene.GetSceneID();
+}
+
+GYVOID GYHuman::OnLeaveScene( GYScene& scene )
+{
+	m_currentSceneID = INVALID_VALUE;
 }
 

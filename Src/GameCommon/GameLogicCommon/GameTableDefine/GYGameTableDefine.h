@@ -19,6 +19,7 @@ struct GYSceneConfig
 	GYINT32		SceneWight;			// 场景宽度
 	GYINT32		ZoneSize;			// 场景内区域的宽度
 	GYINT32		MaxHumanInScene;	// 场景内最大玩家数目
+	GYINT32		SysnRange;			// 同步范围
 	GYString	AreaConfigFileName;	// 场景内事件区域配置文件名
 
 	GYSceneConfig();

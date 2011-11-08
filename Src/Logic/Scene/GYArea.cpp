@@ -9,6 +9,7 @@
 #include "GYGameTableDefine.h"
 #include "GYScene.h"
 #include "GYZone.h"
+#include "GYGameCreature.h"
 
 GYArea::GYArea()
 {
@@ -55,3 +56,22 @@ const GYGUID& GYArea::GetGUID()	const
 	return m_areaGUID;
 }
 
+GYVOID GYArea::OnTickCreature( GYCreature& creature, GYUINT32 frameTime )
+{
+
+}
+
+GYINT32 GYArea::OnAddCreature( GYCreature& creature )
+{
+	return 0;
+}
+
+GYINT32 GYArea::OnRemoveCreature( GYCreature& creature )
+{
+	return 0;
+}
+
+GYINT32 GYArea::Release()
+{
+	return 0;
+}

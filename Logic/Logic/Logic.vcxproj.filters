@@ -16,9 +16,6 @@
     <Filter Include="Object">
       <UniqueIdentifier>{dc3983f8-4ba9-416b-8cc0-172b7adc8d56}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GameLogicCommon">
-      <UniqueIdentifier>{c69a7ff5-dd29-438c-9a99-b00fc06cec11}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ObjectPool">
       <UniqueIdentifier>{c1d1f03d-7985-4dde-8420-67336df2038c}</UniqueIdentifier>
     </Filter>
@@ -65,6 +62,9 @@
     <ClCompile Include="..\..\Src\Logic\PacketHandler\GYLogoutPacketHandler.cpp">
       <Filter>PacketHandler</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Src\Logic\Object\GYGameCreature.cpp">
+      <Filter>Object</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Src\Logic\Table\GYTableManager.h">
@@ -86,9 +86,6 @@
       <Filter>Packet</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Src\Logic\GYServer.h" />
-    <ClInclude Include="..\..\Src\GameLogicCommon\GYObjectCommenDefine.h">
-      <Filter>GameLogicCommon</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Src\GameLogicCommon\GameTableDefine\GYGameTableDefine.h">
       <Filter>Table</Filter>
     </ClInclude>

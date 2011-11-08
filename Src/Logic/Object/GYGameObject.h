@@ -10,14 +10,20 @@
 #include "GYObject.h"
 #include "GYObjectCommenDefine.h"
 
+//提供通过GUID以及object type相关接口
 class GYGameObject : public GYObject
 {
 protected:
 	GYGameObject(){};
+
 	virtual ~GYGameObject(){};
 public:
 	virtual const GYGUID&	GetGUID() const = 0;
+
+	virtual GYVOID	SetGUID(const GYGUID& guid) = 0;
+
 	virtual EM_GAME_OBJECT_TYPE GetObjectType() const = 0;
+
 	virtual GYINT32 Init() = 0;
 };
 

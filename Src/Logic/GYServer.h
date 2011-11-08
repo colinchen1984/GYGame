@@ -38,6 +38,8 @@ public:
 
 	GYINT32 RemoveHumanFromScene(const GYGUID& guid);
 
+	GYScene* GetSceneByID(GYINT32 sceneID);
+
 	static GYServer& GetSingleton();
 };
 

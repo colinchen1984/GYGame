@@ -8,7 +8,7 @@
 #include "GYGameTableDefine.h"
 #include "GYArea.h"
 #include "GYZone.h"
-#include "GYGameHuman.h"
+#include "GYGameCreature.h"
 
 GYScene::GYScene()
 {
@@ -64,40 +64,68 @@ GYINT32 GYScene::Init( const GYSceneConfig& sceneDefine )
 			point.m_z = static_cast<GYFLOAT>((z + 1) * sceneDefine.ZoneSize);
 			zoneRect.m_pointB =  point;
 			GYINT32 sceneID = z * m_maxXZoneCount + x;
-			m_zone[sceneID].Init(*this, sceneID, zoneRect);
+			m_zone[sceneID].Init(*this, sceneID, zoneRect, x, z);
 		}
 	}
-
+	m_oldSyncZoneID.Init((2 * sceneDefine.SysnRange -1) * (2 * sceneDefine.SysnRange -1));
+	m_newSyncZoneID.Init((2 * sceneDefine.SysnRange -1) * (2 * sceneDefine.SysnRange -1));
 	if (0 != _LoadAreaData(sceneDefine.AreaConfigFileName))
 	{
 		Release();
 		return INVALID_VALUE;
 	}
-	m_humanSet.Init(sceneDefine.MaxHumanInScene);
+
+	for (GYINT32 i = 0; i < EM_GAME_OBJECT_TYPE_COUNT; ++i)
+	{
+		m_creatureSet[i].Init(sceneDefine.MaxHumanInScene);
+	}
+
 	return 0;
 }										 
 
 //对于位置处于zone与zone的边界的问题，采用左闭右开的原则
 GYINT32 GYScene::GetZoneID( const GYPosition& position ) const
 {
-	GYAssert(position.m_x >= 0.0f && position.m_x <= m_sceneConfig->SceneLength);
-	GYAssert(position.m_z >= 0.0f && position.m_z <= m_sceneConfig->SceneWight);
-	GYINT32 xIndex = static_cast<GYINT32>(position.m_x / m_sceneConfig->ZoneSize);
-	GYINT32 zIndex = static_cast<GYINT32>(position.m_z / m_sceneConfig->ZoneSize);
-	GYINT32 sceneID = zIndex * m_maxXZoneCount + xIndex;
+	GYINT32 sceneID = INVALID_VALUE;
+	if(position.m_x >= 0.0f && position.m_x <= m_sceneConfig->SceneLength)
+	{
+		if (position.m_z >= 0.0f && position.m_z <= m_sceneConfig->SceneWight)
+		{
+			GYINT32 xIndex = static_cast<GYINT32>(position.m_x / m_sceneConfig->ZoneSize);
+			GYINT32 zIndex = static_cast<GYINT32>(position.m_z / m_sceneConfig->ZoneSize);
+			sceneID = zIndex * m_maxXZoneCount + xIndex;
+		}
+	}
 	return sceneID; 
 }
 
 GYINT32 GYScene::Release()
 {
+	for (GYINT32 i = 0; i < EM_GAME_OBJECT_TYPE_COUNT; ++i)
+	{
+		GYINT32 creatureCount = m_creatureSet[i].GetCurrentItemCount();
+		//TODO 通知场景内所有玩家离开场景,保持相关数据
+		m_creatureSet[i].Release();
+	}
+	for (GYINT32 i = 0; i < m_zoneCount; ++i)
+	{
+		m_zone[i].Release();
+	}
 	GYDelete[] m_zone;
-	GYDelete[] m_Area;
 	m_zone = GYNULL;
+	for (GYINT32 i = 0; i < m_sceneAreaDefine.GetTableRowCount(); ++i)
+	{
+		m_Area[i].Release();
+	}
+	GYDelete[] m_Area;
 	m_Area = GYNULL;
+
 	m_sceneConfig = GYNULL;
 	m_maxXZoneCount = 0;
 	m_maxZZoneCount = 0;
 	m_sceneAreaDefine.Release();
+	m_oldSyncZoneID.Release();
+	m_newSyncZoneID.Release();
 	return 0;
 }
 
@@ -156,7 +184,7 @@ GYINT32 GYScene::GetMaxZZoneCount() const
 	return m_maxZZoneCount;
 }
 
-GYINT32 GYScene::AddHuman( GYHuman& human, const GYPosition& position )
+GYINT32 GYScene::AddCreature(GYCreature& creature, const GYPosition& position)
 {
 	GYINT32 result = INVALID_VALUE;
 	do 
@@ -167,43 +195,43 @@ GYINT32 GYScene::AddHuman( GYHuman& human, const GYPosition& position )
 			break;
 		}
 
-		if (GYTRUE != m_humanSet.Add(human))
+		if (GYTRUE != m_creatureSet[creature.GetObjectType()].Add(creature))
 		{
 			break;
 		}
 
-		if (0 != pZone->AddHuman(human))
+		if (0 != pZone->AddCreature(creature))
 		{
-			m_humanSet.Delete(human);
+			m_creatureSet[creature.GetObjectType()].Delete(creature);
 			break;
 		}
-		human.SetPosition(position);
-		human.OnEnterScene();
+		creature.SetPosition(position);
+		creature.OnEnterScene(*this);
 		result = 0;
-		
+
 	} while (GYFALSE);
 	return result;
 }
 
-GYINT32 GYScene::RemoveHuman( GYHuman& human )
+GYINT32 GYScene::RemoveCreature(GYCreature& creature)
 {
 	GYINT32 result = INVALID_VALUE;
 	do 
 	{
-		GYZone* pZone = GetZone(human.GetPosition());
+		GYZone* pZone = GetZone(creature.GetPosition());
 		if (GYNULL == pZone)
 		{
 			break;
 		}
 
-		human.OnLeaveScene();
+		creature.OnLeaveScene(*this);
 
-		if (0 != pZone->RemoveHuman(human))
+		if (0 != pZone->RemoveCreature(creature))
 		{
 			break;
 		}
 
-		if (0 != m_humanSet.Delete(human))
+		if (0 !=  m_creatureSet[creature.GetObjectType()].Delete(creature))
 		{
 			break;
 		}
@@ -213,3 +241,62 @@ GYINT32 GYScene::RemoveHuman( GYHuman& human )
 	} while (GYFALSE);
 	return result;
 }
+
+GYVOID GYScene::Tick( GYUINT32 frameTime )
+{
+	for (GYINT32 i = 0; i < EM_GAME_OBJECT_TYPE_COUNT; ++i)
+	{
+		GYINT32 creatureCount = m_creatureSet[i].GetCurrentItemCount();
+		for (GYINT32 t = 0; t < creatureCount; ++i)
+		{
+			m_creatureSet[i][t]->Tick(frameTime);
+		}
+	}
+
+	for (GYINT32 i = 0; i < m_zoneCount; ++i)
+	{
+		m_zone[i].Tick(frameTime);
+	}
+}
+
+GYVOID GYScene::OnCreatureChangePosition(GYCreature& creature, const GYPosition& beforChange, const GYPosition& afterChange)
+{
+	GYZone* pBeforZone = GetZone(beforChange);
+	GYZone* pAfterZone = GetZone(afterChange);
+	if (pBeforZone == pAfterZone)
+	{
+		return;
+	}
+
+	//设同步范围为n
+	//则以当前Zone为中心,取正方形
+	//变长为2n-1
+	//整个同步面积为(2n-1)(2n-1)
+
+	//1 通知在pBeforZone同步范围内,不在pAfterZone同步范围内的玩家
+	//删除该creature
+
+	//2 通知不在pBeforZone同步范围内,在pAfterZone同步范围内的玩家
+	//添加该creature
+
+	//3 如果该creature是玩家,通知该玩家删除在pBeforZone同步范围内,不在pAfterZone同步范围内的creature
+
+	//4 如果该creature是玩家,通知该玩家添加不在pBeforZone同步范围内,在pAfterZone同步范围内的creature
+
+}
+
+GYVOID GYScene::_GetSyncRange(GYZone& centerZone, GYINT32 syncRange, GYArray<GYINT32>& array )
+{
+	array.CleanUp();
+	GYINT32 leftXID = centerZone.GetXID() - syncRange;
+	leftXID = leftXID >= 0 ? leftXID : 0;
+	GYINT32 leftZID = centerZone.GetZID() - syncRange;
+	leftXID = leftZID >= 0 ? leftZID : 0;
+	GYINT32 rightXID = centerZone.GetXID + syncRange;
+	rightXID = rightXID >= m_maxXZoneCount ? m_maxXZoneCount - 1 : rightXID;
+	GYINT32 rightZID = centerZone.GetZID() + syncRange;
+	rightZID = rightZID >= m_maxZZoneCount ? m_maxZZoneCount - 1 : rightZID;
+
+
+}
+

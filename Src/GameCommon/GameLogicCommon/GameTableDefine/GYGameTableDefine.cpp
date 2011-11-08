@@ -29,12 +29,13 @@ GYVOID GYSceneConfig::Serializ( GYSerializationInteface& seralizer )
 	seralizer << SceneWight;
 	seralizer << ZoneSize;
 	seralizer << MaxHumanInScene;
+	seralizer << SysnRange;
 	seralizer << AreaConfigFileName;
 }
 
 const GYCHAR* GYSceneConfig::GetTableFileName()
 {
-	static const GYCHAR* pTableName = "../Game/Table/GYSceneDefin.tab";
+	static const GYCHAR* pTableName = "../Game/Table/GYSceneDefine.tab";
 	return pTableName;
 }
 

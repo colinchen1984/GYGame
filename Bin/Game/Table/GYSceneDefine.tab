@@ -1,0 +1,5 @@
+﻿场景ID	场景名	场景宽度	场景长度	区域大小	场景内最大人数	场景同步范围	区域配置文件
+INT	STR	INT	INT	INT	INT	INT	STR
+#1	注释哦亲	256	256	8	100	10	
+1	测试场景	512	512	1	16	3	./Scene/TestScene/Area.tab
+2	新手村	512	512	1	16	4	./Scene/TestScene/Area.tab
