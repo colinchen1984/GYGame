@@ -7,7 +7,7 @@
 #include "GYZone.h"
 #include "GYArea.h"
 #include "GYGameHuman.h"
-
+#include "GYPacketHandler.h"
 GYZone::GYZone()
 {
 
@@ -74,7 +74,7 @@ GYINT32 GYZone::RemoveCreature(GYCreature& creature)
 	return result;
 }
 
-GYVOID GYZone::_ForEach(GYCreature& creature, GYVOID* param)
+GYVOID GYZone::_AreaTickForEach(GYCreature& creature, GYVOID* param)
 {
 	GYZone* pZone = reinterpret_cast<GYZone*>(param);
 	if (GYNULL != pZone)
@@ -86,13 +86,22 @@ GYVOID GYZone::_ForEach(GYCreature& creature, GYVOID* param)
 		}
 	}
 }
+
 GYVOID GYZone::Tick( GYUINT32 frameTime )
 {
 	m_frameTime = frameTime;
 	for (GYINT32 i = 0; i < EM_GAME_OBJECT_TYPE_COUNT; ++i)
 	{
-		m_creatureSet[i].ForEachElement(_ForEach, this);
+		m_creatureSet[i].ForEachElement(_AreaTickForEach, this);
 	}
 	
 }
 
+GYVOID GYZone::_SendPacketForEach( GYCreature& creature, GYVOID* param )
+{
+	GYPacketInteface* packet = reinterpret_cast<GYPacketInteface*>(param);
+	if (GYNULL != packet)
+	{
+		creature.SendPacket(*packet);
+	}
+}

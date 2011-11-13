@@ -63,7 +63,7 @@ public:
 private:
 	GYINT32 _LoadAreaData(const GYString& areaConfigTableName);
 
-	GYVOID _GetSyncRange(GYZone& centerZone, GYINT32 syncRange, GYArray<GYINT32>& array);
+	GYVOID _GetSyncRange(const GYZone* beforZone, const GYZone* afertZone, GYINT32 syncRange, GYArray<GYINT32>& inBNotA, GYArray<GYINT32>& inANotB);
 };
 #endif
 

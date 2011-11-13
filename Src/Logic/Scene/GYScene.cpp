@@ -63,8 +63,8 @@ GYINT32 GYScene::Init( const GYSceneConfig& sceneDefine )
 			point.m_x = static_cast<GYFLOAT>((x + 1) * sceneDefine.ZoneSize);
 			point.m_z = static_cast<GYFLOAT>((z + 1) * sceneDefine.ZoneSize);
 			zoneRect.m_pointB =  point;
-			GYINT32 sceneID = z * m_maxXZoneCount + x;
-			m_zone[sceneID].Init(*this, sceneID, zoneRect, x, z);
+			GYINT32 zoneID = z * m_maxXZoneCount + x;
+			m_zone[zoneID].Init(*this, zoneID, zoneRect, x, z);
 		}
 	}
 	m_oldSyncZoneID.Init((2 * sceneDefine.SysnRange -1) * (2 * sceneDefine.SysnRange -1));
@@ -268,10 +268,7 @@ GYVOID GYScene::OnCreatureChangePosition(GYCreature& creature, const GYPosition&
 		return;
 	}
 
-	//设同步范围为n
-	//则以当前Zone为中心,取正方形
-	//变长为2n-1
-	//整个同步面积为(2n-1)(2n-1)
+	_GetSyncRange(pBeforZone, pAfterZone, m_sceneConfig->SysnRange, m_oldSyncZoneID, m_newSyncZoneID);
 
 	//1 通知在pBeforZone同步范围内,不在pAfterZone同步范围内的玩家
 	//删除该creature
@@ -285,18 +282,138 @@ GYVOID GYScene::OnCreatureChangePosition(GYCreature& creature, const GYPosition&
 
 }
 
-GYVOID GYScene::_GetSyncRange(GYZone& centerZone, GYINT32 syncRange, GYArray<GYINT32>& array )
+GYVOID GYScene::_GetSyncRange(const GYZone* beforZone, const GYZone* afterZone, GYINT32 syncRange, GYArray<GYINT32>& inBNotA, GYArray<GYINT32>& inANotB)
 {
-	array.CleanUp();
-	GYINT32 leftXID = centerZone.GetXID() - syncRange;
-	leftXID = leftXID >= 0 ? leftXID : 0;
-	GYINT32 leftZID = centerZone.GetZID() - syncRange;
-	leftXID = leftZID >= 0 ? leftZID : 0;
-	GYINT32 rightXID = centerZone.GetXID + syncRange;
-	rightXID = rightXID >= m_maxXZoneCount ? m_maxXZoneCount - 1 : rightXID;
-	GYINT32 rightZID = centerZone.GetZID() + syncRange;
-	rightZID = rightZID >= m_maxZZoneCount ? m_maxZZoneCount - 1 : rightZID;
+	GYAssert(syncRange > 0);
+	//不能同时为空
+	GYAssert(!(GYNULL == beforZone && GYNULL == afterZone));
+	inBNotA.CleanUp();
+	inANotB.CleanUp();
 
+	GYINT32 beforZoneLeftXID = INVALID_VALUE;
+	GYINT32 beforZoneLeftZID = INVALID_VALUE;
+	GYINT32 beforZoneRightXID = INVALID_VALUE;
+	GYINT32 beforZoneRightZID = INVALID_VALUE;
+
+	GYINT32 afterZoneLeftXID = INVALID_VALUE;
+	GYINT32 afterZoneLeftZID = INVALID_VALUE;
+	GYINT32 afterZoneRightXID = INVALID_VALUE;
+	GYINT32 afterZoneRightZID = INVALID_VALUE;
+	if (GYNULL != beforZone)
+	{
+		//这部分可以提前计算以节省CPU周期
+		beforZoneLeftXID = beforZone->GetXID() - syncRange;
+		beforZoneLeftXID = beforZoneLeftXID >= 0 ? beforZoneLeftXID : 0;
+		beforZoneLeftZID = beforZone->GetZID() - syncRange;
+		beforZoneLeftZID = beforZoneLeftZID >= 0 ? beforZoneLeftZID : 0;
+		beforZoneRightXID = beforZone->GetXID() + syncRange;
+		beforZoneRightXID = beforZoneRightXID >= m_maxXZoneCount ? m_maxXZoneCount - 1 : beforZoneRightXID;
+		beforZoneRightZID = beforZone->GetZID() + syncRange;
+		beforZoneRightZID = beforZoneRightZID >= m_maxZZoneCount ? m_maxZZoneCount - 1 : beforZoneRightZID;
+	}
+	if (GYNULL != afterZone)
+	{
+		afterZoneLeftXID = afterZone->GetXID() - syncRange;
+		afterZoneLeftXID = afterZoneLeftXID >= 0 ? afterZoneLeftXID : 0;
+		afterZoneLeftZID = afterZone->GetZID() - syncRange;
+		afterZoneLeftZID = afterZoneLeftZID >= 0 ? afterZoneLeftZID : 0;
+		afterZoneRightXID = afterZone->GetXID() + syncRange;
+		afterZoneRightXID = afterZoneRightXID >= m_maxXZoneCount ? m_maxXZoneCount - 1 : afterZoneRightXID;
+		afterZoneRightZID = afterZone->GetZID() + syncRange;
+		afterZoneRightZID = afterZoneRightZID >= m_maxZZoneCount ? m_maxZZoneCount - 1 : afterZoneRightZID;
+	}
+
+	if (GYNULL == beforZone)
+	{
+		//刚进入场景
+		for (GYINT32 z = afterZoneLeftZID; z <= afterZoneRightZID; ++z)
+		{
+			for (GYINT32 x = afterZoneLeftXID; x <=afterZoneRightXID; ++x)
+			{
+				inANotB.Add(z * m_maxXZoneCount + x);
+			}
+		}
+		return ;
+	}
+
+	if (GYNULL == afterZone)
+	{
+		//离开场景
+		for (GYINT32 z = beforZoneLeftZID; z <= beforZoneRightZID; ++z)
+		{
+			for (GYINT32 x = beforZoneLeftXID; x <= beforZoneRightXID; ++x)
+			{
+				inBNotA.Add(z * m_maxXZoneCount + x);
+			}
+		}
+	}
+
+
+	//设同步范围为n
+	//则以当前Zone为中心,取正方形
+	//边长为2n-1
+	//整个同步面积为(2n-1)(2n-1)
+	GYRect beforRect;
+	beforRect.m_pointA.m_x = static_cast<GYFLOAT>(beforZoneLeftXID);
+	beforRect.m_pointA.m_z = static_cast<GYFLOAT>(beforZoneLeftZID);
+	beforRect.m_pointB.m_x = static_cast<GYFLOAT>(beforZoneRightXID);
+	beforRect.m_pointB.m_z = static_cast<GYFLOAT>(beforZoneRightZID);
+
+	GYRect afterRect;
+	afterRect.m_pointA.m_x = static_cast<GYFLOAT>(afterZoneLeftXID);
+	afterRect.m_pointA.m_z = static_cast<GYFLOAT>(afterZoneLeftZID);
+	afterRect.m_pointB.m_x = static_cast<GYFLOAT>(afterZoneRightXID);
+	afterRect.m_pointB.m_z = static_cast<GYFLOAT>(afterZoneRightZID);
+
+
+	const GYINT32 sizeLength = 2 * syncRange - 1;
+	if(!(abs(beforZone->GetXID() - afterZone->GetXID()) > sizeLength || abs(beforZone->GetZID() - afterZone->GetZID()) > sizeLength))
+	{
+		GYPosition temp;
+		for (GYINT32 z = beforZoneLeftZID; z <= beforZoneRightZID; ++z)
+		{
+			for (GYINT32 x = beforZoneLeftXID; x <= beforZoneRightXID; ++x)
+			{
+				temp.m_x = static_cast<GYFLOAT>(x);
+				temp.m_z = static_cast<GYFLOAT>(z);
+				if (GYFALSE == afterRect.InRect(temp))
+				{
+					inBNotA.Add(z * m_maxXZoneCount + x);
+				}
+			}
+		}
+
+		for (GYINT32 z = afterZoneLeftZID; z <= afterZoneRightZID; ++z)
+		{
+			for (GYINT32 x = afterZoneLeftXID; x <=afterZoneRightXID; ++x)
+			{
+				temp.m_x = static_cast<GYFLOAT>(x);
+				temp.m_z = static_cast<GYFLOAT>(z);
+				if (GYFALSE == beforRect.InRect(temp))
+				{
+					inANotB.Add(z * m_maxXZoneCount + x);
+				}
+			}
+		}
+	}
+	else
+	{
+		for (GYINT32 z = beforZoneLeftZID; z <= beforZoneRightZID; ++z)
+		{
+			for (GYINT32 x = beforZoneLeftXID; x <= beforZoneRightXID; ++x)
+			{
+				inBNotA.Add(z * m_maxXZoneCount + x);
+			}
+		}
+
+		for (GYINT32 z = afterZoneLeftZID; z <= afterZoneRightZID; ++z)
+		{
+			for (GYINT32 x = afterZoneLeftXID; x <=afterZoneRightXID; ++x)
+			{
+				inANotB.Add(z * m_maxXZoneCount + x);
+			}
+		}
+	}
 
 }
 

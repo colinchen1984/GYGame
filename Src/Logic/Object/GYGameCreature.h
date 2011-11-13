@@ -35,6 +35,8 @@ public:
 
 	virtual GYVOID Tick(GYUINT32 frameTime) = 0;
 
+	virtual GYBOOL SendPacket(const GYPacketInteface& packet) {return GYFALSE;};
+
 private:
 	virtual GYVOID _SetPosition(const GYPosition& position) = 0;
 

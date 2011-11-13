@@ -37,6 +37,7 @@ public:
 
 	GYINLINE virtual GYINT32 GetCurrentSceneID() const {return m_currentSceneID;};
 
+	virtual GYBOOL SendPacket(const GYPacketInteface& packet);
 
 private:
 	GYINLINE virtual GYVOID _SetPosition(const GYPosition& position){ m_position = position;}
