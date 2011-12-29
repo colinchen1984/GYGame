@@ -228,7 +228,7 @@ GYSerializationInteface& GYTableSerialization::operator<<(GYINT64& value)
 	const GYCHAR* pData = _GetDataString(pDataStart, pDataEnd);
 	GYAssert(GYNULL != pData);
 #ifdef WIN32
-	value = _strtoui64(pData, GYNULL, 10);
+	value = _atoi64(pData, GYNULL, 10);
 #else 
 	value = strtoll(pData, GYNULL, 10);
 #endif
