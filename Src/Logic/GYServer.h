@@ -15,6 +15,8 @@
 #include "GYObjectPool.h"
 #include "GYGameHuman.h"
 
+class GYGatewaySession;
+
 class GYServer
 {
 	StringMangerSingleton				m_stringManager;			//字符串管理器
@@ -34,7 +36,7 @@ public:
 
 	GYVOID	RunOnce();
 
-	GYINT32 AddHumanToScene(const GYGUID& guid, GYINT32 secneID);
+	GYINT32 AddHumanToScene(GYGatewaySession& gatewaySession, const GYGUID& guid, GYINT32 secneID);
 
 	GYINT32 RemoveHumanFromScene(const GYGUID& guid);
 

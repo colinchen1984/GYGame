@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../Src/GameCommon/NetWork;../../Src/GameCommon/CommonDefine;../../Src/GameCommon/CommonDefine/String;../../Src/GameCommon/CommonDefine/TimeController;../../Src/GameCommon/Table;../../Src/Protocol;../../Src/Logic/Table;../../Src/Logic/NetWork;../../Src/Logic/PacketHandler;../../Src/Logic/Packet;../../Src/Logic"
+				AdditionalIncludeDirectories="../../Src/GameCommon/GameLogicCommon/GameTableDefine;../../Src/GameCommon/GameLogicCommon;../../Src/GameCommon/NetWork;../../Src/GameCommon/CommonDefine;../../Src/GameCommon/CommonDefine/String;../../Src/GameCommon/CommonDefine/TimeController;../../Src/GameCommon/Table;../../Src/Protocol;../../Src/Logic/Table;../../Src/Logic/NetWork;../../Src/Logic/PacketHandler;../../Src/Logic/Packet;../../Src/Logic/ObjectPool;../../Src/Logic/Object;../../Src/Logic/Scene;../../Src/Logic"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -62,9 +62,9 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions=" /PROFILE"
-				AdditionalDependencies="Table.lib NetWork.lib GameCommon.lib Protocol.lib"
+				AdditionalDependencies="Table.lib NetWork.lib GameCommon.lib Protocol.lib GameLogicCommon.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="../../Bin/NetWork;../../Bin/Protocol;../../Bin/Table;../../Bin/GameCommon"
+				AdditionalLibraryDirectories="../../Bin/NetWork;../../Bin/Protocol;../../Bin/Table;../../Bin/GameCommon;../../Bin/GameLogicCommon"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -173,14 +173,6 @@
 			Name="Table"
 			>
 			<File
-				RelativePath="..\..\Src\Logic\Table\GYTableDefine.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Src\Logic\Table\GYTableDefine.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\Src\Logic\Table\GYTableManager.cpp"
 				>
 			</File>
@@ -213,6 +205,14 @@
 			Name="PacketHandler"
 			>
 			<File
+				RelativePath="..\..\Src\Logic\PacketHandler\GYLoginPacketHandler.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Src\Logic\PacketHandler\GYLogoutPacketHandler.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Src\Logic\PacketHandler\GYPacketHandler.h"
 				>
 			</File>
@@ -238,6 +238,82 @@
 			</File>
 			<File
 				RelativePath="..\..\Src\Logic\Packet\GYPacketFactoryRegister.cpp"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="GameLogicCommon"
+			>
+			<File
+				RelativePath="..\..\Src\GameCommon\GameLogicCommon\GYObjectCommenDefine.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Src\GameCommon\GameLogicCommon\GYPosition.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Src\GameCommon\GameLogicCommon\GYRect.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Object"
+			>
+			<File
+				RelativePath="..\..\Src\Logic\Object\GYGameCreature.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Src\Logic\Object\GYGameCreature.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Src\Logic\Object\GYGameHuman.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Src\Logic\Object\GYGameHuman.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Src\Logic\Object\GYGameObject.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="ObjectPool"
+			>
+			<File
+				RelativePath="..\..\Src\Logic\ObjectPool\GYObjectPool.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Scene"
+			>
+			<File
+				RelativePath="..\..\Src\Logic\Scene\GYArea.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Src\Logic\Scene\GYArea.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Src\Logic\Scene\GYScene.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Src\Logic\Scene\GYScene.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Src\Logic\Scene\GYZone.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Src\Logic\Scene\GYZone.h"
 				>
 			</File>
 		</Filter>

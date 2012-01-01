@@ -1,17 +1,23 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NetWork", "NetWork\NetWork.vcxproj", "{D63B124B-4428-4033-990F-81F6A30D9DB9}"
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NetWork", "NetWork\NetWork.vcproj", "{D63B124B-4428-4033-990F-81F6A30D9DB9}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "test\test.vcxproj", "{A1EDF7F1-EF41-4C00-80D2-93A809D9D90A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "test\test.vcproj", "{A1EDF7F1-EF41-4C00-80D2-93A809D9D90A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D63B124B-4428-4033-990F-81F6A30D9DB9} = {D63B124B-4428-4033-990F-81F6A30D9DB9}
+		{29C2AD56-1725-4CCC-B25B-6FD5ED584696} = {29C2AD56-1725-4CCC-B25B-6FD5ED584696}
+		{748DBA7F-BCA6-40E0-B987-692FA66F9188} = {748DBA7F-BCA6-40E0-B987-692FA66F9188}
+		{BDC69096-3762-4417-AE96-0C96DA6EC628} = {BDC69096-3762-4417-AE96-0C96DA6EC628}
+	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Thread", "Thread\Thread.vcxproj", "{BDC69096-3762-4417-AE96-0C96DA6EC628}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Thread", "Thread\Thread.vcproj", "{BDC69096-3762-4417-AE96-0C96DA6EC628}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameCommon", "GameCommon\GameCommon.vcxproj", "{748DBA7F-BCA6-40E0-B987-692FA66F9188}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameCommon", "GameCommon\GameCommon.vcproj", "{748DBA7F-BCA6-40E0-B987-692FA66F9188}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Table", "Table\Table.vcxproj", "{29C2AD56-1725-4CCC-B25B-6FD5ED584696}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Table", "Table\Table.vcproj", "{29C2AD56-1725-4CCC-B25B-6FD5ED584696}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameLogicCommon", "GameLogicCommon\GameLogicCommon.vcxproj", "{5FD31C0C-7462-4DAF-8DB0-16C084F2FCD0}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameLogicCommon", "GameLogicCommon\GameLogicCommon.vcproj", "{8E5A1E19-C91C-447A-B869-8521521401C4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,10 +45,10 @@ Global
 		{29C2AD56-1725-4CCC-B25B-6FD5ED584696}.Debug|Win32.Build.0 = Debug|Win32
 		{29C2AD56-1725-4CCC-B25B-6FD5ED584696}.Release|Win32.ActiveCfg = Release|Win32
 		{29C2AD56-1725-4CCC-B25B-6FD5ED584696}.Release|Win32.Build.0 = Release|Win32
-		{5FD31C0C-7462-4DAF-8DB0-16C084F2FCD0}.Debug|Win32.ActiveCfg = Debug|Win32
-		{5FD31C0C-7462-4DAF-8DB0-16C084F2FCD0}.Debug|Win32.Build.0 = Debug|Win32
-		{5FD31C0C-7462-4DAF-8DB0-16C084F2FCD0}.Release|Win32.ActiveCfg = Release|Win32
-		{5FD31C0C-7462-4DAF-8DB0-16C084F2FCD0}.Release|Win32.Build.0 = Release|Win32
+		{8E5A1E19-C91C-447A-B869-8521521401C4}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8E5A1E19-C91C-447A-B869-8521521401C4}.Debug|Win32.Build.0 = Debug|Win32
+		{8E5A1E19-C91C-447A-B869-8521521401C4}.Release|Win32.ActiveCfg = Release|Win32
+		{8E5A1E19-C91C-447A-B869-8521521401C4}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

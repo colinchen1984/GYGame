@@ -97,7 +97,7 @@ GYVOID GYServer::RunOnce()
 	m_scene.Tick(30);
 }
 
-GYINT32 GYServer::AddHumanToScene( const GYGUID& guid, GYINT32 secneID )
+GYINT32 GYServer::AddHumanToScene(GYGatewaySession& gatewaySession, const GYGUID& guid, GYINT32 secneID )
 {
 	GYINT32 result = INVALID_VALUE;
 	do 
@@ -114,7 +114,7 @@ GYINT32 GYServer::AddHumanToScene( const GYGUID& guid, GYINT32 secneID )
 			break;
 		}
 		pHuman->SetGUID(guid);
-		pHuman->Init();
+		pHuman->Init(gatewaySession);
 
 		GYPosition position(100.0f, 100.0f);
 		pHuman->SetPosition(position);

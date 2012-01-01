@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="GameCommon"
-	ProjectGUID="{748DBA7F-BCA6-40E0-B987-692FA66F9188}"
-	RootNamespace="GameCommon"
+	Name="Protocol"
+	ProjectGUID="{C878DB7B-332A-4FA7-9F37-70288557B4AC}"
+	RootNamespace="Protocol"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
 	>
@@ -19,7 +19,7 @@
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory="../../Bin/$(ProjectName)"
-			IntermediateDirectory="../../OutPut/$(ProjectName)/$(ConfigurationName)"
+			IntermediateDirectory="../../Output/$(ProjectName)/$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="1"
 			>
@@ -41,8 +41,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../Src/GameCommon/CommonDefine;../../Src/GameCommon/CommonDefine/String"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
+				AdditionalIncludeDirectories="../../Src/GameCommon/CommonDefine;../../Src/GameCommon/CommonDefine/String;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -82,7 +82,7 @@
 			Name="Release|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="1"
+			ConfigurationType="4"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
 			>
@@ -105,7 +105,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
@@ -122,19 +122,10 @@
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
-				Name="VCLinkerTool"
-				LinkIncremental="1"
-				GenerateDebugInformation="true"
-				SubSystem="1"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				TargetMachine="1"
+				Name="VCLibrarianTool"
 			/>
 			<Tool
 				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -146,9 +137,6 @@
 				Name="VCFxCopTool"
 			/>
 			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
@@ -156,80 +144,48 @@
 	<References>
 	</References>
 	<Files>
-		<Filter
-			Name="String"
-			>
-			<File
-				RelativePath="..\..\Src\GameCommon\CommonDefine\String\GYString.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Src\GameCommon\CommonDefine\String\GYString.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Src\GameCommon\CommonDefine\String\GYStringManger.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Src\GameCommon\CommonDefine\String\GYStringManger.h"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="TimeController"
-			>
-			<File
-				RelativePath="..\..\Src\GameCommon\CommonDefine\TimeController\GYTimeController.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Src\GameCommon\CommonDefine\TimeController\GYTimeController.h"
-				>
-			</File>
-		</Filter>
 		<File
-			RelativePath="..\..\Src\GameCommon\CommonDefine\GYArray.h"
+			RelativePath="..\..\Src\Protocol\GYLogin.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\Src\GameCommon\CommonDefine\GYCommonDefine.cpp"
+			RelativePath="..\..\Src\Protocol\GYLogin.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\Src\GameCommon\CommonDefine\GYCommonDefine.h"
+			RelativePath="..\..\Src\Protocol\GYLogout.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\Src\GameCommon\CommonDefine\GYCycleBuffer.h"
+			RelativePath="..\..\Src\Protocol\GYLogout.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\Src\GameCommon\CommonDefine\GYHashTable.h"
+			RelativePath="..\..\Src\Protocol\GYProtocolDefine.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\Src\GameCommon\CommonDefine\GYINIReader.cpp"
+			RelativePath="..\..\Src\Protocol\GYProtocolDefine.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\Src\GameCommon\CommonDefine\GYINIReader.h"
+			RelativePath="..\..\Src\Protocol\GYProtocolID.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\Src\GameCommon\CommonDefine\GYList.h"
+			RelativePath="..\..\Src\Protocol\GYSCTest.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\Src\GameCommon\CommonDefine\GYObject.h"
+			RelativePath="..\..\Src\Protocol\GYSCTest.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\Src\GameCommon\CommonDefine\GYSerialization.h"
+			RelativePath="..\..\Src\Protocol\GYTestPacket.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\Src\GameCommon\CommonDefine\GYTimeStamp.h"
+			RelativePath="..\..\Src\Protocol\GYTestPacket.h"
 			>
 		</File>
 	</Files>

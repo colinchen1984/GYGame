@@ -13,6 +13,7 @@
 //提供移动,战斗,存放物品,使用物品的相关接口
 
 class GYScene;
+class GYPacketInteface;
 struct GYPosition;
 
 class GYCreature : public GYGameObject
@@ -35,7 +36,7 @@ public:
 
 	virtual GYVOID Tick(GYUINT32 frameTime) = 0;
 
-	virtual GYBOOL SendPacket(const GYPacketInteface& packet) {return GYFALSE;};
+	GYINLINE virtual GYVOID SendPacket(const GYPacketInteface& packet) {};
 
 private:
 	virtual GYVOID _SetPosition(const GYPosition& position) = 0;

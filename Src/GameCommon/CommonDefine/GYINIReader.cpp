@@ -352,7 +352,7 @@ GYINT32 ReadINIFloatValue(const GYCHAR* fileName, const GYCHAR* nodeName, const 
 		return result;
 
 	if (buffer != GYNULL)
-		value = atof(buffer);
+		value = static_cast<GYFLOAT>(atof(buffer));
 	return OK;
 }
 

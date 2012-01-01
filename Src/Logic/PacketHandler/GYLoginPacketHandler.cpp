@@ -11,7 +11,7 @@
 GYBOOL GYLoginPacketHandler(GYGatewaySession& gatewaySession, const GYGUID& guid, GYPacketInteface& packet)
 {
 	const GYLogin& loginPacket = static_cast<GYLogin&>(packet);
-	if (0 != GETLOGICSERVER.AddHumanToScene(loginPacket.GetUserID(), loginPacket.GetSceneID()))
+	if (0 != GETLOGICSERVER.AddHumanToScene(gatewaySession, loginPacket.GetUserID(), loginPacket.GetSceneID()))
 	{
 		//通知gateway断开与客户端的连接
 	}

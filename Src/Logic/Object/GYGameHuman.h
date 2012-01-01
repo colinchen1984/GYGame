@@ -11,10 +11,20 @@
 #include "GYGameCreature.h"
 #include "GYPosition.h"
 
+class GYGatewaySession;
+
 class GYHuman : public GYCreature
 {
 	//只允许Human pool创建human object
 	template<typename HashKeyType, typename T>	friend class GYObjectPool;
+
+private:
+	//TODO: object 的数据存放
+	//暂时采用下面的方式存放数据
+	GYGUID		m_guid;
+	GYPosition	m_position;
+	GYINT32		m_currentSceneID;
+	GYGatewaySession* m_pSession;
 public:
 	virtual	~GYHuman();
 
@@ -24,8 +34,7 @@ public:
 
 	GYINLINE virtual EM_GAME_OBJECT_TYPE GetObjectType() const{return EM_GAME_OBJECT_TYPE_HUMAN;};
 
-	virtual GYINT32 Init();
-
+	GYINT32 Init(GYGatewaySession& gatewaySession);
 
 	GYINLINE virtual const GYPosition& GetPosition() const { return m_position;}
 
@@ -37,7 +46,7 @@ public:
 
 	GYINLINE virtual GYINT32 GetCurrentSceneID() const {return m_currentSceneID;};
 
-	virtual GYBOOL SendPacket(const GYPacketInteface& packet);
+	virtual GYVOID SendPacket(const GYPacketInteface& packet);
 
 private:
 	GYINLINE virtual GYVOID _SetPosition(const GYPosition& position){ m_position = position;}
@@ -45,12 +54,6 @@ private:
 protected:
 	GYHuman();
 
-private:
-	//TODO: object 的数据存放
-	//暂时采用下面的方式存放数据
-	GYGUID		m_guid;
-	GYPosition	m_position;
-	GYINT32		m_currentSceneID;
 };
 
 #endif

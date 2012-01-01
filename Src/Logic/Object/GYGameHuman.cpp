@@ -6,6 +6,7 @@
 ////////////////////////////////////////////
 #include "GYGameHuman.h"
 #include "GYScene.h"
+#include "GYGatewaySession.h"
 
 GYHuman::GYHuman()
 {
@@ -17,8 +18,9 @@ GYHuman::~GYHuman()
 
 }
 
-GYINT32 GYHuman::Init()
+GYINT32 GYHuman::Init( GYGatewaySession& gatewaySession )
 {
+	m_pSession = &gatewaySession;
 	return 0;
 }
 
@@ -35,5 +37,10 @@ GYVOID GYHuman::OnEnterScene( GYScene& scene )
 GYVOID GYHuman::OnLeaveScene( GYScene& scene )
 {
 	m_currentSceneID = INVALID_VALUE;
+}
+
+GYVOID GYHuman::SendPacket(const GYPacketInteface& packet )
+{
+	m_pSession->SendPacket(m_guid, packet);
 }
 

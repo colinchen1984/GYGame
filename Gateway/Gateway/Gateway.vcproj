@@ -214,6 +214,10 @@
 			Name="PacketHandler"
 			>
 			<File
+				RelativePath="..\..\Src\Gateway\PacketHandler\GYLoginPacketHandler.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Src\Gateway\PacketHandler\GYPacketHandler.h"
 				>
 			</File>

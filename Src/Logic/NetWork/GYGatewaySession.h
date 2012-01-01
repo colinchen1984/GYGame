@@ -41,7 +41,7 @@ public:
 
 	GYVOID	Release();
 
-	GYVOID	SendPacket(const GYGUID& guid, GYPacketInteface& packet);
+	GYVOID	SendPacket(const GYGUID& guid, const GYPacketInteface& packet);
 
 	GYBOOL	Tick();
 

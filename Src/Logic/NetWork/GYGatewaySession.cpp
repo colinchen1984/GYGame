@@ -136,12 +136,12 @@ GYVOID GYGatewaySession::_OnReceive()
 }
 	
 
-GYVOID GYGatewaySession::SendPacket(const GYGUID& guid, GYPacketInteface& packet)
+GYVOID GYGatewaySession::SendPacket(const GYGUID& guid, const GYPacketInteface& packet)
 {
 	m_connection.Send();
 	GYStreamSerialization<GATEWAY_SESSION_SEND_BUFFER_LEN> packetSender(m_connection.m_outputBuffer, EM_SERIALIZAION_MODE_WRITE);
 	packetSender << const_cast<GYGUID&>(guid);
-	packetSender << packet;
+	packetSender << const_cast<GYPacketInteface&>(packet);
 	m_allSendDataSize += packetSender.GetSerializDataSize();
 	GYAssert(m_connection.m_outputBuffer.GetWriteSize() > 0);
 }
