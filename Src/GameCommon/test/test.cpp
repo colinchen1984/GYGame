@@ -107,13 +107,36 @@ struct TestStructTable
 #include <hash_set>
 #include <iostream>
 #include <limits>
+#include <stdio.h>
+#include <io.h>
+#include <crtdbg.h>
 using namespace stdext;
 using namespace std;
 #endif 
 #include "GYHashTable.h"
+#include <time.h>
 GYINT32 main()
 {
-
+	DWORD b = GetTickCount();
+	srand(time(0));
+	char ttest[16] = {0};
+	int t = rand();
+	t = t % 9999 + 1;
+	sprintf_s(ttest, sizeof(ttest), "00034");
+	for (int i = 0; i < 100000; ++i)
+	{
+		FILE* f = fopen(ttest, "wb");
+		fclose(f);
+	}
+	b = GetTickCount() - b;
+	_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
+	_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_FILE);
+	_CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE);
+	FILE* p = fopen("test", "wb");
+	_CrtSetReportFile(_CRT_WARN, (_HFILE)_get_osfhandle( _fileno(p)));
+	_CrtSetReportFile(_CRT_ERROR, (_HFILE)_get_osfhandle( _fileno(p)));
+	_CrtSetReportFile(_CRT_ASSERT, (_HFILE)_get_osfhandle( _fileno(p)));
+_ASSERTE(0!=0);
 #ifdef WIN32
 	hash_set<GYINT32> testSet;
 	testSet.insert(3);

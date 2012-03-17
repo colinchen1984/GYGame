@@ -11,6 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
+    <VCTargetsPath Condition="'$(VCTargetsPath11)' != '' and '$(VSVersion)' == '' and '$(VisualStudioVersion)' == ''">$(VCTargetsPath11)</VCTargetsPath>
+  </PropertyGroup>
+  <PropertyGroup Label="Globals">
     <ProjectGuid>{F6DCE7BB-6715-455A-802D-53AA4D8D038A}</ProjectGuid>
     <RootNamespace>Logic</RootNamespace>
     <Keyword>Win32Proj</Keyword>
@@ -18,11 +21,13 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -36,30 +41,33 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../Bin/$(ProjectName)/</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../../Output//$(ProjectName)/$(Configuration)/</IntDir>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <_ProjectFileVersion>11.0.50214.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>../../Bin/$(ProjectName)\</OutDir>
+    <IntDir>../../Output//$(ProjectName)/$(Configuration)\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../../Src/GameCommon/NetWork;../../Src/GameCommon/CommonDefine;../../Src/GameCommon/CommonDefine/String;../../Src/GameCommon/CommonDefine/TimeController;../../Src/GameCommon/Table;../../Src/GameCommon/GameLogicCommon/;../../Src/GameCommon/GameLogicCommon/GameTableDefine;../../Src/Protocol;../../Src/Logic/Table;../../Src/Logic/Scene;../../Src/Logic/NetWork;../../Src/Logic/PacketHandler;../../Src/Logic/Object;../../Src/Logic/ObjectPool;../../Src/Logic/Packet;../../Src/Logic;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../Src/GameCommon/GameLogicCommon/GameTableDefine;../../Src/GameCommon/GameLogicCommon;../../Src/GameCommon/NetWork;../../Src/GameCommon/CommonDefine;../../Src/GameCommon/CommonDefine/String;../../Src/GameCommon/CommonDefine/TimeController;../../Src/GameCommon/Table;../../Src/Protocol;../../Src/Logic/Table;../../Src/Logic/NetWork;../../Src/Logic/PacketHandler;../../Src/Logic/Packet;../../Src/Logic/ObjectPool;../../Src/Logic/Object;../../Src/Logic/Scene;../../Src/Logic;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader />
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Link>
       <AdditionalOptions> /PROFILE %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>Table.lib;NetWork.lib;GameCommon.lib;GameLogicCommon.lib;Protocol.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Table.lib;NetWork.lib;GameCommon.lib;Protocol.lib;GameLogicCommon.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../../Bin/NetWork;../../Bin/Protocol;../../Bin/Table;../../Bin/GameCommon;../../Bin/GameLogicCommon;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
@@ -73,8 +81,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader />
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
@@ -87,37 +94,39 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Src\Logic\Object\GYGameCreature.cpp" />
-    <ClCompile Include="..\..\Src\Logic\Object\GYGameHuman.cpp" />
-    <ClCompile Include="..\..\Src\Logic\PacketHandler\GYLoginPacketHandler.cpp" />
-    <ClCompile Include="..\..\Src\Logic\PacketHandler\GYLogoutPacketHandler.cpp" />
-    <ClCompile Include="..\..\Src\Logic\Scene\GYArea.cpp" />
-    <ClCompile Include="..\..\Src\Logic\Scene\GYScene.cpp" />
-    <ClCompile Include="..\..\Src\Logic\Scene\GYZone.cpp" />
     <ClCompile Include="..\..\Src\Logic\Table\GYTableManager.cpp" />
     <ClCompile Include="..\..\Src\Logic\NetWork\GYGatewaySession.cpp" />
     <ClCompile Include="..\..\Src\Logic\NetWork\GYNetWorkManager.cpp" />
+    <ClCompile Include="..\..\Src\Logic\PacketHandler\GYLoginPacketHandler.cpp" />
+    <ClCompile Include="..\..\Src\Logic\PacketHandler\GYLogoutPacketHandler.cpp" />
     <ClCompile Include="..\..\Src\Logic\PacketHandler\GYTestPacketHandler.cpp" />
     <ClCompile Include="..\..\Src\Logic\Packet\GYPacketFactoryManager.cpp" />
     <ClCompile Include="..\..\Src\Logic\Packet\GYPacketFactoryRegister.cpp" />
+    <ClCompile Include="..\..\Src\Logic\Object\GYGameCreature.cpp" />
+    <ClCompile Include="..\..\Src\Logic\Object\GYGameHuman.cpp" />
+    <ClCompile Include="..\..\Src\Logic\Scene\GYArea.cpp" />
+    <ClCompile Include="..\..\Src\Logic\Scene\GYScene.cpp" />
+    <ClCompile Include="..\..\Src\Logic\Scene\GYZone.cpp" />
     <ClCompile Include="..\..\Src\Logic\GYServer.cpp" />
     <ClCompile Include="..\..\Src\Logic\main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Src\GameLogicCommon\GameTableDefine\GYGameTableDefine.h" />
-    <ClInclude Include="..\..\Src\Logic\ObjectPool\GYObjectPool.h" />
-    <ClInclude Include="..\..\Src\Logic\Object\GYGameCreature.h" />
-    <ClInclude Include="..\..\Src\Logic\Object\GYGameHuman.h" />
-    <ClInclude Include="..\..\Src\Logic\Object\GYGameObject.h" />
-    <ClInclude Include="..\..\Src\Logic\Scene\GYArea.h" />
-    <ClInclude Include="..\..\Src\Logic\Scene\GYScene.h" />
-    <ClInclude Include="..\..\Src\Logic\Scene\GYZone.h" />
     <ClInclude Include="..\..\Src\Logic\Table\GYTableManager.h" />
     <ClInclude Include="..\..\Src\Logic\NetWork\GYGatewaySession.h" />
     <ClInclude Include="..\..\Src\Logic\NetWork\GYNetWorkManager.h" />
     <ClInclude Include="..\..\Src\Logic\PacketHandler\GYPacketHandler.h" />
     <ClInclude Include="..\..\Src\Logic\PacketHandler\GYPacketHandlerCommon.h" />
     <ClInclude Include="..\..\Src\Logic\Packet\GYPacketFactoryManager.h" />
+    <ClInclude Include="..\..\Src\GameCommon\GameLogicCommon\GYObjectCommenDefine.h" />
+    <ClInclude Include="..\..\Src\GameCommon\GameLogicCommon\GYPosition.h" />
+    <ClInclude Include="..\..\Src\GameCommon\GameLogicCommon\GYRect.h" />
+    <ClInclude Include="..\..\Src\Logic\Object\GYGameCreature.h" />
+    <ClInclude Include="..\..\Src\Logic\Object\GYGameHuman.h" />
+    <ClInclude Include="..\..\Src\Logic\Object\GYGameObject.h" />
+    <ClInclude Include="..\..\Src\Logic\ObjectPool\GYObjectPool.h" />
+    <ClInclude Include="..\..\Src\Logic\Scene\GYArea.h" />
+    <ClInclude Include="..\..\Src\Logic\Scene\GYScene.h" />
+    <ClInclude Include="..\..\Src\Logic\Scene\GYZone.h" />
     <ClInclude Include="..\..\Src\Logic\GYServer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
