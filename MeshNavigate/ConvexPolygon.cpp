@@ -295,3 +295,13 @@ int GetPolygonPointCount(const ConvexPolygon* polygon)
 	return polygon->vertexCount;	
 }
 
+const Vector* GetPolygonNormal( const ConvexPolygon* polygon )
+{
+	if(NULL == polygon)
+	{
+		return 0;
+	}
+
+	return polygon->normalVectorList;	
+}
+

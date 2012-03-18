@@ -1,13 +1,15 @@
 
 #include "ObjectMesh.h"
 #include "MeshNavigate.h"
-#include "ConvexPolygon.h"
 #include "BaseStruct.h"
 #include "VectorMath.h"
 #include <malloc.h>
 #include <memory.h>
 #include <math.h>
 #include <stdlib.h>
+
+//整个凸包的计算过程采用的右手坐标系,x朝右为正,y朝上为正
+//符合当前游戏的设定
 
 struct InterPoint
 {
@@ -82,7 +84,9 @@ static int compareInterPoint(const void *left, const void *right)
 {
 	const InterPoint* a = (InterPoint*)left;	
 	const InterPoint* b = (InterPoint*)right;
-	int result = abs(a->m_slope - b->m_slope) < EPSILON ? 0 : a->m_slope < b->m_slope ? 1 : -1;
+	
+	//排序使cos较小的值排在前面,也就是同x轴角度大的排在前面 所以有 a->m_slope < b->m_slope ? -1 : 1;
+	int result = abs(a->m_slope - b->m_slope) < EPSILON ? 0 : a->m_slope < b->m_slope ? -1 : 1;
 	return result;
 }
 
@@ -97,6 +101,7 @@ bool MakeConvexHullFromItem(ItemNavigateMesh* item)
 		return false;
 	}
 
+	//求得是左下角及z轴最大的的点,z相同时去x较小的点
 	int basePointIndex = 0;
 	for (int i = 0; i < item->m_pointCount; ++i)
 	{
@@ -106,7 +111,7 @@ bool MakeConvexHullFromItem(ItemNavigateMesh* item)
 		}
 		else if(abs(item->m_pointList[i].m_point.z - item->m_pointList[basePointIndex].m_point.z) < EPSILON)
 		{
-			if(item->m_pointList[i].m_point.x > item->m_pointList[basePointIndex].m_point.x)
+			if(item->m_pointList[i].m_point.x < item->m_pointList[basePointIndex].m_point.x)
 			{
 				basePointIndex = i;
 			}
@@ -119,17 +124,23 @@ bool MakeConvexHullFromItem(ItemNavigateMesh* item)
 	{
 		if(i == basePointIndex)
 		{//保证基点排在第一位
-			item->m_pointList[i].m_slope = 1.0f;
+			item->m_pointList[i].m_slope = -1.0f;
 			continue;;
 		}
 		Vector v = {item->m_pointList[i].m_point.x - item->m_pointList[basePointIndex].m_point.x, 0.0f, item->m_pointList[i].m_point.z - item->m_pointList[basePointIndex].m_point.z};
 		NormalizationVector(&v);
 		item->m_pointList[i].m_slope = VectorDotProduct(&v, &baseVector);
 	}
+
 	qsort(item->m_pointList, item->m_pointCount, sizeof(item->m_pointList[0]), compareInterPoint);
 
-	Point* queue = (Point*)malloc(sizeof(Point) * item->m_pointCount);
-	memset(queue, 0, sizeof(queue[0]) * item->m_pointCount);
+	//整个遍历过程由左下沿顺时针转到右下
+	//所以得到的凸包是顺时针序
+
+	//这里的32是经验值
+	int queueMaxCount = 32;
+	Point* queue = (Point*)malloc(sizeof(Point) * queueMaxCount);
+	memset(queue, 0, sizeof(queue[0]) * queueMaxCount);
 	for (int i = 0; i < 3; ++i)
 	{
 		queue[i].x = item->m_pointList[i].m_point.x;
@@ -145,12 +156,17 @@ bool MakeConvexHullFromItem(ItemNavigateMesh* item)
 			Vector pMinsToP = {queue[q].x - queue[q - 1].x, 0.0f, queue[q].z - queue[q - 1].z};
 			Vector result;
 			VectorCrossProduct(&result, &pMinsToP, &pToPplus);
-			if(result.y > 0.0f)
+			if(result.y < 0.0f)
 			{
 				//新的点在凸包上,直接添加
 				queue[pointCountInQueue].x = point->m_point.x;
 				queue[pointCountInQueue].z = point->m_point.z;
 				++pointCountInQueue;
+				if (pointCountInQueue == queueMaxCount)
+				{
+					queueMaxCount = queueMaxCount << 1;
+					queue = (Point*)realloc(queue, sizeof(queue[0]) * queueMaxCount);
+				}
 				break;
 			}
 			else
@@ -160,6 +176,7 @@ bool MakeConvexHullFromItem(ItemNavigateMesh* item)
 		}
 	}
 
+	//凸包是顺时针序
 	item->m_ProjectionPolygon = queue;
 	item->m_projectionPointCount = pointCountInQueue;
 	return true;

@@ -11,6 +11,7 @@
 
 struct ConvexPolygon;
 struct Point;
+struct Vector;
 
 extern ConvexPolygon* CreateConvexPolygon(int maxVertexCount);
 
@@ -27,3 +28,5 @@ extern bool AddPointToPolygon(ConvexPolygon* polygon, float x, float z, bool che
 extern const Point* GetPolygonPointList(const ConvexPolygon* polygon);
 
 extern int GetPolygonPointCount(const ConvexPolygon* polygon);
+
+extern const Vector* GetPolygonNormal(const ConvexPolygon* polygon);
