@@ -45,6 +45,9 @@ struct ClippingInterPoint
 	float				tValueForClippingWindow;
 	PROCESS_STATE state;
 };
+static int GenerateConvexPolygon(ClippingInterPoint* pointList, const int pointCount, ConvexPolygon** result, int maxResultSize);
+static ClippingInterPoint* CreateClippedPolygonData(const ConvexPolygon* clippedPolygon, const ConvexPolygon* clippingWindow);
+static ClippingInterPoint* CreateClippingWindowData(const ConvexPolygon* clippedPolygon, const ConvexPolygon* clippingWindow);
 
 int ConvexPolygonClipping(const ConvexPolygon* clippedPolygon,
 								  const ConvexPolygon* clippingWindow,
@@ -91,44 +94,10 @@ int ConvexPolygonClipping(const ConvexPolygon* clippedPolygon,
 		return ALL_POINT_IN_CLIPPING_WINDOW;
 	}
 
-	ClippingInterPoint* pointChainForClippedPolygon = (ClippingInterPoint*)malloc(sizeof(ClippingInterPoint) * pointCountForClippedPolygon);
-	const ClippingInterPoint* const pHeadOfClippedPolygonChain = pointChainForClippedPolygon;
-	for (int i = 0; i < pointCountForClippedPolygon; ++i)
-	{
-		int prevIndex = 0 == i ? pointCountForClippedPolygon - 1 : i - 1;
-		int nextIndex = i + 1 == pointCountForClippedPolygon ? 0 : i + 1;
-		pointChainForClippedPolygon[i].point = pointListForClippedPolygon[i];
-		pointChainForClippedPolygon[i].pointType = INTER_POINT_TYPE_CLIPPED_PYLIGON_POINT;
-		pointChainForClippedPolygon[i].prev2ClippedPolygon = &pointChainForClippedPolygon[prevIndex];
-		pointChainForClippedPolygon[i].next2ClippedPolygon = &pointChainForClippedPolygon[nextIndex];
-		pointChainForClippedPolygon[i].prev2ClippingdWindow = NULL;
-		pointChainForClippedPolygon[i].next2ClippingdWindow = NULL;
-		pointChainForClippedPolygon[i].state = PROCESS_STATE_UNPROCESSED;
-		pointChainForClippedPolygon[i].tValueForClippedPolygon = -999999.0f;
-		pointChainForClippedPolygon[i].tValueForClippingWindow = -999999.0f;
-		
-		if (PointInPolygon(clippingWindow, pointChainForClippedPolygon[i].point.x, pointChainForClippedPolygon[i].point.z))
-		{
-			pointChainForClippedPolygon[i].state = PROCESS_STATE_NO_NEED_PROCESS;
-		}
-		
-	}
 
-	ClippingInterPoint* pointChainForClippingWindow = (ClippingInterPoint*)malloc(sizeof(ClippingInterPoint) * pointCountForClippingWindow);
-	const ClippingInterPoint* const pHeadOfClippingWindow = pointChainForClippingWindow;
-	for (int i = 0; i < pointCountForClippingWindow; ++i)
-	{
-		int prevIndex = 0 == i ? pointCountForClippingWindow - 1 : i - 1;
-		int nextIndex = i + 1 == pointCountForClippingWindow ? 0 : i + 1;
-		pointChainForClippingWindow[i].point = pointListForClipingWindow[i];
-		pointChainForClippingWindow[i].pointType = INTER_POINT_TYPE_CLIPPING_WINDOW_POINT;
-		pointChainForClippingWindow[i].prev2ClippingdWindow = &pointChainForClippingWindow[prevIndex];
-		pointChainForClippingWindow[i].next2ClippingdWindow = &pointChainForClippingWindow[nextIndex];
-		pointChainForClippingWindow[i].prev2ClippedPolygon = NULL;
-		pointChainForClippingWindow[i].next2ClippedPolygon = NULL;
-		pointChainForClippingWindow[i].tValueForClippedPolygon = -999999.0f;
-		pointChainForClippingWindow[i].tValueForClippingWindow = -999999.0f;
-	}
+
+	ClippingInterPoint* pointChainForClippingWindow = CreateClippingWindowData(clippedPolygon, clippingWindow);
+	ClippingInterPoint* pointChainForClippedPolygon = CreateClippedPolygonData(clippedPolygon, clippingWindow);
 
 	//查找交点并将交点插入正确的位置
 	const Vector* const pNormalOfClippedPolygon = GetPolygonNormal(clippedPolygon);
@@ -141,33 +110,32 @@ int ConvexPolygonClipping(const ConvexPolygon* clippedPolygon,
 		{
 			int nextIndexOfClippedPolygon = indexOfclippedPolygon + 1 == pointCountForClippedPolygon ? 0 : indexOfclippedPolygon + 1;
 
-			Vector toBeginPoint = {pointChainForClippingWindow[indexOfClippingWindow].point.x - pointChainForClippedPolygon[indexOfclippedPolygon].point.x,
+			ClippingInterPoint* const pBeginPointOfClippinWindow = &pointChainForClippingWindow[indexOfClippingWindow];
+			ClippingInterPoint* const pEndPointOfClippinWindow = &pointChainForClippingWindow[nextIndexOfClippingWindow];
+
+			ClippingInterPoint* const pBeginPointOfClippedPolygon = &pointChainForClippedPolygon[indexOfclippedPolygon];
+			ClippingInterPoint* const pEndPointOfClippedPolygon = &pointChainForClippedPolygon[nextIndexOfClippedPolygon];
+			Vector toBeginPoint = {pBeginPointOfClippinWindow->point.x - pBeginPointOfClippedPolygon->point.x,
 									0.0f,
-									pointChainForClippingWindow[indexOfClippingWindow].point.z - pointChainForClippedPolygon[indexOfclippedPolygon].point.z};
-			Vector toEndPoint = {pointChainForClippingWindow[nextIndexOfClippingWindow].point.x - pointChainForClippedPolygon[indexOfclippedPolygon].point.x,
+									pBeginPointOfClippinWindow->point.z - pBeginPointOfClippedPolygon->point.z};
+			Vector toEndPoint = {pEndPointOfClippinWindow->point.x - pBeginPointOfClippedPolygon->point.x,
 								0.0f,
-								pointChainForClippingWindow[nextIndexOfClippingWindow].point.z - pointChainForClippedPolygon[indexOfclippedPolygon].point.z};
+								pEndPointOfClippinWindow->point.z - pBeginPointOfClippedPolygon->point.z};
 
 			float cosofToBeginPoint = VectorDotProduct(&toBeginPoint, &pNormalOfClippedPolygon[indexOfclippedPolygon]);					
 			float cosofToEndPoint = VectorDotProduct(&toEndPoint, &pNormalOfClippedPolygon[indexOfclippedPolygon]);	
-
-			if (abs(cosofToBeginPoint) < EPSILON && cosofToEndPoint > 0.0f)
+			bool beginPointIsSpecial = (abs(cosofToBeginPoint) < EPSILON && cosofToEndPoint > 0.0f);
+			bool endPointIsSpecial = (abs(cosofToEndPoint) < EPSILON &&  cosofToBeginPoint> 0.0f);
+			if (beginPointIsSpecial || endPointIsSpecial)
 			{
 				//特殊点，即交点在被裁减的多边形的边上，且同在内侧
-				ClippingInterPoint* pTempPoint = &pointChainForClippingWindow[indexOfClippingWindow];
+				ClippingInterPoint* pTempPoint = beginPointIsSpecial ? pBeginPointOfClippinWindow : pEndPointOfClippinWindow;
 				pTempPoint->pointType = INTER_POINT_TYPE_CLIPPING_WINDOW_POINT_AN_INSERCTION_POINT;
 				ClippingInterPoint* pCurrentPositon = &pointChainForClippedPolygon[indexOfclippedPolygon];
 				ClippingInterPoint* pNextPosition = pCurrentPositon->next2ClippedPolygon;
 				ClippingInterPoint* pEndPosition = &pointChainForClippedPolygon[nextIndexOfClippedPolygon];
-				float deltX = pointChainForClippedPolygon[nextIndexOfClippedPolygon].point.x - pointChainForClippedPolygon[indexOfclippedPolygon].point.x;
-				if(abs(deltX) < EPSILON)
-				{
-					pTempPoint->tValueForClippedPolygon = (pTempPoint->point.z - pointChainForClippedPolygon[indexOfclippedPolygon].point.z) / (pointChainForClippedPolygon[nextIndexOfClippedPolygon].point.z - pointChainForClippedPolygon[indexOfclippedPolygon].point.z);
-				}
-				else
-				{
-					pTempPoint->tValueForClippedPolygon = (pTempPoint->point.x - pointChainForClippedPolygon[indexOfclippedPolygon].point.x) / (pointChainForClippedPolygon[nextIndexOfClippedPolygon].point.x - pointChainForClippedPolygon[indexOfclippedPolygon].point.x);
-				}
+				pTempPoint->tValueForClippedPolygon = GetTValue(&pBeginPointOfClippedPolygon->point, &pEndPointOfClippedPolygon->point, &pTempPoint->point);
+
 				while (true)
 				{
 					if( pTempPoint->tValueForClippedPolygon < pCurrentPositon->tValueForClippedPolygon)
@@ -197,57 +165,12 @@ int ConvexPolygonClipping(const ConvexPolygon* clippedPolygon,
 			{
 				//特殊点，即交点在被裁减的多边形的边上，且同在外侧
 				//直接抛弃，不处理
-
 				continue;
 			}
-
-			if (abs(cosofToEndPoint) < EPSILON &&  cosofToBeginPoint> 0.0f)
-			{
-				//特殊点，即交点在被裁减的多边形的边上，且同在内侧
-				ClippingInterPoint* pTempPoint = &pointChainForClippingWindow[nextIndexOfClippingWindow];
-				pTempPoint->pointType = INTER_POINT_TYPE_CLIPPING_WINDOW_POINT_AN_INSERCTION_POINT;
-				ClippingInterPoint* pCurrentPositon = &pointChainForClippedPolygon[indexOfclippedPolygon];
-				ClippingInterPoint* pNextPosition = pCurrentPositon->next2ClippedPolygon;
-				ClippingInterPoint* pEndPosition = &pointChainForClippedPolygon[nextIndexOfClippedPolygon];
-				float deltX = pointChainForClippedPolygon[nextIndexOfClippedPolygon].point.x - pointChainForClippedPolygon[indexOfclippedPolygon].point.x;
-				if(abs(deltX) < EPSILON)
-				{
-					pTempPoint->tValueForClippedPolygon = (pTempPoint->point.z - pointChainForClippedPolygon[indexOfclippedPolygon].point.z) / (pointChainForClippedPolygon[nextIndexOfClippedPolygon].point.z - pointChainForClippedPolygon[indexOfclippedPolygon].point.z);
-				}
-				else
-				{
-					pTempPoint->tValueForClippedPolygon = (pTempPoint->point.x - pointChainForClippedPolygon[indexOfclippedPolygon].point.x) / (pointChainForClippedPolygon[nextIndexOfClippedPolygon].point.x - pointChainForClippedPolygon[indexOfclippedPolygon].point.x);
-				}
-				while (true)
-				{
-					if( pTempPoint->tValueForClippedPolygon < pCurrentPositon->tValueForClippedPolygon)
-					{
-						ClippingInterPoint* pLastPosition = pCurrentPositon->prev2ClippedPolygon;
-						pLastPosition->next2ClippedPolygon = pTempPoint;
-						pCurrentPositon->prev2ClippedPolygon = pTempPoint;
-						pTempPoint->prev2ClippedPolygon = pLastPosition;
-						pTempPoint->next2ClippedPolygon = pCurrentPositon;
-						break;
-					}
-					else if (pEndPosition == pNextPosition)
-					{
-						pCurrentPositon->next2ClippedPolygon = pTempPoint;
-						pNextPosition->prev2ClippedPolygon = pTempPoint;
-						pTempPoint->prev2ClippedPolygon = pCurrentPositon;
-						pTempPoint->next2ClippedPolygon = pNextPosition;
-						break;
-					}
-					pCurrentPositon = pNextPosition;
-					pNextPosition = pCurrentPositon->next2ClippedPolygon;
-				}
-				continue;
-			}
-
 			if (abs(cosofToEndPoint) < EPSILON && cosofToBeginPoint < 0.0f)
 			{
 				//特殊点，即交点在被裁减的多边形的边上，且同在外侧
 				//直接抛弃，不处理
-
 				continue;
 			}
 
@@ -256,7 +179,6 @@ int ConvexPolygonClipping(const ConvexPolygon* clippedPolygon,
 			{
 				continue;
 			}
-
 			if (cosofToBeginPoint < 0.0f && cosofToEndPoint < 0.0f)
 			{
 				continue;
@@ -264,15 +186,16 @@ int ConvexPolygonClipping(const ConvexPolygon* clippedPolygon,
 
 			//如果有交点，则求交点并将交点插入正确的位置
 			//两相交线段求交点
-			//从而可以求出p的坐标
+			//从而可以求出p的坐标 具体算法可以参考图形学算法
 			float tValue =cosofToBeginPoint;
 			tValue /= (cosofToBeginPoint - cosofToEndPoint);
-			float insertionX = pointChainForClippingWindow[indexOfClippingWindow].point.x + tValue * (pointChainForClippingWindow[nextIndexOfClippingWindow].point.x - pointChainForClippingWindow[indexOfClippingWindow].point.x);
-			float insertionZ = pointChainForClippingWindow[indexOfClippingWindow].point.z + tValue * (pointChainForClippingWindow[nextIndexOfClippingWindow].point.z - pointChainForClippingWindow[indexOfClippingWindow].point.z);
-			Point point = {insertionX, insertionZ};
+			float insertionX = pBeginPointOfClippinWindow->point.x + tValue * (pEndPointOfClippinWindow->point.x - pBeginPointOfClippinWindow->point.x);
+			float insertionZ = pBeginPointOfClippinWindow->point.z + tValue * (pEndPointOfClippinWindow->point.z - pBeginPointOfClippinWindow->point.z);
+			
 			//检查点是否在线段的延长线上
-			Point a = {pointChainForClippedPolygon[indexOfclippedPolygon].point.x, pointChainForClippedPolygon[indexOfclippedPolygon].point.z};
-			Point b = {pointChainForClippedPolygon[nextIndexOfClippedPolygon].point.x, pointChainForClippedPolygon[nextIndexOfClippedPolygon].point.z};
+			Point point = {insertionX, insertionZ};
+			Point a = {pBeginPointOfClippedPolygon->point.x, pBeginPointOfClippedPolygon->point.z};
+			Point b = {pEndPointOfClippedPolygon->point.x, pEndPointOfClippedPolygon->point.z};
 			MakeRectByPoint(&checkRect, &a, &b);
 			if(true != InRect(&checkRect, &point))
 			{
@@ -282,16 +205,9 @@ int ConvexPolygonClipping(const ConvexPolygon* clippedPolygon,
 			ClippingInterPoint* pTempPoint = (ClippingInterPoint*)malloc(sizeof(ClippingInterPoint));
 			pTempPoint->point = point;
 			pTempPoint->tValueForClippingWindow = tValue;
+			pTempPoint->tValueForClippedPolygon = GetTValue(&pBeginPointOfClippedPolygon->point, &pEndPointOfClippedPolygon->point, &point);
 
-			float deltX = pointChainForClippedPolygon[nextIndexOfClippedPolygon].point.x - pointChainForClippedPolygon[indexOfclippedPolygon].point.x;
-			if(abs(deltX) < EPSILON)
-			{
-				pTempPoint->tValueForClippedPolygon = (insertionZ - pointChainForClippedPolygon[indexOfclippedPolygon].point.z) / (pointChainForClippedPolygon[nextIndexOfClippedPolygon].point.z - pointChainForClippedPolygon[indexOfclippedPolygon].point.z);
-			}
-			else
-			{
-				pTempPoint->tValueForClippedPolygon = (insertionX - pointChainForClippedPolygon[indexOfclippedPolygon].point.x) / (pointChainForClippedPolygon[nextIndexOfClippedPolygon].point.x - pointChainForClippedPolygon[indexOfclippedPolygon].point.x);
-			}
+			//通过遍历链表查找正确的位置插入生成点
 			ClippingInterPoint* pCurrentPositon = &pointChainForClippingWindow[indexOfClippingWindow];
 			ClippingInterPoint* pNextPosition = pCurrentPositon->next2ClippingdWindow;
 			ClippingInterPoint* pEndPosition = &pointChainForClippingWindow[nextIndexOfClippingWindow];
@@ -319,6 +235,7 @@ int ConvexPolygonClipping(const ConvexPolygon* clippedPolygon,
 			}
 
 
+			//通过遍历链表查找正确的位置插入生成点
 			pCurrentPositon = &pointChainForClippedPolygon[indexOfclippedPolygon];
 			pNextPosition = pCurrentPositon->next2ClippedPolygon;
 			pEndPosition = &pointChainForClippedPolygon[nextIndexOfClippedPolygon];
@@ -365,71 +282,7 @@ int ConvexPolygonClipping(const ConvexPolygon* clippedPolygon,
 	*resultCount = 0;
 
 	//首先检查是否有足够的空间容纳结果
-	for (int i = 0; i < pointCountForClippedPolygon; ++i)
-	{
-		if (PROCESS_STATE_UNPROCESSED != pointChainForClippedPolygon[i].state)
-		{
-			continue;
-		}
-		*resultCount += 1;
-		pointChainForClippedPolygon[i].state = PROCESS_STATE_BEGIN_ADD;
-		ClippingInterPoint* tempPoint = pointChainForClippedPolygon[i].next2ClippedPolygon;
-		ClippingInterPoint* lastPoint = &pointChainForClippedPolygon[i];
-		while (true)
-		{
-			if(PROCESS_STATE_BEGIN_ADD == tempPoint->state)
-			{
-				break;
-			}
-
-			if (INTER_POINT_TYPE_CLIPPED_PYLIGON_POINT == tempPoint->pointType)
-			{
-				tempPoint->state = PROCESS_STATE_ADDED_TO_POLYGON;
-				lastPoint = tempPoint;
-				tempPoint = tempPoint->next2ClippedPolygon;
-			}
-			else if(INTER_POINT_TYPE_CLIPPING_WINDOW_POINT == tempPoint->pointType)
-			{
-				lastPoint = tempPoint;
-				tempPoint = tempPoint->prev2ClippingdWindow;
-			}
-			else if(INTER_POINT_TYPE_INTERSECTION_POINT_FOR_IN == tempPoint->pointType)
-			{
-				lastPoint = tempPoint;
-				tempPoint = tempPoint->next2ClippedPolygon;
-
-			}
-			else if(INTER_POINT_TYPE_INTERSECTION_POINT_FOR_OUT == tempPoint->pointType)
-			{
-				lastPoint = tempPoint;
-				tempPoint = tempPoint->prev2ClippingdWindow;
-			}
-			else if(INTER_POINT_TYPE_CLIPPING_WINDOW_POINT_AN_INSERCTION_POINT == tempPoint->pointType)
-			{
-				//特殊点
-				if(INTER_POINT_TYPE_CLIPPING_WINDOW_POINT == lastPoint->pointType
-					|| INTER_POINT_TYPE_INTERSECTION_POINT_FOR_OUT == lastPoint->pointType)
-				{
-					lastPoint = tempPoint;
-					tempPoint = tempPoint->next2ClippedPolygon;
-				}
-				else if(INTER_POINT_TYPE_CLIPPED_PYLIGON_POINT  == lastPoint->pointType)
-				{
-					lastPoint = tempPoint;
-					tempPoint = tempPoint->prev2ClippingdWindow;
-				}
-				else
-				{
-					assert(0);
-				}
-			}
-			else
-			{
-				assert(0);
-			}
-		}
-	}
-
+	*resultCount = GenerateConvexPolygon(pointChainForClippedPolygon, pointCountForClippedPolygon, NULL, 0);
 	if (maxResultCount < *resultCount)
 	{
 		return NEED_MORE_SPACE_FOR_RESULT;
@@ -450,18 +303,54 @@ int ConvexPolygonClipping(const ConvexPolygon* clippedPolygon,
 
 	memset(result, 0, sizeof(result[0]) * maxResultCount);
 	*resultCount = 0;
+	*resultCount = GenerateConvexPolygon(pointChainForClippedPolygon, pointCountForClippedPolygon, result, maxResultCount);
 
-	for (int i = 0; i < pointCountForClippedPolygon; ++i)
+	//释放分配的内存
+	ClippingInterPoint* pCurrent = &pointChainForClippedPolygon[0];
+	ClippingInterPoint* pNext = pCurrent->next2ClippedPolygon;
+	while (pNext != &pointChainForClippedPolygon[0])
 	{
-		if (PROCESS_STATE_UNPROCESSED != pointChainForClippedPolygon[i].state)
+		if (INTER_POINT_TYPE_INTERSECTION_POINT_FOR_IN == pNext->pointType || INTER_POINT_TYPE_INTERSECTION_POINT_FOR_OUT == pNext->pointType)
+		{
+			pCurrent = pNext;
+			pNext = pNext->next2ClippedPolygon;
+			free(pCurrent);
+		}
+		else
+		{
+			pNext = pNext->next2ClippedPolygon;
+		}
+	}
+	free(pointChainForClippedPolygon);
+	free(pointChainForClippingWindow);
+	return 0;
+}
+
+//遍历链表，分割多边形
+//教材上的的做法是用逆时针的多边形裁剪顺时针的多边形
+//这里采用的做法是用顺时针的多边形裁剪顺时针的多边形(应为Convex不支持逆时针的多边形凸包)
+//所以做法和教材上有区别
+//教材上的做法是用单向链表即可
+//本实现必须采用双向链表
+static int GenerateConvexPolygon(ClippingInterPoint* pointList, const int pointCount, ConvexPolygon** result, int maxResultSize)
+{
+	bool isGenerate = NULL != result ? true : false;
+	int resultCount = 0;;
+	for (int i = 0; i < pointCount; ++i)
+	{
+		if (PROCESS_STATE_UNPROCESSED != pointList[i].state)
 		{
 			continue;
 		}
-		ConvexPolygon* polygon = CreateConvexPolygon(100);
-		pointChainForClippedPolygon[i].state = PROCESS_STATE_BEGIN_ADD;
-		ClippingInterPoint* tempPoint = pointChainForClippedPolygon[i].next2ClippedPolygon;
-		ClippingInterPoint* lastPoint = &pointChainForClippedPolygon[i];
-		AddPointToPolygon(polygon, lastPoint->point.x, lastPoint->point.z, false);
+
+		pointList[i].state = PROCESS_STATE_BEGIN_ADD;
+		ClippingInterPoint* tempPoint = pointList[i].next2ClippedPolygon;
+		ClippingInterPoint* lastPoint = &pointList[i];
+		ConvexPolygon* polygon = isGenerate ? CreateConvexPolygon(100) : NULL;
+		if (isGenerate)
+		{
+			AddPointToPolygon(polygon, lastPoint->point.x, lastPoint->point.z, false);
+		}
 		while (true)
 		{
 			if(PROCESS_STATE_BEGIN_ADD == tempPoint->state)
@@ -516,27 +405,62 @@ int ConvexPolygonClipping(const ConvexPolygon* clippedPolygon,
 				assert(0);
 			}
 		}
-		result[*resultCount] = polygon;
-		*resultCount += 1;
+		if (isGenerate)
+		{
+			result[resultCount] = polygon;
+		}
+		resultCount += 1;
 	}
+	return resultCount;
+}
+static ClippingInterPoint* CreateClippedPolygonData(const ConvexPolygon* clippedPolygon, const ConvexPolygon* clippingWindow)
+{
+	const Point* pointListForClippedPolygon = GetPolygonPointList(clippedPolygon);
+	const int pointCountForClippedPolygon = GetPolygonPointCount(clippedPolygon);
 
-	//释放分配的内存
-	ClippingInterPoint* pCurrent = &pointChainForClippedPolygon[0];
-	ClippingInterPoint* pNext = pCurrent->next2ClippedPolygon;
-	while (pNext != &pointChainForClippedPolygon[0])
+	ClippingInterPoint* pointChainForClippedPolygon = (ClippingInterPoint*)malloc(sizeof(ClippingInterPoint) * pointCountForClippedPolygon);
+	for (int i = 0; i < pointCountForClippedPolygon; ++i)
 	{
-		if (INTER_POINT_TYPE_INTERSECTION_POINT_FOR_IN == pNext->pointType || INTER_POINT_TYPE_INTERSECTION_POINT_FOR_OUT == pNext->pointType)
+		int prevIndex = 0 == i ? pointCountForClippedPolygon - 1 : i - 1;
+		int nextIndex = i + 1 == pointCountForClippedPolygon ? 0 : i + 1;
+		pointChainForClippedPolygon[i].point = pointListForClippedPolygon[i];
+		pointChainForClippedPolygon[i].pointType = INTER_POINT_TYPE_CLIPPED_PYLIGON_POINT;
+		pointChainForClippedPolygon[i].prev2ClippedPolygon = &pointChainForClippedPolygon[prevIndex];
+		pointChainForClippedPolygon[i].next2ClippedPolygon = &pointChainForClippedPolygon[nextIndex];
+		pointChainForClippedPolygon[i].prev2ClippingdWindow = NULL;
+		pointChainForClippedPolygon[i].next2ClippingdWindow = NULL;
+		pointChainForClippedPolygon[i].state = PROCESS_STATE_UNPROCESSED;
+		pointChainForClippedPolygon[i].tValueForClippedPolygon = -999999.0f;
+		pointChainForClippedPolygon[i].tValueForClippingWindow = -999999.0f;
+
+		if (PointInPolygon(clippingWindow, pointChainForClippedPolygon[i].point.x, pointChainForClippedPolygon[i].point.z))
 		{
-			pCurrent = pNext;
-			pNext = pNext->next2ClippedPolygon;
-			free(pCurrent);
+			pointChainForClippedPolygon[i].state = PROCESS_STATE_NO_NEED_PROCESS;
 		}
-		else
-		{
-			pNext = pNext->next2ClippedPolygon;
-		}
+
 	}
-	free(pointChainForClippedPolygon);
-	free(pointChainForClippingWindow);
-	return 0;
+	return pointChainForClippedPolygon;
+}
+
+static ClippingInterPoint* CreateClippingWindowData(const ConvexPolygon* clippedPolygon, const ConvexPolygon* clippingWindow)
+{
+
+	const Point* pointListForClipingWindow  = GetPolygonPointList(clippingWindow);
+	const int pointCountForClippingWindow  = GetPolygonPointCount(clippingWindow);
+
+	ClippingInterPoint* pointChainForClippingWindow = (ClippingInterPoint*)malloc(sizeof(ClippingInterPoint) * pointCountForClippingWindow);
+	for (int i = 0; i < pointCountForClippingWindow; ++i)
+	{
+		int prevIndex = 0 == i ? pointCountForClippingWindow - 1 : i - 1;
+		int nextIndex = i + 1 == pointCountForClippingWindow ? 0 : i + 1;
+		pointChainForClippingWindow[i].point = pointListForClipingWindow[i];
+		pointChainForClippingWindow[i].pointType = INTER_POINT_TYPE_CLIPPING_WINDOW_POINT;
+		pointChainForClippingWindow[i].prev2ClippingdWindow = &pointChainForClippingWindow[prevIndex];
+		pointChainForClippingWindow[i].next2ClippingdWindow = &pointChainForClippingWindow[nextIndex];
+		pointChainForClippingWindow[i].prev2ClippedPolygon = NULL;
+		pointChainForClippingWindow[i].next2ClippedPolygon = NULL;
+		pointChainForClippingWindow[i].tValueForClippedPolygon = -999999.0f;
+		pointChainForClippingWindow[i].tValueForClippingWindow = -999999.0f;
+	}
+	return pointChainForClippingWindow;
 }
