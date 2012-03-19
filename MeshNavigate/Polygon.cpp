@@ -1,6 +1,6 @@
 /*
-**文件名称：ConvexPolygon.cpp
-**功能描述：凸多边形
+**文件名称：Polygon.cpp
+**功能描述：多边形
 **文件说明：
 **作    者：陈琳
 **创建时间：2012-02-21
@@ -8,7 +8,7 @@
 */
 #include "BaseStruct.h"
 #include "VectorMath.h"
-#include "ConvexPolygon.h"
+#include "Polygon.h"
 #include <string.h>
 #include <malloc.h>
 #include <math.h>

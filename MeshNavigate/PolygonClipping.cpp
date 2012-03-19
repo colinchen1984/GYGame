@@ -8,7 +8,7 @@
 */
 
 #include "PolygonClipping.h"
-#include "ConvexPolygon.h"
+#include "Polygon.h"
 #include "BaseStruct.h"
 #include "VectorMath.h"
 #include <malloc.h>

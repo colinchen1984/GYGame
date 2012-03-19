@@ -228,19 +228,19 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\ConvexPolygon.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\ConvexPolygon.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\ObjectMesh.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\..\ObjectMesh.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Polygon.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Polygon.h"
 				>
 			</File>
 			<File

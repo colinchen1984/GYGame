@@ -1,6 +1,5 @@
 
 #include "ObjectMesh.h"
-#include "MeshNavigate.h"
 #include "BaseStruct.h"
 #include "VectorMath.h"
 #include <malloc.h>

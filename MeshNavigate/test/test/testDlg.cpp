@@ -6,7 +6,7 @@
 #include "test.h"
 #include "testDlg.h"
 #include "../../ObjectMesh.h"
-#include "../../ConvexPolygon.h"
+#include "../../Polygon.h"
 #include "../../PolygonClipping.h"
 #ifdef _DEBUG
 #define new DEBUG_NEW
