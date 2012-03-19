@@ -9,24 +9,27 @@
 
 #pragma once
 
-struct ConvexPolygon;
+struct MeshPolygon;
 struct Point;
 struct Vector;
 
-extern ConvexPolygon* CreateConvexPolygon(int maxVertexCount);
+extern MeshPolygon* CreatePolygon(int maxVertexCount);
 
-extern void ReleaseConvexPolygon(ConvexPolygon* polygon);
+extern void ReleasePolygon(MeshPolygon* polygon);
 
-extern ConvexPolygon* MakeConvexPolygonCopy(ConvexPolygon* polygon);
+extern MeshPolygon* MakePolygonCopy(MeshPolygon* polygon);
 
-extern void CleanConvexPolygon(ConvexPolygon* polygon);
+extern void CleanPolygon(MeshPolygon* polygon);
 
-extern bool PointInPolygon(const ConvexPolygon* polygon, float x, float z); 
+//需要调用者自己保证Polygon是Convex Polygon
+extern bool PointInPolygon(const MeshPolygon* polygon, float x, float z); 
 
-extern bool AddPointToPolygon(ConvexPolygon* polygon, float x, float z, bool check);
+extern bool AddPointToPolygon(MeshPolygon* polygon, float x, float z);
 
-extern const Point* GetPolygonPointList(const ConvexPolygon* polygon);
+extern bool IsConvexPolygon(MeshPolygon* polygon);
 
-extern int GetPolygonPointCount(const ConvexPolygon* polygon);
+extern const Point* GetPolygonPointList(const MeshPolygon* polygon);
 
-extern const Vector* GetPolygonNormal(const ConvexPolygon* polygon);
+extern int GetPolygonPointCount(const MeshPolygon* polygon);
+
+extern const Vector* GetPolygonNormal(const MeshPolygon* polygon);

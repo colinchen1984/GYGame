@@ -45,13 +45,14 @@ struct ClippingInterPoint
 	float				tValueForClippingWindow;
 	PROCESS_STATE state;
 };
-static int GenerateConvexPolygon(ClippingInterPoint* pointList, const int pointCount, ConvexPolygon** result, int maxResultSize);
-static ClippingInterPoint* CreateClippedPolygonData(const ConvexPolygon* clippedPolygon, const ConvexPolygon* clippingWindow);
-static ClippingInterPoint* CreateClippingWindowData(const ConvexPolygon* clippedPolygon, const ConvexPolygon* clippingWindow);
+static int GenerateConvexPolygon(ClippingInterPoint* pointList, const int pointCount, MeshPolygon** result, int maxResultSize, int* bufferForPolygonConverCount, int bufferCount);
+static ClippingInterPoint* CreateClippedPolygonData(const MeshPolygon* clippedPolygon, const MeshPolygon* clippingWindow);
+static ClippingInterPoint* CreateClippingWindowData(const MeshPolygon* clippedPolygon, const MeshPolygon* clippingWindow);
+float GetTValue( const Point* beginPoint, const Point* endPoint, const Point* middlePoint );
 
-int ConvexPolygonClipping(const ConvexPolygon* clippedPolygon,
-								  const ConvexPolygon* clippingWindow,
-								  ConvexPolygon** result,
+int ConvexPolygonClipping(const MeshPolygon* clippedPolygon,
+								  const MeshPolygon* clippingWindow,
+								  MeshPolygon** result,
 								  const int maxResultCount,
 								  int* resultCount)
 {
@@ -59,9 +60,10 @@ int ConvexPolygonClipping(const ConvexPolygon* clippedPolygon,
 	{
 		return WRONG_PARAM;
 	}
-
+	int allPointCountForClipping = 0;
 	const Point* pointListForClipingWindow  = GetPolygonPointList(clippingWindow);
 	const int pointCountForClippingWindow  = GetPolygonPointCount(clippingWindow);
+	allPointCountForClipping += pointCountForClippingWindow;
 	int clipingWindowPointInClippedWindowCount = 0;
 	for (int i = 0; i < pointCountForClippingWindow; ++i)
 	{
@@ -89,6 +91,7 @@ int ConvexPolygonClipping(const ConvexPolygon* clippedPolygon,
 		}
 	}
 
+	allPointCountForClipping += pointCountForClippedPolygon;
 	if (pointCountForClippedPolygon == clippedPolygonointInClippedWindowCount)
 	{
 		return ALL_POINT_IN_CLIPPING_WINDOW;
@@ -203,6 +206,7 @@ int ConvexPolygonClipping(const ConvexPolygon* clippedPolygon,
 			}
 
 			ClippingInterPoint* pTempPoint = (ClippingInterPoint*)malloc(sizeof(ClippingInterPoint));
+			++allPointCountForClipping;
 			pTempPoint->point = point;
 			pTempPoint->tValueForClippingWindow = tValue;
 			pTempPoint->tValueForClippedPolygon = GetTValue(&pBeginPointOfClippedPolygon->point, &pEndPointOfClippedPolygon->point, &point);
@@ -282,7 +286,8 @@ int ConvexPolygonClipping(const ConvexPolygon* clippedPolygon,
 	*resultCount = 0;
 
 	//首先检查是否有足够的空间容纳结果
-	*resultCount = GenerateConvexPolygon(pointChainForClippedPolygon, pointCountForClippedPolygon, NULL, 0);
+	int* bufferForPolygonConverCount = (int*)malloc(sizeof(int*) * allPointCountForClipping);
+	*resultCount = GenerateConvexPolygon(pointChainForClippedPolygon, pointCountForClippedPolygon, NULL, 0, bufferForPolygonConverCount, allPointCountForClipping);
 	if (maxResultCount < *resultCount)
 	{
 		return NEED_MORE_SPACE_FOR_RESULT;
@@ -303,7 +308,7 @@ int ConvexPolygonClipping(const ConvexPolygon* clippedPolygon,
 
 	memset(result, 0, sizeof(result[0]) * maxResultCount);
 	*resultCount = 0;
-	*resultCount = GenerateConvexPolygon(pointChainForClippedPolygon, pointCountForClippedPolygon, result, maxResultCount);
+	*resultCount = GenerateConvexPolygon(pointChainForClippedPolygon, pointCountForClippedPolygon, result, maxResultCount, bufferForPolygonConverCount, allPointCountForClipping);
 
 	//释放分配的内存
 	ClippingInterPoint* pCurrent = &pointChainForClippedPolygon[0];
@@ -321,6 +326,7 @@ int ConvexPolygonClipping(const ConvexPolygon* clippedPolygon,
 			pNext = pNext->next2ClippedPolygon;
 		}
 	}
+	free(bufferForPolygonConverCount);
 	free(pointChainForClippedPolygon);
 	free(pointChainForClippingWindow);
 	return 0;
@@ -332,10 +338,14 @@ int ConvexPolygonClipping(const ConvexPolygon* clippedPolygon,
 //所以做法和教材上有区别
 //教材上的做法是用单向链表即可
 //本实现必须采用双向链表
-static int GenerateConvexPolygon(ClippingInterPoint* pointList, const int pointCount, ConvexPolygon** result, int maxResultSize)
+static int GenerateConvexPolygon(ClippingInterPoint* pointList, const int pointCount, MeshPolygon** result, int maxResultSize, int* bufferForPolygonConverCount, int bufferCount)
 {
 	bool isGenerate = NULL != result ? true : false;
 	int resultCount = 0;;
+	if (true != isGenerate)
+	{
+		memset(bufferForPolygonConverCount, 0, sizeof(bufferForPolygonConverCount[0]) * bufferCount);
+	}
 	for (int i = 0; i < pointCount; ++i)
 	{
 		if (PROCESS_STATE_UNPROCESSED != pointList[i].state)
@@ -346,10 +356,14 @@ static int GenerateConvexPolygon(ClippingInterPoint* pointList, const int pointC
 		pointList[i].state = PROCESS_STATE_BEGIN_ADD;
 		ClippingInterPoint* tempPoint = pointList[i].next2ClippedPolygon;
 		ClippingInterPoint* lastPoint = &pointList[i];
-		ConvexPolygon* polygon = isGenerate ? CreateConvexPolygon(100) : NULL;
+		MeshPolygon* polygon = isGenerate ? CreatePolygon(bufferForPolygonConverCount[resultCount]) : NULL;
 		if (isGenerate)
 		{
-			AddPointToPolygon(polygon, lastPoint->point.x, lastPoint->point.z, false);
+			AddPointToPolygon(polygon, lastPoint->point.x, lastPoint->point.z);
+		}
+		else
+		{
+			++bufferForPolygonConverCount[resultCount];
 		}
 		while (true)
 		{
@@ -357,8 +371,14 @@ static int GenerateConvexPolygon(ClippingInterPoint* pointList, const int pointC
 			{
 				break;
 			}
-
-			AddPointToPolygon(polygon, tempPoint->point.x, tempPoint->point.z, false);
+			if(isGenerate)
+			{
+				AddPointToPolygon(polygon, tempPoint->point.x, tempPoint->point.z);
+			}
+			else
+			{
+				++bufferForPolygonConverCount[resultCount];
+			}
 			if (INTER_POINT_TYPE_CLIPPED_PYLIGON_POINT == tempPoint->pointType)
 			{
 				tempPoint->state = PROCESS_STATE_ADDED_TO_POLYGON;
@@ -409,11 +429,11 @@ static int GenerateConvexPolygon(ClippingInterPoint* pointList, const int pointC
 		{
 			result[resultCount] = polygon;
 		}
-		resultCount += 1;
+		++resultCount;
 	}
 	return resultCount;
 }
-static ClippingInterPoint* CreateClippedPolygonData(const ConvexPolygon* clippedPolygon, const ConvexPolygon* clippingWindow)
+static ClippingInterPoint* CreateClippedPolygonData(const MeshPolygon* clippedPolygon, const MeshPolygon* clippingWindow)
 {
 	const Point* pointListForClippedPolygon = GetPolygonPointList(clippedPolygon);
 	const int pointCountForClippedPolygon = GetPolygonPointCount(clippedPolygon);
@@ -442,7 +462,7 @@ static ClippingInterPoint* CreateClippedPolygonData(const ConvexPolygon* clipped
 	return pointChainForClippedPolygon;
 }
 
-static ClippingInterPoint* CreateClippingWindowData(const ConvexPolygon* clippedPolygon, const ConvexPolygon* clippingWindow)
+static ClippingInterPoint* CreateClippingWindowData(const MeshPolygon* clippedPolygon, const MeshPolygon* clippingWindow)
 {
 
 	const Point* pointListForClipingWindow  = GetPolygonPointList(clippingWindow);
@@ -463,4 +483,19 @@ static ClippingInterPoint* CreateClippingWindowData(const ConvexPolygon* clipped
 		pointChainForClippingWindow[i].tValueForClippingWindow = -999999.0f;
 	}
 	return pointChainForClippingWindow;
+}
+
+static float GetTValue( const Point* beginPoint, const Point* endPoint, const Point* middlePoint )
+{
+	float t = 0.0f;
+	float deltX = endPoint->x - beginPoint->x;
+	if(abs(deltX) < EPSILON)
+	{
+		t = (middlePoint->z - beginPoint->z) / (endPoint->z - beginPoint->z);
+	}
+	else
+	{
+		t = (middlePoint->x - beginPoint->x) / (endPoint->x - beginPoint->x);
+	}
+	return t;
 }

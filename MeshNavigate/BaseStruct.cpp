@@ -28,7 +28,12 @@ inline bool InRect(const Rect* rect, const Point* a)
 
 bool IsSamePoint( const Point* a, const Point* b )
 {
-	bool result = abs(a->x - b->x) < EPSILON && abs(a->z - b->z) < EPSILON;
+	double xSquar = (a->x - b->x);
+	xSquar *= xSquar;
+	double zSquar = (a->z - b->z);
+	zSquar *= zSquar;
+	const static double SQUAR_EPSILON = EPSILON * EPSILON;
+	bool result = xSquar + zSquar < SQUAR_EPSILON;
 	return result;
 }
 

@@ -13,9 +13,9 @@
 #include <malloc.h>
 #include <math.h>
 
-struct ConvexPolygon
+struct MeshPolygon
 {
-	//要求顶点顺时针, 所有边的法线朝内
+	//要求顶点顺时针
 	Point* 			pointList;
 	Vector* 		normalVectorList;
 	int 			vertexCount;
@@ -24,15 +24,15 @@ struct ConvexPolygon
 
 
 
-ConvexPolygon* CreateConvexPolygon(int maxVertexCount)
+MeshPolygon* CreatePolygon(int maxVertexCount)
 {
 	if(maxVertexCount < 3)
 	{
 		return NULL;
 	}
 	
-	ConvexPolygon* p = (ConvexPolygon*)malloc(sizeof(ConvexPolygon));
-	memset(p, 0, sizeof(ConvexPolygon));
+	MeshPolygon* p = (MeshPolygon*)malloc(sizeof(MeshPolygon));
+	memset(p, 0, sizeof(MeshPolygon));
 	
 	p->pointList = (Point*)malloc(sizeof(Point) * maxVertexCount);
 	memset(p->pointList, 0, sizeof(p->pointList[0]) * maxVertexCount);
@@ -42,7 +42,7 @@ ConvexPolygon* CreateConvexPolygon(int maxVertexCount)
 	return p;
 }
 
-void ReleaseConvexPolygon(ConvexPolygon* polygon)
+void ReleasePolygon(MeshPolygon* polygon)
 {
 	if(NULL == polygon)
 	{
@@ -53,7 +53,7 @@ void ReleaseConvexPolygon(ConvexPolygon* polygon)
 	free(polygon);
 }
 
-void CleanConvexPolygon(ConvexPolygon* polygon)
+void CleanPolygon(MeshPolygon* polygon)
 {
 	if(NULL == polygon)
 	{
@@ -64,7 +64,7 @@ void CleanConvexPolygon(ConvexPolygon* polygon)
 	polygon->vertexCount = 0;
 }
 
-static bool CopyConvexPolygon( ConvexPolygon* dest, const ConvexPolygon* src)
+static bool CopyConvexPolygon( MeshPolygon* dest, const MeshPolygon* src)
 {
 	if (dest->maxVertexCount < src->maxVertexCount)
 	{
@@ -75,14 +75,14 @@ static bool CopyConvexPolygon( ConvexPolygon* dest, const ConvexPolygon* src)
 	dest->vertexCount = src->vertexCount;
 }
 
-ConvexPolygon* MakeConvexPolygonCopy( ConvexPolygon* polygon )
+MeshPolygon* MakePolygonCopy( MeshPolygon* polygon )
 {
 	if(NULL == polygon)
 	{
 		return NULL;
 	}
-	ConvexPolygon* p = (ConvexPolygon*)malloc(sizeof(ConvexPolygon));
-	memcpy(p, polygon, sizeof(ConvexPolygon));
+	MeshPolygon* p = (MeshPolygon*)malloc(sizeof(MeshPolygon));
+	memcpy(p, polygon, sizeof(MeshPolygon));
 
 	p->pointList = (Point*)malloc(sizeof(Point) * polygon->maxVertexCount);
 	memcpy(p->pointList, polygon->pointList, sizeof(p->pointList[0]) * polygon->maxVertexCount);
@@ -91,7 +91,7 @@ ConvexPolygon* MakeConvexPolygonCopy( ConvexPolygon* polygon )
 	return p;
 }
 
-bool PointInPolygon(const ConvexPolygon* polygon, float x, float z)
+bool PointInPolygon(const MeshPolygon* polygon, float x, float z)
 {
 	if(NULL == polygon)
 	{
@@ -121,7 +121,7 @@ bool PointInPolygon(const ConvexPolygon* polygon, float x, float z)
 	return result;
 }
 
-static void inline PushBackPointToPolygon(ConvexPolygon* polygon, const Point* point)
+static void inline PushBackPointToPolygon(MeshPolygon* polygon, const Point* point)
 {
 	Vector v;
 	int targetIndex = polygon->vertexCount;
@@ -146,76 +146,7 @@ static void inline PushBackPointToPolygon(ConvexPolygon* polygon, const Point* p
 		
 }
 
-static inline void InsertPointToPolygon(ConvexPolygon* polygon, int targetPosition, const Point* point)
-{
-	memmove(&polygon->pointList[targetPosition + 2], &polygon->pointList[targetPosition + 1], sizeof(polygon->pointList[0]) * (polygon->vertexCount - targetPosition - 1));
-	memmove(&polygon->normalVectorList[targetPosition + 2], &polygon->normalVectorList[targetPosition + 1], sizeof(polygon->normalVectorList[0]) * (polygon->vertexCount - targetPosition - 1));
-	polygon->pointList[targetPosition + 1] = *point;
-	++polygon->vertexCount;
-	Vector v = {point->x - polygon->pointList[targetPosition].x, 0.0f, point->z - polygon->pointList[targetPosition].z};
-	VectorCrossProduct(&polygon->normalVectorList[targetPosition], &v, &StandardVector);
-	v.x = polygon->pointList[targetPosition + 2].x - point->x;
-	v.z = polygon->pointList[targetPosition + 2].z - point->z;
-	VectorCrossProduct(&polygon->normalVectorList[targetPosition + 1], &v, &StandardVector);
-	if (targetPosition + 2 == polygon->vertexCount - 1)
-	{
-		v.x =polygon->pointList[0].x - polygon->pointList[targetPosition + 2].x;
-		v.z =polygon->pointList[0].z - polygon->pointList[targetPosition + 2].z;
-		VectorCrossProduct(&polygon->normalVectorList[targetPosition + 2], &v, &StandardVector);
-	}
-}
-
-static bool IsRightInsertPosition(ConvexPolygon* polygon, int targetPosition, const Point* point)
-{
-	//组成Rect, 检测是否在rect内
-	int beginIndex = targetPosition;
-	int endIndex = targetPosition + 1 == polygon->vertexCount ? 0 : targetPosition + 1;
-	if(abs(point->x - polygon->pointList[beginIndex].x) + abs(point->x - polygon->pointList[endIndex].x) > abs(polygon->pointList[beginIndex].x - polygon->pointList[endIndex].x))
-	{
-		return false;
-	}
-
-	if(abs(point->z - polygon->pointList[beginIndex].z) + abs(point->z - polygon->pointList[endIndex].z) > abs(polygon->pointList[beginIndex].z - polygon->pointList[endIndex].z))
-	{
-		return false;
-	}
-	Vector fromTargetToPoint = {point->x - polygon->pointList[beginIndex].x, 0.0f, point->z - polygon->pointList[beginIndex].z};
-	Vector normalVectorForfromTargetToPointLine;
-	VectorCrossProduct(&normalVectorForfromTargetToPointLine, &fromTargetToPoint, &StandardVector);
-	bool result = true;
-	int sameSize = 0; //0尚未找到开始比较  -1 点成小于0   1点成大于0
-	for(int i = 0; i < polygon->vertexCount; ++i)
-	{
-		if (i == beginIndex)
-		{
-			continue;
-		}
-
-		Vector lineFromPointToEnd = {polygon->pointList[i].x - point->x, 0.0f, polygon->pointList[i].z - point->z};
-		//VectorCrossProduct(&v, &lineFromPointToEnd, &StandardVector);
-
-		float dot = VectorDotProduct(&lineFromPointToEnd, &normalVectorForfromTargetToPointLine);
-
-		if(0 == sameSize)
-		{
-			sameSize = dot < 0 ? -1 : 1;
-		}
-		else
-		{
-			int size = dot < 0 ? -1 : 1;
-			if(size != sameSize)
-			{
-				result = false;
-				break;
-			}
-		}
-	}
-	return result;
-}
-
-
-
-bool AddPointToPolygon(ConvexPolygon* polygon, float x, float z, bool check)
+bool AddPointToPolygon(MeshPolygon* polygon, float x, float z)
 {
 	const Point point = {x, z};
 	if(NULL == polygon)
@@ -228,54 +159,32 @@ bool AddPointToPolygon(ConvexPolygon* polygon, float x, float z, bool check)
 		return false;
 	}
 
-	bool result = false;
-	if(false == check)// || polygon->vertexCount < 3)
-	{
-		PushBackPointToPolygon(polygon, &point);
-		result = true;
-	}
-	else
-	{
-		do
-		{
-			if(false != PointInPolygon(polygon, point.x, point.z))
-			{
-				break;
-			}
-			
-			int targetPosition = -1;
-			for(int i = 0; i < polygon->vertexCount; ++i)
-			{
-				if(IsRightInsertPosition(polygon, i, &point))
-				{
-					targetPosition = i;
-					break;
-				}
-			}
-			
-			if(-1 != targetPosition)
-			{
-				if(targetPosition + 1 < polygon->vertexCount)
-				{
-					InsertPointToPolygon(polygon, targetPosition, &point);
-				}
-				else
-				{
-					PushBackPointToPolygon(polygon, &point);
-				}
-			}
-			else
-			{
-				break;
-			}
+	PushBackPointToPolygon(polygon, &point);
+	return true;
+}
 
-			result = true;
-		}while(0);
+
+bool IsConvexPolygon( MeshPolygon* polygon )
+{
+	if (polygon->vertexCount < 3)
+	{
+		return false;
+	}
+
+	if (3 == polygon->vertexCount)
+	{
+		return true;
+	}
+	bool result = true;
+	for (int i = 0; i < polygon->vertexCount; ++i)
+	{
+		
 	}
 	return result;
 }
 
-const Point* GetPolygonPointList(const ConvexPolygon* polygon)
+
+const Point* GetPolygonPointList(const MeshPolygon* polygon)
 {
 	if(NULL == polygon)
 	{
@@ -285,7 +194,7 @@ const Point* GetPolygonPointList(const ConvexPolygon* polygon)
 	return polygon->pointList;
 }
 
-int GetPolygonPointCount(const ConvexPolygon* polygon)
+int GetPolygonPointCount(const MeshPolygon* polygon)
 {
 	if(NULL == polygon)
 	{
@@ -295,7 +204,7 @@ int GetPolygonPointCount(const ConvexPolygon* polygon)
 	return polygon->vertexCount;	
 }
 
-const Vector* GetPolygonNormal( const ConvexPolygon* polygon )
+const Vector* GetPolygonNormal( const MeshPolygon* polygon )
 {
 	if(NULL == polygon)
 	{

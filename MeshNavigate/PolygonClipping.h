@@ -9,7 +9,7 @@
 
 #pragma once
 
-struct ConvexPolygon;
+struct MeshPolygon;
 
 //基于Weiler-Atherton算法
 //所有输入的多边形必须是顺时针顺序
@@ -24,8 +24,8 @@ const int NEED_MORE_SPACE_FOR_RESULT = -2;
 //裁剪多边形位于被裁减多边形内部，无法裁剪
 //目前不支持镂空的情况
 const int CLIPPING_WINDOW_ALL_IN_CLIPPED_POLYGON = -3;
-extern int ConvexPolygonClipping(const ConvexPolygon* clippedPolygon,
-								  const ConvexPolygon* clipWindow,
-								  ConvexPolygon** result,
+extern int ConvexPolygonClipping(const MeshPolygon* clippedPolygon,
+								  const MeshPolygon* clipWindow,
+								  MeshPolygon** result,
 								  const int maxResultCount,
 								  int* resultCount);

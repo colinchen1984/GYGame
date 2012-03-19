@@ -10,7 +10,7 @@
 #pragma once
 
 struct ItemNavigateMesh;
-struct ConvexPolygon;
+struct MeshPolygon;
 struct Point;
 
 extern ItemNavigateMesh* CreateItemNavigateMesh(int maxVertexCount);

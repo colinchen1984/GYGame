@@ -94,8 +94,8 @@ void CtestDlg::OnPaint()
 		GetClientRect(&rect);
 		CDialog::OnPaint();
 	}
-
-#ifdef TEST
+#define CONVEXHULL
+#ifdef CONVEXHULL
 	vector<Point>::iterator it = m_pointList.begin();
 	vector<Point>::iterator beginIt = m_pointList.begin();
 	vector<Point>::iterator endIt = m_pointList.end();
@@ -126,6 +126,7 @@ void CtestDlg::OnPaint()
 		dc.LineTo(m_polygonPointList[0].x, m_polygonPointList[0].z);
 	}
 #endif 
+#ifdef CLIPPING
 	CClientDC dc(this);
 	CBrush brush;
 	CBrush* oldBrush;
@@ -197,6 +198,7 @@ void CtestDlg::OnPaint()
 		}
 		dc.LineTo(m_clippingPoint[i][0].x, m_clippingPoint[i][0].z);
 	}
+#endif
 }
 
 //当用户拖动最小化窗口时系统调用此函数取得光标
@@ -210,7 +212,7 @@ void CtestDlg::DrawPolygon()
 {
 	CRect rect;
 	GetClientRect(&rect);
-	int xMax = 800, yMax = 600;
+	int xMax = 400, yMax = 320;
 	//srand(time(NULL));
 	int vertexCount = m_maxVertexCount * 10; (rand() + 3) % 100;
 	m_pointList.clear();
@@ -232,22 +234,22 @@ void CtestDlg::DrawPolygon()
 	m_polygonPointList.assign(polygonPoint, polygonPoint + polygonPointCount);
 	ReleaseItemNavigateMesh(item);
 
-	ConvexPolygon* clipped = CreateConvexPolygon(m_clippedPoint.size());
+	MeshPolygon* clipped = CreatePolygon(m_clippedPoint.size());
 	for (int i = 0; i < m_clippedPoint.size(); ++i)
 	{
-		AddPointToPolygon(clipped, m_clippedPoint[i].x, m_clippedPoint[i].z, false);
+		AddPointToPolygon(clipped, m_clippedPoint[i].x, m_clippedPoint[i].z);
 	}
 
-	ConvexPolygon* clippingWindow = CreateConvexPolygon(m_clipingWindow.size());
+	MeshPolygon* clippingWindow = CreatePolygon(m_clipingWindow.size());
 	for (int i = 0; i < m_clipingWindow.size();++i)
 	{
-		AddPointToPolygon(clippingWindow, m_clipingWindow[i].x, m_clipingWindow[i].z, false);
+		AddPointToPolygon(clippingWindow, m_clipingWindow[i].x, m_clipingWindow[i].z);
 	}
-	ConvexPolygon* test[100];
+	MeshPolygon* test[100];
 	int result;
 	ConvexPolygonClipping(clipped, clippingWindow, test, 100, &result);
-	ReleaseConvexPolygon(clipped);
-	ReleaseConvexPolygon(clippingWindow);
+	ReleasePolygon(clipped);
+	ReleasePolygon(clippingWindow);
 	m_clippingPoint.clear();
 	for (int i = 0; i < result; ++i)
 	{
@@ -256,7 +258,7 @@ void CtestDlg::DrawPolygon()
 		vector<Point> temp;
 		temp.assign(polygonPoint, polygonPoint+ polygonPointCount);
 		m_clippingPoint.push_back(temp);
-		ReleaseConvexPolygon(test[i]);
+		ReleasePolygon(test[i]);
 		
 	}
 	m_clippedPoint.clear();
