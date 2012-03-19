@@ -228,6 +228,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\ConcavePolygondecompose.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\ConcavePolygondecompose.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\ObjectMesh.cpp"
 				>
 			</File>

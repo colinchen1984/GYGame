@@ -5,9 +5,13 @@
 #include "stdafx.h"
 #include "test.h"
 #include "testDlg.h"
+#include <math.h>
 #include "../../ObjectMesh.h"
 #include "../../Polygon.h"
 #include "../../PolygonClipping.h"
+#include "../../VectorMath.h"
+#include "../../ConcavePolygonDecompose.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -239,7 +243,21 @@ void CtestDlg::DrawPolygon()
 	{
 		AddPointToPolygon(clipped, m_clippedPoint[i].x, m_clippedPoint[i].z);
 	}
-
+	MeshPolygon* testT = CreatePolygon(5);
+	AddPointToPolygon(testT, 0.0f + 1.0f, 0.0f + 1.0f);
+	AddPointToPolygon(testT, 1.0f + 1.0f, -1.0f + 1.0f);
+	AddPointToPolygon(testT, 0.50f + 1.0f, 0.00f + 1.0f);
+	AddPointToPolygon(testT, 1.0f + 1.0f, 1.0f + 1.0f);
+	ConcavePolygonDecompose(testT, 0, 0, 0);
+	Point p = {0.5f, 0.5f};
+	Matrix3x3 testM;
+	IdentityMatrix(&testM);
+	MakeRotateMatrix(&testM, 3.1415926 / 2, true);
+	MritrixPlusPoint( &testM, &p);
+	IdentityMatrix(&testM);
+	MakeRotateMatrix(&testM, 3.1415926 / 2, false);
+	MritrixPlusPoint( &testM, &p);
+	IsConvexPolygon(testT);
 	MeshPolygon* clippingWindow = CreatePolygon(m_clipingWindow.size());
 	for (int i = 0; i < m_clipingWindow.size();++i)
 	{

@@ -15,33 +15,6 @@
 
 //foward declare
 
-class GYCycleBufferBase
-{
-public:
-	GYCycleBufferBase(){};
-	virtual ~GYCycleBufferBase(){};
-	
-	virtual const GYCHAR* ReadPtr() = 0;
-	
-    virtual GYINT32 GetWriteSize() = 0;
-
-    virtual GYINT32 GetReadSize() = 0;
-
-    virtual GYINT32 CleanUp() = 0;
-
-    virtual const GYCHAR* const GetHead() = 0;
-
-    virtual const GYCHAR* const GetTail() = 0;
-
-    virtual GYINT32 WritePtr(GYINT32 n) = 0;
-
-    virtual GYINT32 Write(const GYCHAR* p, GYINT32 nLen) = 0;
-	
-    virtual GYINT32 ReadPtr(GYINT32 n) = 0;
-
-    virtual GYINT32 Read(GYCHAR* p, GYINT32 len) = 0;
-};
-
 template<GYINT32 MAX_BUFFER_LEN = 1024 * 16>
 class GYCycleBuffer
 {
@@ -146,8 +119,9 @@ public:
 			}
             else
             {
-                GYMemcpy(m_pWriter, p, m_pTail - m_pWriter);
-                GYMemcpy(m_pHeader, p + (m_pTail - m_pWriter), nLen - (m_pTail - m_pWriter));
+				GYINT32 plen = m_pTail - m_pWriter;
+                GYMemcpy(m_pWriter, p, plen);
+                GYMemcpy(m_pHeader, p + plen, nLen - plen);
             }
             WritePtr(nLen);
             err = 0;
@@ -188,8 +162,9 @@ public:
 			}
             else
             {
-                GYMemcpy(p, m_pReader, m_pTail - m_pReader);
-                GYMemcpy(p + (m_pTail - m_pReader), m_pHeader, len - (m_pTail - m_pReader));
+				GYINT32 plen = m_pTail - m_pReader;
+                GYMemcpy(p, m_pReader, plen);
+                GYMemcpy(p + plen, m_pHeader, len - plen);
             }
             ReadPtr(len);
             err = 0;

@@ -164,21 +164,64 @@ bool AddPointToPolygon(MeshPolygon* polygon, float x, float z)
 }
 
 
-bool IsConvexPolygon( MeshPolygon* polygon )
+bool IsConvexPolygon(const MeshPolygon* polygon )
 {
+	bool result = false;
 	if (polygon->vertexCount < 3)
 	{
-		return false;
+		result = false;
+		return result;
 	}
-
-	if (3 == polygon->vertexCount)
+	else if (3 == polygon->vertexCount)
 	{
-		return true;
+		Vector normal0 = polygon->normalVectorList[0];
+		Vector normal1 = polygon->normalVectorList[1];
+		float dotaValue = VectorDotProduct(NormalizationVector(&normal0), NormalizationVector(&normal1));
+		//all point in one line
+		result = FloatEqual(dotaValue, 1.0f) ? false : true;
+		return result;
 	}
-	bool result = true;
-	for (int i = 0; i < polygon->vertexCount; ++i)
+	else if(4 == polygon->vertexCount)
 	{
-		
+		//求对角线是否有交点
+		//有则是凸多边形
+		result = IntersectionPointBettwenTwoSegments(&polygon->pointList[0], &polygon->pointList[2], &polygon->pointList[1], &polygon->pointList[3], NULL);
+	}
+	else
+	{
+		result = true;
+		for (int i = 0; i < polygon->vertexCount; ++i)
+		{
+			//对每一个点A, 检查其他点是否都 A -> A1同一侧
+			if (true != result)
+			{
+				break;
+			}
+			int allInOneLine = 0;;
+			for (int t = 0; t < polygon->vertexCount; ++t)
+			{
+				if (t == i)
+				{
+					continue;
+				}
+				Vector checkVector = {polygon->pointList[t].x - polygon->pointList[i].x, 0.0f, polygon->pointList[t].z - polygon->pointList[i].z};
+				float checkPointDotValue = VectorDotProduct(&checkVector, &polygon->normalVectorList[i]);
+				if (checkPointDotValue < 0.0f)
+				{
+					result = false;
+					break;
+				}
+				if (FloatEqualZero(checkPointDotValue))
+				{
+					++allInOneLine;
+				}
+			}
+			//all point in one line
+			if (allInOneLine == polygon->vertexCount - 1)
+			{
+				result = false;
+			}
+		}
 	}
 	return result;
 }

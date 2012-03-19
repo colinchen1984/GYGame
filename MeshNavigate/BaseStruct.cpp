@@ -19,7 +19,7 @@ void MakeRectByPoint(Rect* rect, const Point* a, const Point* b)
 	rect->height = abs(a->z - b->z);
 }
 
-inline bool InRect(const Rect* rect, const Point* a)
+bool InRect(const Rect* rect, const Point* a)
 {
 	bool xreslut = rect->leftTop.x <= a->x && rect->leftTop.x + rect->width >= a->x;
 	bool zreslut = rect->leftTop.z <= a->z && rect->leftTop.z + rect->height >= a->z;
@@ -37,7 +37,7 @@ bool IsSamePoint( const Point* a, const Point* b )
 	return result;
 }
 
-extern Vector* NormalizationVector( Vector* v )
+Vector* NormalizationVector( Vector* v )
 {
 	float t = v->x * v->x + v->y * v->y + v->z * v->z;
 	t = sqrt(t);
@@ -45,5 +45,21 @@ extern Vector* NormalizationVector( Vector* v )
 	v->y /= t;
 	v->z /= t;
 	return v;
+}
+
+Matrix3x3* IdentityMatrix( Matrix3x3* matrix )
+{
+	for(int i = 0; i < 3; ++i)
+	{
+		for(int t = 0; t < 3; ++t)
+		{
+				matrix->point[i][t] = 0.0f;
+		}
+	}
+	for (int i = 0; i < 3; ++i)
+	{
+		matrix->point[i][i] = 1.0f;
+	}
+	return matrix;
 }
 

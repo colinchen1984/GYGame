@@ -127,8 +127,8 @@ int ConvexPolygonClipping(const MeshPolygon* clippedPolygon,
 
 			float cosofToBeginPoint = VectorDotProduct(&toBeginPoint, &pNormalOfClippedPolygon[indexOfclippedPolygon]);					
 			float cosofToEndPoint = VectorDotProduct(&toEndPoint, &pNormalOfClippedPolygon[indexOfclippedPolygon]);	
-			bool beginPointIsSpecial = (abs(cosofToBeginPoint) < EPSILON && cosofToEndPoint > 0.0f);
-			bool endPointIsSpecial = (abs(cosofToEndPoint) < EPSILON &&  cosofToBeginPoint> 0.0f);
+			bool beginPointIsSpecial = (FloatEqualZero(cosofToBeginPoint) && cosofToEndPoint > 0.0f);
+			bool endPointIsSpecial = (FloatEqualZero(cosofToEndPoint) &&  cosofToBeginPoint> 0.0f);
 			if (beginPointIsSpecial || endPointIsSpecial)
 			{
 				//特殊点，即交点在被裁减的多边形的边上，且同在内侧
@@ -164,13 +164,13 @@ int ConvexPolygonClipping(const MeshPolygon* clippedPolygon,
 				continue;
 			}
 
-			if (abs(cosofToBeginPoint) < EPSILON && cosofToEndPoint < 0.0f)
+			if (FloatEqualZero(cosofToBeginPoint) && cosofToEndPoint < 0.0f)
 			{
 				//特殊点，即交点在被裁减的多边形的边上，且同在外侧
 				//直接抛弃，不处理
 				continue;
 			}
-			if (abs(cosofToEndPoint) < EPSILON && cosofToBeginPoint < 0.0f)
+			if (FloatEqualZero(cosofToEndPoint) && cosofToBeginPoint < 0.0f)
 			{
 				//特殊点，即交点在被裁减的多边形的边上，且同在外侧
 				//直接抛弃，不处理

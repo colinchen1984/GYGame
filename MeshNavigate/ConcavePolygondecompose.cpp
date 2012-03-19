@@ -1,31 +1,91 @@
 /*
-**文件名称：PolygonClipping.h
+**文件名称：ConcavePolygonDecompose.h
 **功能描述：
 **文件说明：
 **作    者：陈琳
 **创建时间：2012-02-21
 **修    改：
 */
+#include "ConcavePolygondecompose.h"
+#include "BaseStruct.h"
+#include "Polygon.h"
+#include "VectorMath.h"
+#include <malloc.h>
+#include <math.h>
 
-#pragma once
+struct DecomposePoint
+{
+	Point point;
+	int id;
+};
 
-struct MeshPolygon;
+//使用的是顺时针序,所以和教材上介绍的方法正好相反
 
-//基于Weiler-Atherton算法
-//所有输入的多边形必须是顺时针顺序
+int ConcavePolygonDecompose(const MeshPolygon* polygon, 
+								   MeshPolygon** result, 
+								   const int maxResultCount, 
+								   int* resultCount )
+{
+	//if (NULL == polygon || NULL == resultCount)
+	//{
+	//	return WRONG_DECOMPOSE_PARAM;
+	//}
 
-//被裁剪多边形位于裁剪多边形内部，所以裁剪后完全消失
-const int ALL_POINT_IN_CLIPPING_WINDOW = 2;
+	if (true == IsConvexPolygon(polygon))
+	{
+		return NO_NEED_DECOMPOSE;
+	}
 
-//传入的的参数有误
-const int WRONG_PARAM = -1;
-//传入的缓存区不够存储所有的结果，resultCount会返回需要的缓存区个数
-const int NEED_MORE_SPACE_FOR_RESULT = -2;
-//裁剪多边形位于被裁减多边形内部，无法裁剪
-//目前不支持镂空的情况
-const int CLIPPING_WINDOW_ALL_IN_CLIPPED_POLYGON = -3;
-extern int ConvexPolygonClipping(const MeshPolygon* clippedPolygon,
-								  const MeshPolygon* clipWindow,
-								  MeshPolygon** result,
-								  const int maxResultCount,
-								  int* resultCount);
+	const Point* const pointList = GetPolygonPointList(polygon);
+	int pointCount = GetPolygonPointCount(polygon);
+	DecomposePoint* dPointList = (DecomposePoint*)malloc(sizeof(DecomposePoint) * pointCount);
+	for (int i = 0; i < pointCount; ++i)
+	{
+		dPointList[i].point = pointList[i];
+		dPointList[i].id = i;
+	}
+	Matrix3x3 transferMatrix;
+	const Point originPoint = {0.0f, 0.0f};
+	while (true)
+	{
+		int beginIndex = 0;
+		for (; beginIndex < pointCount; ++beginIndex)
+		{
+			int nextIndex = beginIndex + 1 == pointCount ? 0 : beginIndex + 1;
+			int next2Index = nextIndex + 1 == pointCount ? 0 : nextIndex + 1;
+			IdentityMatrix(&transferMatrix);
+			MakeTransferMatrix(&transferMatrix, &dPointList[beginIndex].point, &originPoint);
+			//平移多边形
+			for (int i = 0; i < pointCount; ++i)
+			{
+				MritrixPlusPoint(&transferMatrix, &dPointList[i].point);
+			}
+			//旋转多边形
+			//求旋转矩阵
+			bool countClockWiseRotate = dPointList[nextIndex].point.z > 0 ? true : false;
+			//游戏里面Z朝内,所以旋转方向要取反
+			countClockWiseRotate = !countClockWiseRotate;
+			const static Vector targetVector = {1.0f, 0.0f, 0.0f};
+			Vector fromBegin2Next = {dPointList[nextIndex].point.x - dPointList[beginIndex].point.x, 
+									0.0f,
+									dPointList[nextIndex].point.z - dPointList[beginIndex].point.z};
+			NormalizationVector(&fromBegin2Next);
+			float cosValue = VectorDotProduct(&fromBegin2Next, &targetVector);
+			float angle = acos(cosValue);
+			IdentityMatrix(&transferMatrix);
+			MakeRotateMatrix(&transferMatrix, angle, countClockWiseRotate);
+			for (int i = 0; i < pointCount; ++i)
+			{
+				MritrixPlusPoint(&transferMatrix, &dPointList[i].point);
+			}
+			if (FloatEqualZero(dPointList[next2Index].point.z) || dPointList[next2Index].point.z > 0.0f)
+			{
+				//该点不需处理
+				continue;
+			}
+		}
+
+		break;
+	}
+	return 0;
+}

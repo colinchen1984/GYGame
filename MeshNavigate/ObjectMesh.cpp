@@ -85,7 +85,7 @@ static int compareInterPoint(const void *left, const void *right)
 	const InterPoint* b = (InterPoint*)right;
 	
 	//排序使cos较小的值排在前面,也就是同x轴角度大的排在前面 所以有 a->m_slope < b->m_slope ? -1 : 1;
-	int result = abs(a->m_slope - b->m_slope) < EPSILON ? 0 : a->m_slope < b->m_slope ? -1 : 1;
+	int result = FloatEqual(a->m_slope, b->m_slope) ? 0 : a->m_slope < b->m_slope ? -1 : 1;
 	return result;
 }
 
@@ -108,7 +108,7 @@ bool MakeConvexHullFromItem(ItemNavigateMesh* item)
 		{
 			basePointIndex = i;
 		}
-		else if(abs(item->m_pointList[i].m_point.z - item->m_pointList[basePointIndex].m_point.z) < EPSILON)
+		else if(FloatEqual(item->m_pointList[i].m_point.z, item->m_pointList[basePointIndex].m_point.z))
 		{
 			if(item->m_pointList[i].m_point.x < item->m_pointList[basePointIndex].m_point.x)
 			{

@@ -84,8 +84,10 @@ GYINT32 GYTableSerialization::Init( const GYCHAR* fileName )
 		
 		if(1 != fread(BufferForTableFileLoad, m_fileSize, 1, pFile))
 		{
+			fclose(pFile);
 			break;
 		}
+		fclose(pFile);
 		BufferForTableFileLoad[m_fileSize] = 0;
 		const GYCHAR* pDataStart = BufferForTableFileLoad;
 		static const GYCHAR BOM[3] ={(GYCHAR)0xef, (GYCHAR)0xbb, (GYCHAR)0xbf} ;
