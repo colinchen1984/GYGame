@@ -9,6 +9,7 @@
 
 #include "BaseStruct.h"
 #include <math.h>
+#include <malloc.h>
 
 void MakeRectByPoint(Rect* rect, const Point* a, const Point* b)
 {
@@ -63,3 +64,74 @@ Matrix3x3* IdentityMatrix( Matrix3x3* matrix )
 	return matrix;
 }
 
+struct Queue
+{
+	void**	m_queue;
+	int		m_maxCount;
+	int		m_currentDataCount;
+};
+
+Queue* CreateQueue(int maxCount)
+{
+	Queue* queue = (Queue*)malloc(sizeof(Queue));
+	queue->m_queue = (void**)(malloc(sizeof(void*) * maxCount));
+	queue->m_maxCount = maxCount;
+	queue->m_currentDataCount = 0;
+	return queue;
+}
+
+void PushDataToQueue(Queue* queue, void* data)
+{
+	if (NULL == queue)
+	{
+		return;
+	}
+
+	if (queue->m_currentDataCount == queue->m_maxCount)
+	{
+		queue->m_maxCount = queue->m_maxCount << 1;
+		queue->m_queue = (void**)realloc(queue->m_queue, sizeof(void*) * queue->m_maxCount);
+	}
+	queue->m_queue[queue->m_currentDataCount++] = data;
+}
+
+void* PopDataFromQueue(Queue* queue)
+{
+	if (NULL == queue)
+	{
+		return NULL;
+	}
+
+	if (0 == queue->m_currentDataCount)
+	{
+		return NULL;
+	}
+
+	return queue->m_queue[--queue->m_currentDataCount];
+}
+
+void ReleaseQueue(Queue* queue)
+{
+	free(queue->m_queue);
+	free(queue);
+}
+
+void CleanQueue( Queue* queue )
+{
+	if (NULL == queue)
+	{
+		return;
+	}
+
+	queue->m_currentDataCount = 0;
+}
+
+int GetDataCountFromQueue( Queue* queue )
+{
+	if (NULL == queue)
+	{
+		return 0;
+	}
+
+	return queue->m_currentDataCount;
+}

@@ -149,17 +149,25 @@ static void inline PushBackPointToPolygon(MeshPolygon* polygon, const Point* poi
 bool AddPointToPolygon(MeshPolygon* polygon, float x, float z)
 {
 	const Point point = {x, z};
+
+	return AddPointToPolygonByPoint(polygon, &point);
+}
+
+
+
+bool AddPointToPolygonByPoint( MeshPolygon* polygon, const Point* p )
+{
 	if(NULL == polygon)
 	{
 		return false;
 	}
-	
+
 	if(polygon->vertexCount == polygon->maxVertexCount)
 	{
 		return false;
 	}
 
-	PushBackPointToPolygon(polygon, &point);
+	PushBackPointToPolygon(polygon, p);
 	return true;
 }
 
@@ -246,6 +254,17 @@ int GetPolygonPointCount(const MeshPolygon* polygon)
 	
 	return polygon->vertexCount;	
 }
+
+int GetPolygonPointMaxCount( const MeshPolygon* polygon )
+{
+	if(NULL == polygon)
+	{
+		return 0;
+	}
+
+	return polygon->maxVertexCount;	
+}
+
 
 const Vector* GetPolygonNormal( const MeshPolygon* polygon )
 {

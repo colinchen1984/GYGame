@@ -98,7 +98,7 @@ void CtestDlg::OnPaint()
 		GetClientRect(&rect);
 		CDialog::OnPaint();
 	}
-#define CONVEXHULL
+#define CLIPPING
 #ifdef CONVEXHULL
 	vector<Point>::iterator it = m_pointList.begin();
 	vector<Point>::iterator beginIt = m_pointList.begin();
@@ -214,7 +214,7 @@ HCURSOR CtestDlg::OnQueryDragIcon()
 
 void CtestDlg::DrawPolygon()
 {
-	CRect rect;
+/*	CRect rect;
 	GetClientRect(&rect);
 	int xMax = 400, yMax = 320;
 	//srand(time(NULL));
@@ -236,9 +236,9 @@ void CtestDlg::DrawPolygon()
 	const Point* polygonPoint = GetConvexHullPointList(item);
 	const int polygonPointCount = GeConvexHullPointCount(item);
 	m_polygonPointList.assign(polygonPoint, polygonPoint + polygonPointCount);
-	ReleaseItemNavigateMesh(item);
+	ReleaseItemNavigateMesh(item);*/
 
-	MeshPolygon* clipped = CreatePolygon(m_clippedPoint.size());
+	/*MeshPolygon* clipped = CreatePolygon(m_clippedPoint.size());
 	for (int i = 0; i < m_clippedPoint.size(); ++i)
 	{
 		AddPointToPolygon(clipped, m_clippedPoint[i].x, m_clippedPoint[i].z);
@@ -248,7 +248,8 @@ void CtestDlg::DrawPolygon()
 	AddPointToPolygon(testT, 1.0f + 1.0f, -1.0f + 1.0f);
 	AddPointToPolygon(testT, 0.50f + 1.0f, 0.00f + 1.0f);
 	AddPointToPolygon(testT, 1.0f + 1.0f, 1.0f + 1.0f);
-	ConcavePolygonDecompose(testT, 0, 0, 0);
+	Queue* resultQueue = CreateQueue(16);
+	ConcavePolygonDecompose(testT, resultQueue);
 	Point p = {0.5f, 0.5f};
 	Matrix3x3 testM;
 	IdentityMatrix(&testM);
@@ -263,24 +264,45 @@ void CtestDlg::DrawPolygon()
 	{
 		AddPointToPolygon(clippingWindow, m_clipingWindow[i].x, m_clipingWindow[i].z);
 	}
-	MeshPolygon* test[100];
-	int result;
-	ConvexPolygonClipping(clipped, clippingWindow, test, 100, &result);
+	CleanQueue(resultQueue);
+	ConvexPolygonClipping(clipped, clippingWindow, resultQueue);
 	ReleasePolygon(clipped);
 	ReleasePolygon(clippingWindow);
 	m_clippingPoint.clear();
-	for (int i = 0; i < result; ++i)
+	while(MeshPolygon* polygon = (MeshPolygon*)PopDataFromQueue(resultQueue))
 	{
-		const Point* polygonPoint = GetPolygonPointList(test[i]);
-		const int polygonPointCount = GetPolygonPointCount(test[i]);
+		const Point* polygonPoint = GetPolygonPointList(polygon);
+		const int polygonPointCount = GetPolygonPointCount(polygon);
 		vector<Point> temp;
 		temp.assign(polygonPoint, polygonPoint+ polygonPointCount);
 		m_clippingPoint.push_back(temp);
-		ReleasePolygon(test[i]);
+		ReleasePolygon(polygon);
 		
 	}
 	m_clippedPoint.clear();
+	m_clipingWindow.clear();*/
+
+
+	MeshPolygon* clippingWindow = CreatePolygon(m_clipingWindow.size());
+	for (int i = 0; i < m_clipingWindow.size();++i)
+	{
+		AddPointToPolygon(clippingWindow, m_clipingWindow[i].x, m_clipingWindow[i].z);
+	}
+	Queue* resultQueue = CreateQueue(16);
+	int result = ConcavePolygonDecompose(clippingWindow, resultQueue);
 	m_clipingWindow.clear();
+	while(MeshPolygon* polygon = (MeshPolygon*)PopDataFromQueue(resultQueue))
+	{
+		const Point* polygonPoint = GetPolygonPointList(polygon);
+		const int polygonPointCount = GetPolygonPointCount(polygon);
+		vector<Point> temp;
+		temp.assign(polygonPoint, polygonPoint+ polygonPointCount);
+		m_clippingPoint.push_back(temp);
+		ReleasePolygon(polygon);
+	}
+	ReleaseQueue(resultQueue);
+	ReleasePolygon(clippingWindow);
+
 	RedrawWindow();
 	return;
 }
@@ -322,6 +344,7 @@ void CtestDlg::OnLButtonDown(UINT nFlags, CPoint point)
 	Point p = {point.x, point.y};
 	m_clippedPoint.push_back(p);
 	m_clippingPoint.clear();
+
 	RedrawWindow();
 	CDialog::OnLButtonDown(nFlags, point);
 }

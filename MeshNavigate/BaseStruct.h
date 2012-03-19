@@ -9,9 +9,11 @@
 
 #pragma once
 
+struct Queue;
 struct Point
 {
 	float x, z;
+	void* userData;
 };
 
 struct Vector
@@ -49,6 +51,18 @@ extern bool IsSamePoint(const Point* a, const Point* b);
 extern Vector* NormalizationVector(Vector* v);
 
 extern Matrix3x3* IdentityMatrix(Matrix3x3* matrix);
+
+extern Queue* CreateQueue(int maxCount);
+
+extern void PushDataToQueue(Queue* queue, void* data);
+
+extern void* PopDataFromQueue(Queue* queue);
+
+extern void CleanQueue(Queue* queue);
+
+extern int GetDataCountFromQueue(Queue* queue);
+
+extern void ReleaseQueue(Queue* queue);
 
 #define NULL 0
 

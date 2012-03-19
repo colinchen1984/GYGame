@@ -45,18 +45,16 @@ struct ClippingInterPoint
 	float				tValueForClippingWindow;
 	PROCESS_STATE state;
 };
-static int GenerateConvexPolygon(ClippingInterPoint* pointList, const int pointCount, MeshPolygon** result, int maxResultSize, int* bufferForPolygonConverCount, int bufferCount);
+static int GenerateConvexPolygon(ClippingInterPoint* pointList, const int pointCount, Queue* queue, int* bufferForPolygonConverCount, int bufferCount);
 static ClippingInterPoint* CreateClippedPolygonData(const MeshPolygon* clippedPolygon, const MeshPolygon* clippingWindow);
 static ClippingInterPoint* CreateClippingWindowData(const MeshPolygon* clippedPolygon, const MeshPolygon* clippingWindow);
 float GetTValue( const Point* beginPoint, const Point* endPoint, const Point* middlePoint );
 
 int ConvexPolygonClipping(const MeshPolygon* clippedPolygon,
 								  const MeshPolygon* clippingWindow,
-								  MeshPolygon** result,
-								  const int maxResultCount,
-								  int* resultCount)
+								  Queue* queue)
 {
-	if(NULL == clippedPolygon || NULL == clippingWindow)
+	if(NULL == clippedPolygon || NULL == clippingWindow || NULL == queue)
 	{
 		return WRONG_PARAM;
 	}
@@ -283,15 +281,10 @@ int ConvexPolygonClipping(const MeshPolygon* clippedPolygon,
 
 	//完成链表构建
 	//开始生成convex polygon
-	*resultCount = 0;
 
 	//首先检查是否有足够的空间容纳结果
 	int* bufferForPolygonConverCount = (int*)malloc(sizeof(int*) * allPointCountForClipping);
-	*resultCount = GenerateConvexPolygon(pointChainForClippedPolygon, pointCountForClippedPolygon, NULL, 0, bufferForPolygonConverCount, allPointCountForClipping);
-	if (maxResultCount < *resultCount)
-	{
-		return NEED_MORE_SPACE_FOR_RESULT;
-	}
+	GenerateConvexPolygon(pointChainForClippedPolygon, pointCountForClippedPolygon, NULL, bufferForPolygonConverCount, allPointCountForClipping);
 
 	//完成链表构建
 	//开始生成convex polygon
@@ -306,9 +299,7 @@ int ConvexPolygonClipping(const MeshPolygon* clippedPolygon,
 
 	}
 
-	memset(result, 0, sizeof(result[0]) * maxResultCount);
-	*resultCount = 0;
-	*resultCount = GenerateConvexPolygon(pointChainForClippedPolygon, pointCountForClippedPolygon, result, maxResultCount, bufferForPolygonConverCount, allPointCountForClipping);
+	GenerateConvexPolygon(pointChainForClippedPolygon, pointCountForClippedPolygon, queue, bufferForPolygonConverCount, allPointCountForClipping);
 
 	//释放分配的内存
 	ClippingInterPoint* pCurrent = &pointChainForClippedPolygon[0];
@@ -338,9 +329,9 @@ int ConvexPolygonClipping(const MeshPolygon* clippedPolygon,
 //所以做法和教材上有区别
 //教材上的做法是用单向链表即可
 //本实现必须采用双向链表
-static int GenerateConvexPolygon(ClippingInterPoint* pointList, const int pointCount, MeshPolygon** result, int maxResultSize, int* bufferForPolygonConverCount, int bufferCount)
+static int GenerateConvexPolygon(ClippingInterPoint* pointList, const int pointCount, Queue* queue, int* bufferForPolygonConverCount, int bufferCount)
 {
-	bool isGenerate = NULL != result ? true : false;
+	bool isGenerate = NULL != queue ? true : false;
 	int resultCount = 0;;
 	if (true != isGenerate)
 	{
@@ -427,7 +418,7 @@ static int GenerateConvexPolygon(ClippingInterPoint* pointList, const int pointC
 		}
 		if (isGenerate)
 		{
-			result[resultCount] = polygon;
+			PushDataToQueue(queue, polygon);
 		}
 		++resultCount;
 	}

@@ -26,10 +26,14 @@ extern bool PointInPolygon(const MeshPolygon* polygon, float x, float z);
 
 extern bool AddPointToPolygon(MeshPolygon* polygon, float x, float z);
 
+extern bool AddPointToPolygonByPoint(MeshPolygon* polygon, const Point* p);
+
 extern bool IsConvexPolygon(const MeshPolygon* polygon);
 
 extern const Point* GetPolygonPointList(const MeshPolygon* polygon);
 
 extern int GetPolygonPointCount(const MeshPolygon* polygon);
+
+extern int GetPolygonPointMaxCount(const MeshPolygon* polygon);
 
 extern const Vector* GetPolygonNormal(const MeshPolygon* polygon);

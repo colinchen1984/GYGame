@@ -10,13 +10,13 @@
 #pragma once
 
 struct MeshPolygon;
+struct Queue;
 
 //所有输入的多边形必须是顺时针顺序
 
 const int NO_NEED_DECOMPOSE = 1;
 
 const int WRONG_DECOMPOSE_PARAM = -1;
+const int WRONG_DATA = -2;
 extern int ConcavePolygonDecompose(const MeshPolygon* polygon,
-								  MeshPolygon** result,
-								  const int maxResultCount,
-								  int* resultCount);
+								  Queue* result);
