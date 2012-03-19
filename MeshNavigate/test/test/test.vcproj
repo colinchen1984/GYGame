@@ -228,11 +228,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\ConcavePolygondecompose.cpp"
+				RelativePath="..\..\ConcavePolygonDecompose.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\ConcavePolygondecompose.h"
+				RelativePath="..\..\ConcavePolygonDecompose.h"
 				>
 			</File>
 			<File
