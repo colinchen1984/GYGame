@@ -387,7 +387,8 @@ void CtestDlg::OnChangeMaxVertexCount(NMHDR *pNMHDR, LRESULT *pResult)
 
 
 	MeshNavigateSystem* sys = CreateGridSystem();
-	InitGridSystem(sys, 512, 512, 1);
+	float* height = (float*)(malloc(sizeof(float) * ((513 * 513))));
+	InitGridSystem(sys, 512, 512, 1, height, 513 * 513);
 	AddItemToGridSystem(sys, itemA);
 	AddItemToGridSystem(sys, itemB);
 	AddItemToGridSystem(sys, itemC);

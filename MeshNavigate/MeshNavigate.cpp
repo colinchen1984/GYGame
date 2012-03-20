@@ -18,6 +18,7 @@
 #include "PolygonClipping.h"
 #include "Polygon.h"
 #include "ObjectMesh.h"
+#include "VectorMath.h"
 
 struct MeshPolygon;
 struct Zone
@@ -58,6 +59,116 @@ struct MeshNavigateSystem
 MeshNavigateSystem* CreateGridSystem()
 {
 	return (MeshNavigateSystem*)malloc(sizeof(MeshNavigateSystem));
+}
+
+static int GetZoneIDByPosition(MeshNavigateSystem* sys, const float x, const float z)
+{
+	int xIndex = (int)x;
+	int zIndex = (int)z;
+	xIndex /= sys->m_zoneSize;
+	zIndex /= sys->m_zoneSize;
+	int zoneID = xIndex + zIndex * sys->m_zZoneCount;
+	return zoneID;
+}
+
+static void MakeTerraionMesh(MeshNavigateSystem* sys, const float* heightData, const int dataCount)
+{
+	int zStep = sys->m_sceneMaxZ / sys->m_terriaonVertexSpacing;
+	for (int triangleZ = 0; triangleZ < sys->m_sceneMaxZ - sys->m_terriaonVertexSpacing; triangleZ +=sys->m_terriaonVertexSpacing)
+	{
+		for(int triangleX = 0; triangleX < sys->m_sceneMaxX - sys->m_terriaonVertexSpacing; triangleX +=sys->m_terriaonVertexSpacing)
+		{
+			//得到三角形的顶点, 顺时针方向
+			/*
+				A-----B
+				| \   |
+				|  \  |
+				|   \ |
+				D-----C
+			*/
+			int pointAX = triangleX;
+			int pointAZ = triangleZ;
+			int pointAHeightIndex = triangleZ * zStep + triangleX;
+			int pointBXHeightIndex = (triangleZ) * zStep + triangleX + 1;
+			int pointCXHeightIndex = (triangleZ + 1) * zStep + triangleX + 1;
+			int pointDXHeightIndex = (triangleZ + 1) * zStep + triangleX;
+			Vector pointA = {(float)pointAX, heightData[pointAHeightIndex], (float)pointAZ};
+			Vector pointB = {(float)pointAX + 1, heightData[pointBXHeightIndex], (float)pointAZ};
+			Vector pointC = {(float)pointAX + 1, heightData[pointCXHeightIndex], (float)pointAZ + 1};
+			Vector pointD = {(float)pointAX , heightData[pointDXHeightIndex], (float)pointAZ + 1};
+			
+			//求三角形ACD是否可以行走
+			Vector CD = {pointC.x - pointD.x, pointC.y - pointD.y, pointC.z - pointD.z};
+			Vector AD = {pointA.x - pointD.x, pointA.y - pointD.y, pointA.z - pointD.z};
+			Vector planeNormalACD;
+			VectorCrossProduct(&planeNormalACD, NormalizationVector(&CD), NormalizationVector(&AD));
+			float cosValue = VectorDotProduct(NormalizationVector(&planeNormalACD), &StandardVector);
+			const static float tag = cos(PI / 4);
+			bool planeACDWork = abs(cosValue) < tag ? false : true;
+
+			//求三角形ABC是否可以行走
+			Vector AB = {pointA.x - pointB.x, pointA.y - pointB.y, pointA.z - pointB.z};
+			Vector CB = {pointC.x - pointB.x, pointC.y - pointB.y, pointC.z - pointB.z};
+			Vector planeNormalABC;
+			VectorCrossProduct(&planeNormalABC, NormalizationVector(&AB), NormalizationVector(&CB));
+			cosValue = VectorDotProduct(NormalizationVector(&planeNormalABC), &StandardVector);
+			bool planeABCWork = abs(cosValue) < tag ? false : true;
+			MeshPolygon* polygon = NULL;
+			if (planeABCWork && planeACDWork)
+			{
+				polygon = CreatePolygon(4);
+				AddPointToPolygon(polygon, pointA.x, pointA.z);
+				AddPointToPolygon(polygon, pointB.x, pointB.z);
+				AddPointToPolygon(polygon, pointC.x, pointC.z);
+				AddPointToPolygon(polygon, pointD.x, pointD.z);
+			}
+			else if(planeACDWork)
+			{
+				polygon = CreatePolygon(3);
+				AddPointToPolygon(polygon, pointA.x, pointA.z);
+				AddPointToPolygon(polygon, pointC.x, pointC.z);
+				AddPointToPolygon(polygon, pointD.x, pointD.z);
+			}
+			else if(planeABCWork)
+			{
+				polygon = CreatePolygon(3);
+				AddPointToPolygon(polygon, pointA.x, pointA.z);
+				AddPointToPolygon(polygon, pointB.x, pointB.z);
+				AddPointToPolygon(polygon, pointC.x, pointC.z);
+			}
+
+			if (NULL != polygon)
+			{
+				// 向所在的区域注册
+				int zoneId = GetZoneIDByPosition(sys, pointA.x, pointA.z);
+				assert(zoneId >= 0);
+				PushDataToQueue(sys->m_gridZoneList[zoneId].polygonList, (void*)polygon);
+			}
+		}
+	}
+}
+
+static void MakeZoneData(MeshNavigateSystem* sys)
+{
+
+	//初始化区域管理相关数据
+	sys->m_zoneSize = 16;
+	sys->m_xZoneCount = sys->m_sceneMaxX / sys->m_zoneSize;
+	sys->m_zZoneCount = sys->m_sceneMaxZ / sys->m_zoneSize;
+	sys->m_zoneCount = sys->m_xZoneCount * sys->m_zZoneCount; 
+	sys->m_gridZoneList = (Zone*)malloc(sizeof(Zone) * sys->m_zoneCount);
+	for (int z = 0; z < sys->m_xZoneCount; ++z)
+	{
+		int zIndex = z * sys->m_zZoneCount;
+		for (int x = 0; x < sys->m_xZoneCount; ++x)
+		{
+			sys->m_gridZoneList[zIndex + x].polygonList = CreateQueue(32);
+			Point leftTop = {(float)(x * sys->m_zoneSize), (float)(z * sys->m_zoneSize)};
+			Point rightBottom = {(float)((x + 1) * sys->m_zoneSize), (float)((z + 1) * sys->m_zoneSize)};
+			int zondIndex = zIndex + x;
+			MakeRectByPoint(&sys->m_gridZoneList[zondIndex].zoneRect, &leftTop, &rightBottom);
+		}
+	}
 }
 
 bool InitGridSystem(MeshNavigateSystem* sys, int maxXSize, int maxZSize, int terriaonVertexSpacing, const float* heightData, const int heightDataCount)
@@ -104,46 +215,10 @@ bool InitGridSystem(MeshNavigateSystem* sys, int maxXSize, int maxZSize, int ter
 	memset(sys->m_pointList, 0, sizeof(Point) * sys->m_maxPointCount);
 
 	sys->m_itemMeshQueue = CreateQueue(128);
-
-	//初始化区域管理相关数据
-	sys->m_zoneSize = 16;
-	sys->m_xZoneCount = sys->m_sceneMaxX * sys->m_zoneSize;
-	sys->m_zZoneCount = sys->m_sceneMaxZ * sys->m_zoneSize;
-	sys->m_zoneCount = sys->m_xZoneCount / sys->m_zZoneCount; 
-	sys->m_gridZoneList = (Zone*)malloc(sizeof(Zone) * sys->m_zoneCount);
-	for (int z = 0; z < sys->m_zoneCount; ++z)
-	{
-		int zIndex = z * sys->m_zoneCount;
-		for (int x = 0; x < sys->m_xZoneCount; ++x)
-		{
-			sys->m_gridZoneList[zIndex + x].polygonList = CreateQueue(32);
-			Point leftTop = {(float)(x * sys->m_zoneSize), (float)(z * sys->m_zoneSize)};
-			Point rightBottom = {(float)((x + 1) * sys->m_zoneSize), (float)((z + 1) * sys->m_zoneSize)};
-			int zondIndex = zIndex + x;
-			MakeRectByPoint(&sys->m_gridZoneList[zondIndex].zoneRect, &leftTop, &rightBottom);
-		}
-	}
 	
-	int zStep = sys->m_sceneMaxZ / sys->m_terriaonVertexSpacing;
-	int xStep = sys->m_sceneMaxX / sys->m_terriaonVertexSpacing;
-	for (int triangleZ = 0; triangleZ < sys->m_sceneMaxZ; triangleZ +=sys->m_terriaonVertexSpacing)
-	{
-		for(int triangleX = 0; triangleX < sys->m_sceneMaxX; triangleX +=sys->m_terriaonVertexSpacing)
-		{
-			//得到三角形的顶点, 顺时针方向
-			/*
-				A-----B
-				| \   |
-				|  \  |
-				|   \ |
-				D-----C
-			*/
-			int pointAX = zondIndex * triangleCount + triangleCount * triangleZ + triangleX;
-			Point pointA = {}
-		}
-
-	}
-
+	MakeZoneData(sys);
+	MakeTerraionMesh(sys, heightData, heightDataCount);
+	
 	return 0;
 }
 
