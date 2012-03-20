@@ -18,13 +18,16 @@ struct Queue;
 //被裁剪多边形位于裁剪多边形内部，所以裁剪后完全消失
 const int ALL_POINT_IN_CLIPPING_WINDOW = 2;
 
-//传入的的参数有误
-const int WRONG_PARAM = -1;
-//传入的缓存区不够存储所有的结果，resultCount会返回需要的缓存区个数
-const int NEED_MORE_SPACE_FOR_RESULT = -2;
+//多边形不相交 不需要裁剪
+const int NOT_NEED_CLIPPING = 3;
+
 //裁剪多边形位于被裁减多边形内部，无法裁剪
 //目前不支持镂空的情况
-const int CLIPPING_WINDOW_ALL_IN_CLIPPED_POLYGON = -3;
+const int CLIPPING_WINDOW_ALL_IN_CLIPPED_POLYGON = 4;
+
+//传入的的参数有误
+const int WRONG_PARAM = -1;
+
 extern int ConvexPolygonClipping(const MeshPolygon* clippedPolygon,
 								  const MeshPolygon* clipWindow,
 								  Queue* queue);

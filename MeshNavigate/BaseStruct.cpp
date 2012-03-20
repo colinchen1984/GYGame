@@ -10,6 +10,7 @@
 #include "BaseStruct.h"
 #include <math.h>
 #include <malloc.h>
+#include <string.h>
 
 void MakeRectByPoint(Rect* rect, const Point* a, const Point* b)
 {
@@ -134,4 +135,31 @@ int GetDataCountFromQueue( Queue* queue )
 	}
 
 	return queue->m_currentDataCount;
+}
+
+void* GetDataFromQueueByIndex(Queue* queue, int index)
+{
+	if (NULL == queue || index >= queue->m_currentDataCount)
+	{
+		return 0;
+	}
+
+	return queue->m_queue[index];
+}
+
+
+void* DeleteDataFromQueue( Queue* queue, int dataIndex )
+{
+	if (NULL == queue || dataIndex >= queue->m_currentDataCount)
+	{
+		return NULL;
+	}
+	if (dataIndex + 1== queue->m_currentDataCount)
+	{
+		return PopDataFromQueue(queue);
+	}
+	void* data = queue->m_queue[dataIndex];
+	memmove(queue->m_queue[dataIndex], queue->m_queue[dataIndex + 1], sizeof(void*) * (queue->m_currentDataCount - dataIndex - 1));
+	--queue->m_currentDataCount;
+	return data;
 }

@@ -2,6 +2,7 @@
 #include "ObjectMesh.h"
 #include "BaseStruct.h"
 #include "VectorMath.h"
+#include "Polygon.h"
 #include <malloc.h>
 #include <memory.h>
 #include <math.h>
@@ -35,7 +36,9 @@ ItemNavigateMesh* CreateItemNavigateMesh(int maxVertexCount)
 	ItemNavigateMesh* p = (ItemNavigateMesh*)malloc(sizeof(ItemNavigateMesh));
 	if(NULL != p)
 	{
-		memset(p, 0, sizeof(*p));
+		p->m_ProjectionPolygon = NULL;
+		p->m_projectionPointCount = 0;
+		p->m_pointCount = 0;
 		p->m_maxPointCount = maxVertexCount;
 		p->m_pointList = (InterPoint*)(malloc(sizeof(InterPoint) * maxVertexCount));
 		memset(p->m_pointList, 0, sizeof(p->m_pointList[0]) * maxVertexCount);
@@ -74,9 +77,10 @@ bool AddVertexToItemNavigateMesh(ItemNavigateMesh* item, float x, float z)
 			return false;
 		}
 	}
-	InterPoint* p = &item->m_pointList[item->m_pointCount++];
+	InterPoint* p = &item->m_pointList[item->m_pointCount];
 	p->m_point = temp;
-	p->m_id = item->m_pointCount - 1;
+	p->m_id = item->m_pointCount;
+	++item->m_pointCount;
 	return true;
 }
 static int compareInterPoint(const void *left, const void *right)
@@ -96,6 +100,11 @@ bool MakeConvexHullFromItem(ItemNavigateMesh* item)
 		return false;
 	}
 	if (item->m_pointCount < 3)
+	{
+		return false;
+	}
+	
+	if (0 != item->m_projectionPointCount)
 	{
 		return false;
 	}
@@ -182,7 +191,7 @@ bool MakeConvexHullFromItem(ItemNavigateMesh* item)
 
 }
 
-const int GeConvexHullPointCount(const ItemNavigateMesh* item)
+const int GetConvexHullPointCount(const ItemNavigateMesh* item)
 {
 	if(NULL == item || NULL == item->m_ProjectionPolygon)
 	{
@@ -200,4 +209,14 @@ const Point* GetConvexHullPointList( const ItemNavigateMesh* item )
 	}
 
 	return (item->m_ProjectionPolygon);
+}
+
+MeshPolygon* GetConvexHullToPolygon( const ItemNavigateMesh* item )
+{
+	if (NULL == item)
+	{
+		return NULL;
+	}
+
+	return CreatePolygonByPoint(item->m_ProjectionPolygon, item->m_pointCount);
 }

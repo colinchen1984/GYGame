@@ -11,6 +11,7 @@
 #include "../../PolygonClipping.h"
 #include "../../VectorMath.h"
 #include "../../ConcavePolygonDecompose.h"
+#include "../../MeshNavigate.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -192,13 +193,13 @@ void CtestDlg::OnPaint()
 		dc.MoveTo(it->x, it->z);
 		CString s;
 		s.Format(L"%d %d", (int)it->x, (int)it->z);
-		dc.TextOut(it->x + 5, it->z + 5, s);
+		//dc.TextOut(it->x + 5, it->z + 5, s);
 		++it;
 		for (; it != endIt; ++it)
 		{
 			dc.LineTo(it->x, it->z);
 			s.Format(L"%d %d", (int)it->x, (int)it->z);
-			dc.TextOut(it->x + 5, it->z + 5, s);
+			//dc.TextOut(it->x + 5, it->z + 5, s);
 		}
 		dc.LineTo(m_clippingPoint[i][0].x, m_clippingPoint[i][0].z);
 	}
@@ -317,7 +318,7 @@ void CtestDlg::ReDrawPolygonWithCurrentData()
 	}
 	(MakeConvexHullFromItem(item));
 	const Point* polygonPoint = GetConvexHullPointList(item);
-	const int polygonPointCount = GeConvexHullPointCount(item);
+	const int polygonPointCount = GetConvexHullPointCount(item);
 	m_polygonPointList.assign(polygonPoint, polygonPoint + polygonPointCount);
 	ReleaseItemNavigateMesh(item);
 	RedrawWindow();
@@ -335,6 +336,73 @@ void CtestDlg::OnChangeMaxVertexCount(NMHDR *pNMHDR, LRESULT *pResult)
 	m_stringVertexCount.Format(L"%d", m_maxVertexCount);
 	UpdateData(FALSE);
 	*pResult = 0;
+
+
+
+
+	int xMax = 400, yMax = 320;
+	//srand(time(NULL));
+	int vertexCount = m_maxVertexCount * 10; (rand() + 3) % 100;
+	ItemNavigateMesh* itemA = CreateItemNavigateMesh(vertexCount);
+	ItemNavigateMesh* itemB = CreateItemNavigateMesh(vertexCount);
+	ItemNavigateMesh* itemC = CreateItemNavigateMesh(vertexCount);
+	/*for (int i = 0; i < vertexCount; ++i)
+	{
+		{
+			float x = (rand() + 3) % xMax;
+			float y = (rand() + 3) % yMax;
+			Point temp = {x, y};
+			(AddVertexToItemNavigateMesh(itemA, x, y));
+		}
+
+		{
+			float x = (rand() + 3) % xMax;
+			float y = (rand() + 3) % yMax;
+			Point temp = {x, y};
+			(AddVertexToItemNavigateMesh(itemB, x, y));
+		}
+
+	}*/
+	float rans = 200.0f;
+	(AddVertexToItemNavigateMesh(itemA, -100.0f + rans, -100.0f+ rans));
+	(AddVertexToItemNavigateMesh(itemA, -100.0f+ rans, 100.0f+ rans));
+	(AddVertexToItemNavigateMesh(itemA, 100.0f+ rans, 100.0f+ rans));
+	(AddVertexToItemNavigateMesh(itemA, 100.0f+ rans, -100.0f+ rans));
+
+
+	(AddVertexToItemNavigateMesh(itemB, 50.0f+ rans, 50.0f+ rans));
+	(AddVertexToItemNavigateMesh(itemB, 50.0f+ rans, 150.0f+ rans));
+	(AddVertexToItemNavigateMesh(itemB, 150.0f+ rans, 150.0f+ rans));
+	(AddVertexToItemNavigateMesh(itemB, 150.0f+ rans, 50.0f+ rans));
+
+	(AddVertexToItemNavigateMesh(itemC, 70.0f + rans, 70.0f + rans));
+	(AddVertexToItemNavigateMesh(itemC, 70.0f+ rans, -70.0f+ rans));
+	(AddVertexToItemNavigateMesh(itemC, 200.0f+ rans, -70.0f+ rans));
+	(AddVertexToItemNavigateMesh(itemC, 200.0f + rans, 70.0f+ rans));
+
+
+	bool result = (MakeConvexHullFromItem(itemA));
+	result = (MakeConvexHullFromItem(itemB));
+	result = (MakeConvexHullFromItem(itemC));
+
+
+	MeshNavigateSystem* sys = CreateGridSystem();
+	InitGridSystem(sys, 512, 512, 1);
+	AddItemToGridSystem(sys, itemA);
+	AddItemToGridSystem(sys, itemB);
+	AddItemToGridSystem(sys, itemC);
+	MakeMeshNavigateData(sys);
+	Queue* resultQueue = GetItemQueue(sys);
+	m_clippingPoint.clear();
+	while(MeshPolygon* polygon = (MeshPolygon*)PopDataFromQueue(resultQueue))
+	{
+		const Point* polygonPoint = GetPolygonPointList(polygon);
+		const int polygonPointCount = GetPolygonPointCount(polygon);
+		vector<Point> temp;
+		temp.assign(polygonPoint, polygonPoint+ polygonPointCount);
+		m_clippingPoint.push_back(temp);
+		ReleasePolygon(polygon);
+	}
 }
 
 

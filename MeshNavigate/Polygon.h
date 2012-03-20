@@ -15,6 +15,8 @@ struct Vector;
 
 extern MeshPolygon* CreatePolygon(int maxVertexCount);
 
+extern MeshPolygon* CreatePolygonByPoint(const Point* pointList, const int pointCount);
+
 extern void ReleasePolygon(MeshPolygon* polygon);
 
 extern MeshPolygon* MakePolygonCopy(MeshPolygon* polygon);

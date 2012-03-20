@@ -12,11 +12,18 @@
 #include <malloc.h>
 #include <memory.h>
 #include <math.h>
+#include <assert.h>
+#include "BaseStruct.h"
+#include "ConcavePolygonDecompose.h"
+#include "PolygonClipping.h"
+#include "Polygon.h"
+#include "ObjectMesh.h"
 
+struct MeshPolygon;
 struct Zone
 {
-	Polygon**	  	m_gridList;
-	int maxGridListCount;
+	Queue*				polygonList;
+	Rect				zoneRect;
 };
 
 
@@ -25,31 +32,35 @@ static const int MN_INVALID_VALUE = -1;
 struct MeshNavigateSystem
 {
 	Point*			m_pointList;				// 顶点列表
+	int				m_currentPointCount;		// 当前顶点数量
 	int				m_terrianVertexsCount;		// 地形顶点列表数量
 	int				m_maxPointCount;			// 顶点列表的最大容量
-	int				m_currentPointCount;		// 当前顶点数量
+
 	//场景信息
 	int				m_sceneMaxX;				// 场景X最大值
 	int				m_sceneMaxZ;				// 场景Z最大值
 	int				m_terriaonVertexSpacing;	// 地形的顶点间隔
+
 	//寻路的区域管理信息
 	int				m_xZoneCount;				// x轴分割的区域的数量
 	int				m_zZoneCount;				// z轴分割的区域的数量
 	Zone*			m_gridZoneList;				// 场景区域列表
 	int				m_zoneSize;					// 区域的大小
 	int				m_zoneCount;				// 整个场景的区域的数量
-	int				m_gridZoneCount;	
-	Polygon*		m_polygonList;				// 场景内多边形列表
+
+	MeshPolygon*	m_polygonList;				// 场景内多边形列表
+
 	int				m_triangleCount;			// 场景内多边形数量
 
+	Queue*			m_itemMeshQueue;			// 物体通过计算后得到的多边形
 };
 
-MeshNavigateSystem* CreateGridSystem();
+MeshNavigateSystem* CreateGridSystem()
 {
 	return (MeshNavigateSystem*)malloc(sizeof(MeshNavigateSystem));
 }
 
-bool InitGridSystem(MeshNavigateSystem* sys, int maxXSize, int maxZSize, int terriaonVertexSpacing)
+bool InitGridSystem(MeshNavigateSystem* sys, int maxXSize, int maxZSize, int terriaonVertexSpacing, const float* heightData, const int heightDataCount)
 {
 	if(NULL == sys)
 	{
@@ -79,17 +90,61 @@ bool InitGridSystem(MeshNavigateSystem* sys, int maxXSize, int maxZSize, int ter
 	sys->m_sceneMaxX = maxXSize;
 	sys->m_sceneMaxZ = maxZSize;
 	sys->m_terriaonVertexSpacing  = terriaonVertexSpacing;
-	sys->m_terrianVertexsCount = (maxXSize / terriaonVertexSpacing) * (maxZSize / terriaonVertexSpacing);
-	sys->m_maxPointCount = sys->m_terrianVertexsCount << 1; //初始化是列表的大小是场景顶点个数的double
-	sys->m_pointList = malloc(sizeof(Point) * sys->m_maxPointCount);
+	sys->m_terrianVertexsCount = (maxXSize / terriaonVertexSpacing + 1) * (maxZSize / terriaonVertexSpacing + 1);
+	if(heightDataCount != sys->m_terrianVertexsCount)
+	{
+		return false;
+	}
+	sys->m_maxPointCount = sys->m_terrianVertexsCount << 1; //初始化是列表的大小是场景地形顶点个数的double
+	sys->m_pointList = (Point*)malloc(sizeof(Point) * sys->m_maxPointCount);
 	if(NULL == sys->m_pointList)
 	{
 		return false;
 	}
-	
 	memset(sys->m_pointList, 0, sizeof(Point) * sys->m_maxPointCount);
-	
+
+	sys->m_itemMeshQueue = CreateQueue(128);
+
 	//初始化区域管理相关数据
+	sys->m_zoneSize = 16;
+	sys->m_xZoneCount = sys->m_sceneMaxX * sys->m_zoneSize;
+	sys->m_zZoneCount = sys->m_sceneMaxZ * sys->m_zoneSize;
+	sys->m_zoneCount = sys->m_xZoneCount / sys->m_zZoneCount; 
+	sys->m_gridZoneList = (Zone*)malloc(sizeof(Zone) * sys->m_zoneCount);
+	for (int z = 0; z < sys->m_zoneCount; ++z)
+	{
+		int zIndex = z * sys->m_zoneCount;
+		for (int x = 0; x < sys->m_xZoneCount; ++x)
+		{
+			sys->m_gridZoneList[zIndex + x].polygonList = CreateQueue(32);
+			Point leftTop = {(float)(x * sys->m_zoneSize), (float)(z * sys->m_zoneSize)};
+			Point rightBottom = {(float)((x + 1) * sys->m_zoneSize), (float)((z + 1) * sys->m_zoneSize)};
+			int zondIndex = zIndex + x;
+			MakeRectByPoint(&sys->m_gridZoneList[zondIndex].zoneRect, &leftTop, &rightBottom);
+		}
+	}
+	
+	int zStep = sys->m_sceneMaxZ / sys->m_terriaonVertexSpacing;
+	int xStep = sys->m_sceneMaxX / sys->m_terriaonVertexSpacing;
+	for (int triangleZ = 0; triangleZ < sys->m_sceneMaxZ; triangleZ +=sys->m_terriaonVertexSpacing)
+	{
+		for(int triangleX = 0; triangleX < sys->m_sceneMaxX; triangleX +=sys->m_terriaonVertexSpacing)
+		{
+			//得到三角形的顶点, 顺时针方向
+			/*
+				A-----B
+				| \   |
+				|  \  |
+				|   \ |
+				D-----C
+			*/
+			int pointAX = zondIndex * triangleCount + triangleCount * triangleZ + triangleX;
+			Point pointA = {}
+		}
+
+	}
+
+	return 0;
 }
 
 #define GetDistence(ax, az, bx, bz) ((ax - bx) * (ax - bx) + (az - bz) * (az - bz))
@@ -109,14 +164,14 @@ int AddPointToSystem(MeshNavigateSystem* sys, float x, float z, bool checkRange)
 		{
 			return -1;
 		}
-		memset(&sys->m_pointList[sys->m_currentPointCount + 1], 0, sizeof(Point) * (sys->m_maxPointCount - sys->m_currentPointCount - 1)); 
 	}
+
 	int result = -1;
 	if(true == checkRange)
 	{
 		for(int i = 0; i < sys->m_currentPointCount; ++i)
 		{
-			const static float minRange = 0.01 * 0.01;
+			const static float minRange = 0.01f * 0.01f;
 			if(GetDistence(x, z, sys->m_pointList[i].x, sys->m_pointList[i].z) < minRange)
 			{
 				result = i;
@@ -137,3 +192,127 @@ int AddPointToSystem(MeshNavigateSystem* sys, float x, float z, bool checkRange)
 	return result;
 }
 
+bool AddItemToGridSystem( MeshNavigateSystem* sys, ItemNavigateMesh* item )
+{
+	if (NULL == item)
+	{
+		return false;
+	}
+
+	if (NULL == sys)
+	{
+		return false;
+	}
+
+	MeshPolygon* itemConvexHullPolygon = GetConvexHullToPolygon(item);
+	if (NULL == itemConvexHullPolygon)
+	{
+		return false;
+	}
+	ReleaseItemNavigateMesh(item);
+	PushDataToQueue(sys->m_itemMeshQueue, (void*)itemConvexHullPolygon);
+	return true;
+}
+
+static bool UpdateItemPolygon(MeshNavigateSystem* sys)
+{
+	Queue* resultQueue = CreateQueue(GetDataCountFromQueue(sys->m_itemMeshQueue));
+	Queue* clippQueue = CreateQueue(GetDataCountFromQueue(sys->m_itemMeshQueue));
+	Queue* decomposeQueue = CreateQueue(GetDataCountFromQueue(sys->m_itemMeshQueue));
+	while (MeshPolygon* polygon = (MeshPolygon*)PopDataFromQueue(sys->m_itemMeshQueue))
+	{
+		int restPolygonCount = GetDataCountFromQueue(sys->m_itemMeshQueue);
+		int clippResult = 0;
+		MeshPolygon* clppingWindow = NULL;
+		int checkIndex = 0;
+		for (; checkIndex < restPolygonCount; ++checkIndex)
+		{
+			clppingWindow = (MeshPolygon*)GetDataFromQueueByIndex(sys->m_itemMeshQueue, checkIndex);
+			CleanQueue(clippQueue);
+			clippResult = ConvexPolygonClipping(polygon, clppingWindow, clippQueue);
+			if(NOT_NEED_CLIPPING != clippResult)
+			{
+				break;
+			}
+		}
+
+		if (checkIndex == restPolygonCount)
+		{
+			//不予任何多边形相交
+			//直接放入结果队列
+			PushDataToQueue(resultQueue, polygon);
+			continue;
+		}
+		else if(ALL_POINT_IN_CLIPPING_WINDOW == clippResult)
+		{
+			//被裁剪多边形位于裁剪多边形内部，所以裁剪后完全消失
+			ReleasePolygon(polygon);
+			continue;
+		}
+		else if(CLIPPING_WINDOW_ALL_IN_CLIPPED_POLYGON == clippResult)
+		{
+			//裁剪多边形位于被裁减多边形内部
+			PushDataToQueue(resultQueue, polygon);
+			//从Queue删除需要删除的多边形
+			DeleteDataFromQueue(sys->m_itemMeshQueue, checkIndex);
+			ReleasePolygon(clppingWindow);
+			continue;
+		}
+		else if(WRONG_PARAM == clippResult)
+		{
+			//传入的的参数有误
+		}
+
+		assert(0 == clippResult);
+		//裁剪成功
+		//对裁剪出来的每一个多边形做凹多边形分解
+		while (MeshPolygon* convexPolygon = (MeshPolygon*)PopDataFromQueue(clippQueue))
+		{
+			CleanQueue(decomposeQueue);
+			int decomposeResult = ConcavePolygonDecompose(convexPolygon, decomposeQueue);
+			if (NO_NEED_DECOMPOSE == decomposeResult)
+			{
+				PushDataToQueue(sys->m_itemMeshQueue, (void*)convexPolygon);
+			}
+			else if (0 == decomposeResult)
+			{
+				ReleasePolygon(convexPolygon);
+				while (void* data = PopDataFromQueue(decomposeQueue))
+				{
+					PushDataToQueue(sys->m_itemMeshQueue, data);
+				}
+			}
+			else
+			{
+				assert(0);
+			}
+		}
+	}
+
+	while(void* data = PopDataFromQueue(resultQueue))
+	{
+		PushDataToQueue(sys->m_itemMeshQueue, data);
+	}
+	ReleaseQueue(resultQueue);
+	ReleaseQueue(clippQueue);
+	ReleaseQueue(decomposeQueue);
+	return true;
+}
+
+bool MakeMeshNavigateData( MeshNavigateSystem* sys )
+{
+	//裁剪, 分解物品凸包
+	if(true != UpdateItemPolygon(sys))
+	{
+		return false;
+	}
+	
+	//
+
+	return true;
+}
+
+Queue* GetItemQueue(MeshNavigateSystem* sys)
+{
+	return sys->m_itemMeshQueue;
+}

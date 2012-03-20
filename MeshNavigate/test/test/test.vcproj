@@ -236,6 +236,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\MeshNavigate.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\MeshNavigate.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\ObjectMesh.cpp"
 				>
 			</File>

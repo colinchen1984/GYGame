@@ -96,7 +96,11 @@ int ConvexPolygonClipping(const MeshPolygon* clippedPolygon,
 	}
 
 
-
+	if (0 == clipingWindowPointInClippedWindowCount && 0 == clippedPolygonointInClippedWindowCount)
+	{
+		//两多边形不相交 不需要裁剪
+		return NOT_NEED_CLIPPING;
+	}
 	ClippingInterPoint* pointChainForClippingWindow = CreateClippingWindowData(clippedPolygon, clippingWindow);
 	ClippingInterPoint* pointChainForClippedPolygon = CreateClippedPolygonData(clippedPolygon, clippingWindow);
 

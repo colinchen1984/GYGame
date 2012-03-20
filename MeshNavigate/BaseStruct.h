@@ -58,9 +58,13 @@ extern void PushDataToQueue(Queue* queue, void* data);
 
 extern void* PopDataFromQueue(Queue* queue);
 
+extern void* DeleteDataFromQueue(Queue* queue, int dataIndex);
+
 extern void CleanQueue(Queue* queue);
 
 extern int GetDataCountFromQueue(Queue* queue);
+
+extern void* GetDataFromQueueByIndex(Queue* queue, int index);
 
 extern void ReleaseQueue(Queue* queue);
 

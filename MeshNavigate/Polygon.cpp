@@ -112,7 +112,7 @@ bool PointInPolygon(const MeshPolygon* polygon, float x, float z)
 		v.x = point.x - polygon->pointList[i].x;
 		v.z = point.z - polygon->pointList[i].z;
 		float dot = VectorDotProduct(&v, &polygon->normalVectorList[i]);
-		if(dot < 0)
+		if(dot < 0 || FloatEqualZero(dot))
 		{
 			result = false;
 			break;
@@ -276,3 +276,18 @@ const Vector* GetPolygonNormal( const MeshPolygon* polygon )
 	return polygon->normalVectorList;	
 }
 
+
+MeshPolygon* CreatePolygonByPoint( const Point* pointList, const int pointCount )
+{
+	MeshPolygon* polygon = CreatePolygon(pointCount);
+	if (NULL == polygon)
+	{
+		return NULL;
+	}
+
+	for (int i = 0; i < pointCount; ++i)
+	{
+		PushBackPointToPolygon(polygon, &pointList[i]);
+	}
+	return polygon;
+}
