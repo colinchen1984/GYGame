@@ -66,6 +66,8 @@ extern int GetDataCountFromQueue(Queue* queue);
 
 extern void* GetDataFromQueueByIndex(Queue* queue, int index);
 
+extern void ShiftQueueData(Queue* dest, Queue* src);
+
 extern void ReleaseQueue(Queue* queue);
 
 #define NULL 0

@@ -163,3 +163,11 @@ void* DeleteDataFromQueue( Queue* queue, int dataIndex )
 	--queue->m_currentDataCount;
 	return data;
 }
+
+void ShiftQueueData( Queue* dest, Queue* src )
+{
+	while(void* data = PopDataFromQueue(src))
+	{
+		PushDataToQueue(dest, data);
+	}
+}

@@ -102,7 +102,7 @@ bool PointInPolygon(const MeshPolygon* polygon, float x, float z)
 	if(polygon->vertexCount < 3)
 	{
 		return false;
-	}
+	} 
 	
 	Vector v;
 	v. y = 0;

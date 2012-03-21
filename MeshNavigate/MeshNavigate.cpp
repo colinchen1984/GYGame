@@ -352,10 +352,7 @@ static bool UpdateItemPolygon(MeshNavigateSystem* sys)
 			else if (0 == decomposeResult)
 			{
 				ReleasePolygon(convexPolygon);
-				while (void* data = PopDataFromQueue(decomposeQueue))
-				{
-					PushDataToQueue(sys->m_itemMeshQueue, data);
-				}
+				ShiftQueueData(sys->m_itemMeshQueue, decomposeQueue);
 			}
 			else
 			{
@@ -364,14 +361,75 @@ static bool UpdateItemPolygon(MeshNavigateSystem* sys)
 		}
 	}
 
-	while(void* data = PopDataFromQueue(resultQueue))
-	{
-		PushDataToQueue(sys->m_itemMeshQueue, data);
-	}
+	ShiftQueueData(sys->m_itemMeshQueue, resultQueue);
 	ReleaseQueue(resultQueue);
 	ReleaseQueue(clippQueue);
 	ReleaseQueue(decomposeQueue);
 	return true;
+}
+
+static void ProceeZoneMeshWithItemMesh(Zone* zone, const MeshPolygon* itemMesh)
+{
+	Queue* resultQueue = CreateQueue(GetDataCountFromQueue(zone->polygonList));
+	Queue* clippQueue = CreateQueue(GetDataCountFromQueue(zone->polygonList));
+	Queue* decomposeQueue = CreateQueue(GetDataCountFromQueue(zone->polygonList));
+	while (MeshPolygon* polygon = (MeshPolygon*)PopDataFromQueue(zone->polygonList))
+	{
+		const MeshPolygon* clppingWindow = itemMesh;
+		CleanQueue(clippQueue);
+		int clippResult = ConvexPolygonClipping(polygon, clppingWindow, clippQueue);
+
+		if (NOT_NEED_CLIPPING == clippResult)
+		{
+			//不予任何多边形相交
+			//直接放入结果队列
+			PushDataToQueue(resultQueue, polygon);
+			continue;
+		}
+		else if(ALL_POINT_IN_CLIPPING_WINDOW == clippResult)
+		{
+			//被裁剪多边形位于裁剪多边形内部，所以裁剪后完全消失
+			ReleasePolygon(polygon);
+			continue;
+		}
+		else if(CLIPPING_WINDOW_ALL_IN_CLIPPED_POLYGON == clippResult)
+		{
+			//裁剪多边形位于被裁减多边形内部
+			PushDataToQueue(resultQueue, polygon);
+			continue;
+		}
+		else if(WRONG_PARAM == clippResult)
+		{
+			//传入的的参数有误
+		}
+
+		assert(0 == clippResult);
+		//裁剪成功
+		//对裁剪出来的每一个多边形做凹多边形分解
+		while (MeshPolygon* convexPolygon = (MeshPolygon*)PopDataFromQueue(clippQueue))
+		{
+			CleanQueue(decomposeQueue);
+			int decomposeResult = ConcavePolygonDecompose(convexPolygon, decomposeQueue);
+			if (NO_NEED_DECOMPOSE == decomposeResult)
+			{
+				PushDataToQueue(resultQueue, (void*)convexPolygon);
+			}
+			else if (0 == decomposeResult)
+			{
+				ReleasePolygon(convexPolygon);
+				ShiftQueueData(resultQueue, decomposeQueue);
+			}
+			else
+			{
+				assert(0);
+			}
+		}
+	}
+
+	ShiftQueueData(zone->polygonList, resultQueue);
+	ReleaseQueue(resultQueue);
+	ReleaseQueue(clippQueue);
+	ReleaseQueue(decomposeQueue);
 }
 
 bool MakeMeshNavigateData( MeshNavigateSystem* sys )
@@ -382,7 +440,29 @@ bool MakeMeshNavigateData( MeshNavigateSystem* sys )
 		return false;
 	}
 	
-	//
+	//检查每一个物品mesh
+	//如果mesh内有一点在某一区域内,就用该物品mesh裁剪区域内所有的地形mesh
+	Queue* pItemQueue = CreateQueue(GetDataCountFromQueue(sys->m_itemMeshQueue));
+	while(MeshPolygon* itemMesh = (MeshPolygon*)PopDataFromQueue(sys->m_itemMeshQueue))
+	{
+		const Point* itemPointList = GetPolygonPointList(itemMesh);
+		const int itemPointCount = GetPolygonPointCount(itemMesh);
+		for (int zoneID = 0; zoneID < sys->m_zoneCount; ++zoneID)
+		{
+			for (int i = 0; i < itemPointCount; ++i)
+			{
+				if(InRect(&sys->m_gridZoneList[zoneID].zoneRect, &itemPointList[i]))
+				{
+					//利用该物品 mesh 处理该zone内所有的多边形
+					ProceeZoneMeshWithItemMesh(&sys->m_gridZoneList[zoneID], itemMesh);
+					break;
+				}
+			}
+		}
+		PushDataToQueue(pItemQueue, (void*)itemMesh);
+	}
+	ShiftQueueData(sys->m_itemMeshQueue, pItemQueue);
+	ReleaseQueue(pItemQueue);
 
 	return true;
 }
