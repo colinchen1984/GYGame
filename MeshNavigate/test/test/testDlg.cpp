@@ -239,17 +239,23 @@ void CtestDlg::DrawPolygon()
 	m_polygonPointList.assign(polygonPoint, polygonPoint + polygonPointCount);
 	ReleaseItemNavigateMesh(item);*/
 
-	/*MeshPolygon* clipped = CreatePolygon(m_clippedPoint.size());
+	MeshPolygon* clipped = CreatePolygon(m_clippedPoint.size());
 	for (int i = 0; i < m_clippedPoint.size(); ++i)
 	{
 		AddPointToPolygon(clipped, m_clippedPoint[i].x, m_clippedPoint[i].z);
 	}
-	MeshPolygon* testT = CreatePolygon(5);
-	AddPointToPolygon(testT, 0.0f + 1.0f, 0.0f + 1.0f);
-	AddPointToPolygon(testT, 1.0f + 1.0f, -1.0f + 1.0f);
-	AddPointToPolygon(testT, 0.50f + 1.0f, 0.00f + 1.0f);
-	AddPointToPolygon(testT, 1.0f + 1.0f, 1.0f + 1.0f);
+	MeshPolygon* testT = CreatePolygon(4);
+	AddPointToPolygon(testT, 1.0f, 1.0f);
+	AddPointToPolygon(testT, 1.0f, 0.0f);
+	AddPointToPolygon(testT, 2.0f, 0.0f);
+	AddPointToPolygon(testT, 2.0f, 1.0f);
+	MeshPolygon* testU = CreatePolygon(4);
+	AddPointToPolygon(testU, 1.0f, 0.0f);
+	AddPointToPolygon(testU, 2.0f, 0.0f);
+	AddPointToPolygon(testU, 2.0f, 1.0f);
+	//AddPointToPolygon(testU, 350.0f, 800.0f);
 	Queue* resultQueue = CreateQueue(16);
+	ConvexPolygonClipping(testT, testU, resultQueue);
 	ConcavePolygonDecompose(testT, resultQueue);
 	Point p = {0.5f, 0.5f};
 	Matrix3x3 testM;
@@ -281,10 +287,10 @@ void CtestDlg::DrawPolygon()
 		
 	}
 	m_clippedPoint.clear();
-	m_clipingWindow.clear();*/
+	m_clipingWindow.clear();
 
 
-	MeshPolygon* clippingWindow = CreatePolygon(m_clipingWindow.size());
+	/*MeshPolygon* clippingWindow = CreatePolygon(m_clipingWindow.size());
 	for (int i = 0; i < m_clipingWindow.size();++i)
 	{
 		AddPointToPolygon(clippingWindow, m_clipingWindow[i].x, m_clipingWindow[i].z);
@@ -302,7 +308,7 @@ void CtestDlg::DrawPolygon()
 		ReleasePolygon(polygon);
 	}
 	ReleaseQueue(resultQueue);
-	ReleasePolygon(clippingWindow);
+	ReleasePolygon(clippingWindow);*/
 
 	RedrawWindow();
 	return;
@@ -336,7 +342,7 @@ void CtestDlg::OnChangeMaxVertexCount(NMHDR *pNMHDR, LRESULT *pResult)
 	m_stringVertexCount.Format(L"%d", m_maxVertexCount);
 	UpdateData(FALSE);
 	*pResult = 0;
-
+	//return ;
 
 
 

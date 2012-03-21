@@ -24,7 +24,10 @@ extern MeshPolygon* MakePolygonCopy(MeshPolygon* polygon);
 extern void CleanPolygon(MeshPolygon* polygon);
 
 //需要调用者自己保证Polygon是Convex Polygon
-extern bool PointInPolygon(const MeshPolygon* polygon, float x, float z); 
+//大于0是在内部
+//==0实在多边形的边上
+//<0是在外部
+extern int PointInPolygon(const MeshPolygon* polygon, float x, float z); 
 
 extern bool AddPointToPolygon(MeshPolygon* polygon, float x, float z);
 
@@ -39,3 +42,5 @@ extern int GetPolygonPointCount(const MeshPolygon* polygon);
 extern int GetPolygonPointMaxCount(const MeshPolygon* polygon);
 
 extern const Vector* GetPolygonNormal(const MeshPolygon* polygon);
+
+extern bool IsSamePolygon(const MeshPolygon* a, const MeshPolygon* b);

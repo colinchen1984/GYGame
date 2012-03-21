@@ -91,30 +91,41 @@ MeshPolygon* MakePolygonCopy( MeshPolygon* polygon )
 	return p;
 }
 
-bool PointInPolygon(const MeshPolygon* polygon, float x, float z)
+int PointInPolygon(const MeshPolygon* polygon, float x, float z)
 {
 	if(NULL == polygon)
 	{
 		return false;
 	}
 	
-	const Point point = {x, z};
 	if(polygon->vertexCount < 3)
 	{
 		return false;
 	} 
 	
+	const Point point = {x, z};
 	Vector v;
 	v. y = 0;
-	bool result = true;
+	int result = 1;
 	for(int i = 0; i < polygon->vertexCount; ++i)
 	{
 		v.x = point.x - polygon->pointList[i].x;
 		v.z = point.z - polygon->pointList[i].z;
 		float dot = VectorDotProduct(&v, &polygon->normalVectorList[i]);
-		if(dot < 0 || FloatEqualZero(dot))
+		if(FloatEqualZero(dot))
 		{
-			result = false;
+			//因为当dot为0的时候,循环break了,没有机会在检查与剩下的边的相交情况
+			//所以在这里需要判断点在线段的上海市在线段的延长线上
+			//从而确定点在多边形上还是在多边形外
+			int nextIndex = i + 1 != polygon->vertexCount ? i + 1 : 0;
+			Rect rect;
+			MakeRectByPoint(&rect, &polygon->pointList[i], &polygon->pointList[nextIndex]);
+			result = InRect(&rect, & point) ? 0 : -1;
+			break;
+		}
+		else if(dot < 0)// || FloatEqualZero(dot))
+		{
+			result = -1;
 			break;
 		}
 	}
@@ -290,4 +301,26 @@ MeshPolygon* CreatePolygonByPoint( const Point* pointList, const int pointCount 
 		PushBackPointToPolygon(polygon, &pointList[i]);
 	}
 	return polygon;
+}
+
+bool IsSamePolygon( const MeshPolygon* a, const MeshPolygon* b )
+{
+	if (a == b)
+	{
+		return true;
+	}
+	if (a->vertexCount != b->vertexCount)
+	{
+		return false;
+	}
+	bool result = true;
+	for (int i = 0; i < a->vertexCount; ++i)
+	{
+		if(!IsSamePoint(&a->pointList[i], &b->pointList[i]))
+		{
+			result = false;
+			break;
+		}
+	}
+	return result;
 }

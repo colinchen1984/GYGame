@@ -74,6 +74,6 @@ extern void ReleaseQueue(Queue* queue);
 
 const Vector StandardVector = {0.0f, 1.0f, 0.0f};
 
-const float EPSILON = 0.000001f;
+const float EPSILON = 0.001f;
 
 const float PI = 3.1415f;
