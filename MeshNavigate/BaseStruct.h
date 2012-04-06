@@ -13,7 +13,13 @@ struct Queue;
 struct Point
 {
 	float x, z;
-	void* userData;
+	union USERDATA
+	{
+		void* voidUserData;
+		int	intUserData;
+		float floatUserData;
+	};
+	USERDATA userData;
 };
 
 struct Vector

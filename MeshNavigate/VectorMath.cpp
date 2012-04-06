@@ -7,8 +7,9 @@
 **ÐÞ    ¸Ä£º
 */
 
-#include <math.h>
+#include "stdafx.h"
 #include "BaseStruct.h"
+#include <math.h>
 
 void VectorCrossProduct(Vector* result, const Vector* a, const Vector* b)
 {

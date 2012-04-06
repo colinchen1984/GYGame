@@ -44,3 +44,11 @@ extern int GetPolygonPointMaxCount(const MeshPolygon* polygon);
 extern const Vector* GetPolygonNormal(const MeshPolygon* polygon);
 
 extern bool IsSamePolygon(const MeshPolygon* a, const MeshPolygon* b);
+
+extern bool AddAdjacentData(MeshPolygon* polygon, const int pointIndexA, const int pointIndexB, const MeshPolygon* adjacentPolygon);
+
+extern MeshPolygon* GetAdjacentData(MeshPolygon* polygon, const int index);
+
+extern bool SetPolygonUserData(MeshPolygon* polygon, void* userData);
+
+extern void* GetPolygonUserData(MeshPolygon* polygon);

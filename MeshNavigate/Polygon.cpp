@@ -6,6 +6,7 @@
 **创建时间：2012-02-21
 **修    改：
 */
+#include "stdafx.h"
 #include "BaseStruct.h"
 #include "VectorMath.h"
 #include "Polygon.h"
@@ -17,9 +18,11 @@ struct MeshPolygon
 {
 	//要求顶点顺时针
 	Point* 			pointList;
+	const MeshPolygon** 	adjectPolygonList;
 	Vector* 		normalVectorList;
 	int 			vertexCount;
 	int				maxVertexCount;
+	void*			m_useData;
 };
 
 
@@ -39,6 +42,8 @@ MeshPolygon* CreatePolygon(int maxVertexCount)
 	p->normalVectorList = (Vector*)malloc(sizeof(Vector)* maxVertexCount);
 	memset(p->normalVectorList, 0, sizeof(p->normalVectorList[0]) * maxVertexCount);
 	p->maxVertexCount = maxVertexCount;
+	p->adjectPolygonList = (const MeshPolygon**)(malloc(sizeof(MeshPolygon*) * p->maxVertexCount));
+	memset(p->adjectPolygonList, 0, sizeof(p->adjectPolygonList[0]) * p->maxVertexCount);
 	return p;
 }
 
@@ -323,4 +328,52 @@ bool IsSamePolygon( const MeshPolygon* a, const MeshPolygon* b )
 		}
 	}
 	return result;
+}
+
+bool AddAdjacentData(MeshPolygon* polygon, const int pointIndexA, const int pointIndexB, const MeshPolygon* adjacentPolygon)
+{
+	if (NULL == polygon || NULL == adjacentPolygon)
+	{
+		return false;
+	}
+	bool result = false;
+	for (int i = 0; i < polygon->vertexCount; ++i)
+	{
+		int nextIndex = i + 1 != polygon->vertexCount ? i + 1 : 0;
+		if ((pointIndexA == polygon->pointList[i].userData.intUserData 
+			 && pointIndexB == polygon->pointList[nextIndex].userData.intUserData)
+			||(pointIndexA == polygon->pointList[nextIndex].userData.intUserData
+			 && pointIndexB == polygon->pointList[i].userData.intUserData))
+		{
+			polygon->adjectPolygonList[i] = adjacentPolygon;
+			result = true;
+			break;
+		}
+	}
+	return result;
+}
+
+MeshPolygon* GetAdjacentData( MeshPolygon* polygon, const int index )
+{
+	if (NULL == polygon || index >= polygon->vertexCount)
+	{
+		return NULL;
+	}
+
+	return (MeshPolygon*)polygon->adjectPolygonList[index];
+}
+
+bool SetPolygonUserData( MeshPolygon* polygon, void* userData )
+{
+	if (NULL == polygon)
+	{
+		return false;
+	}
+	polygon->m_useData = userData;
+	return true;
+}
+
+void* GetPolygonUserData( MeshPolygon* polygon )
+{
+	return polygon->m_useData;
 }

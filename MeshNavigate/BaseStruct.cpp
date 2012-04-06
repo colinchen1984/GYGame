@@ -6,7 +6,7 @@
 **创建时间：2012-02-21
 **修    改：
 */
-
+#include "stdafx.h"
 #include "BaseStruct.h"
 #include <math.h>
 #include <malloc.h>
@@ -30,11 +30,11 @@ bool InRect(const Rect* rect, const Point* a)
 
 bool IsSamePoint( const Point* a, const Point* b )
 {
-	double xSquar = (a->x - b->x);
+	float xSquar = (a->x - b->x);
+	float zSquar = (a->z - b->z);
+	const static float SQUAR_EPSILON = EPSILON * EPSILON;
 	xSquar *= xSquar;
-	double zSquar = (a->z - b->z);
 	zSquar *= zSquar;
-	const static double SQUAR_EPSILON = EPSILON * EPSILON;
 	bool result = xSquar + zSquar < SQUAR_EPSILON;
 	return result;
 }

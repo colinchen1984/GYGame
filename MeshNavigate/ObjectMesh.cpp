@@ -1,4 +1,4 @@
-
+#include "stdafx.h"
 #include "ObjectMesh.h"
 #include "BaseStruct.h"
 #include "VectorMath.h"

@@ -7,7 +7,7 @@
 **修    改：
 */
 
-
+#include "stdafx.h"
 #include <stdio.h>
 #include <malloc.h>
 #include <memory.h>
@@ -25,12 +25,29 @@ struct Zone
 {
 	Queue*				polygonList;
 	Rect				zoneRect;
+
+	Point*				pointListForZone;
+	int					maxPointCount;
+	int					currentPointCount;
+	int					beginIndex;
+	static int			vertexCount;
+};
+int Zone::vertexCount = 0;
+
+
+struct AdjacentData
+{
+	struct _AdjacentData
+	{
+		int pointIndex;
+		MeshPolygon*	polygon;
+	};
+	_AdjacentData*	data;
+	int				dataCount;
+	int				maxDataCount;
 };
 
-
-static const int MN_INVALID_VALUE = -1;
-
-struct MeshNavigateSystem
+struct MeshNavigateGenerator
 {
 	Point*			m_pointList;				// 顶点列表
 	int				m_currentPointCount;		// 当前顶点数量
@@ -49,19 +66,28 @@ struct MeshNavigateSystem
 	int				m_zoneSize;					// 区域的大小
 	int				m_zoneCount;				// 整个场景的区域的数量
 
-	MeshPolygon*	m_polygonList;				// 场景内多边形列表
-
 	int				m_triangleCount;			// 场景内多边形数量
 
 	Queue*			m_itemMeshQueue;			// 物体通过计算后得到的多边形
+	
+	AdjacentData*	m_adjacentData;
+	int				m_adjacentDataCount;			//
+	int				m_polygonCount;
+
+	FILE*			m_logFile;						
 };
 
-MeshNavigateSystem* CreateGridSystem()
+#define BEGINPROFILE unsigned int time = GetTickCount();
+#define ENDPROFILE(sys) time = GetTickCount() - time; fprintf(sys->m_logFile, "%s\t%u\n", __FUNCTION__, time); fflush(sys->m_logFile);
+MeshNavigateGenerator* CreateMeshNavigateGenarator()
 {
-	return (MeshNavigateSystem*)malloc(sizeof(MeshNavigateSystem));
+	
+	void* p = malloc(sizeof(MeshNavigateGenerator));
+	memset(p, 0, sizeof(MeshNavigateGenerator));
+	return (MeshNavigateGenerator*)p;
 }
 
-static int GetZoneIDByPosition(MeshNavigateSystem* sys, const float x, const float z)
+static int GetZoneIDByPosition(MeshNavigateGenerator* sys, const float x, const float z)
 {
 	int xIndex = (int)x;
 	int zIndex = (int)z;
@@ -71,12 +97,13 @@ static int GetZoneIDByPosition(MeshNavigateSystem* sys, const float x, const flo
 	return zoneID;
 }
 
-static void MakeTerraionMesh(MeshNavigateSystem* sys, const float* heightData, const int dataCount)
+static void MakeTerraionMesh(MeshNavigateGenerator* sys, const float* heightData, const int dataCount)
 {
-	int zStep = sys->m_sceneMaxZ / sys->m_terriaonVertexSpacing;
-	for (int triangleZ = 0; triangleZ < sys->m_sceneMaxZ - sys->m_terriaonVertexSpacing; triangleZ +=sys->m_terriaonVertexSpacing)
+	BEGINPROFILE;
+	int zStep = sys->m_sceneMaxZ / sys->m_terriaonVertexSpacing + 1;
+	for (int triangleZ = 0; triangleZ <= sys->m_sceneMaxZ - sys->m_terriaonVertexSpacing; triangleZ +=sys->m_terriaonVertexSpacing)
 	{
-		for(int triangleX = 0; triangleX < sys->m_sceneMaxX - sys->m_terriaonVertexSpacing; triangleX +=sys->m_terriaonVertexSpacing)
+		for(int triangleX = 0; triangleX <= sys->m_sceneMaxX - sys->m_terriaonVertexSpacing; triangleX +=sys->m_terriaonVertexSpacing)
 		{
 			//得到三角形的顶点, 顺时针方向
 			/*
@@ -114,45 +141,55 @@ static void MakeTerraionMesh(MeshNavigateSystem* sys, const float* heightData, c
 			cosValue = VectorDotProduct(NormalizationVector(&planeNormalABC), &StandardVector);
 			bool planeABCWork = abs(cosValue) < tag ? false : true;
 			MeshPolygon* polygon = NULL;
-			if (planeABCWork && planeACDWork)
-			{
-				polygon = CreatePolygon(4);
-				AddPointToPolygon(polygon, pointA.x, pointA.z);
-				AddPointToPolygon(polygon, pointB.x, pointB.z);
-				AddPointToPolygon(polygon, pointC.x, pointC.z);
-				AddPointToPolygon(polygon, pointD.x, pointD.z);
-			}
+			Point pA = {pointA.x, pointA.z};
+			pA.userData.floatUserData = pointA.y;
+			Point pB = {pointB.x, pointB.z};
+			pB.userData.floatUserData = pointB.y;
+			Point pC = {pointC.x, pointC.z};
+			pC.userData.floatUserData = pointC.y;
+			Point pD = {pointD.x, pointD.z};
+			pD.userData.floatUserData = pointD.y;
+
+  			if (planeABCWork && planeACDWork)
+  			{
+  				polygon = CreatePolygon(4);
+  				AddPointToPolygonByPoint(polygon, &pA);
+  				AddPointToPolygonByPoint(polygon, &pB);
+  				AddPointToPolygonByPoint(polygon, &pC);
+  				AddPointToPolygonByPoint(polygon, &pD);
+  			}
 			else if(planeACDWork)
 			{
 				polygon = CreatePolygon(3);
-				AddPointToPolygon(polygon, pointA.x, pointA.z);
-				AddPointToPolygon(polygon, pointC.x, pointC.z);
-				AddPointToPolygon(polygon, pointD.x, pointD.z);
+				AddPointToPolygonByPoint(polygon, &pA);
+				AddPointToPolygonByPoint(polygon, &pC);
+				AddPointToPolygonByPoint(polygon, &pD);
 			}
 			else if(planeABCWork)
 			{
 				polygon = CreatePolygon(3);
-				AddPointToPolygon(polygon, pointA.x, pointA.z);
-				AddPointToPolygon(polygon, pointB.x, pointB.z);
-				AddPointToPolygon(polygon, pointC.x, pointC.z);
+				AddPointToPolygonByPoint(polygon, &pA);
+				AddPointToPolygonByPoint(polygon, &pB);
+				AddPointToPolygonByPoint(polygon, &pC);
 			}
 
-			if (NULL != polygon)
-			{
-				// 向所在的区域注册
-				int zoneId = GetZoneIDByPosition(sys, pointA.x, pointA.z);
-				assert(zoneId >= 0);
-				PushDataToQueue(sys->m_gridZoneList[zoneId].polygonList, (void*)polygon);
-			}
+  			if (NULL != polygon)
+  			{
+  				// 向所在的区域注册
+  				int zoneId = GetZoneIDByPosition(sys, pointA.x, pointA.z);
+  				assert(zoneId >= 0);
+  				PushDataToQueue(sys->m_gridZoneList[zoneId].polygonList, (void*)polygon);
+  			}
 		}
 	}
+	ENDPROFILE(sys);
 }
 
-static void MakeZoneData(MeshNavigateSystem* sys)
+static void MakeZoneData(MeshNavigateGenerator* sys)
 {
-
+	BEGINPROFILE;
 	//初始化区域管理相关数据
-	sys->m_zoneSize = 16;
+	sys->m_zoneSize = 32;
 	sys->m_xZoneCount = sys->m_sceneMaxX / sys->m_zoneSize;
 	sys->m_zZoneCount = sys->m_sceneMaxZ / sys->m_zoneSize;
 	sys->m_zoneCount = sys->m_xZoneCount * sys->m_zZoneCount; 
@@ -163,16 +200,22 @@ static void MakeZoneData(MeshNavigateSystem* sys)
 		for (int x = 0; x < sys->m_xZoneCount; ++x)
 		{
 			sys->m_gridZoneList[zIndex + x].polygonList = CreateQueue(32);
+			sys->m_gridZoneList[zIndex + x].currentPointCount = 0;
+			sys->m_gridZoneList[zIndex + x].beginIndex = 0;
+			sys->m_gridZoneList[zIndex + x].maxPointCount = 32;
+			sys->m_gridZoneList[zIndex + x].pointListForZone = (Point*)malloc(sizeof(Point) * sys->m_gridZoneList[zIndex + x].maxPointCount);
 			Point leftTop = {(float)(x * sys->m_zoneSize), (float)(z * sys->m_zoneSize)};
 			Point rightBottom = {(float)((x + 1) * sys->m_zoneSize), (float)((z + 1) * sys->m_zoneSize)};
 			int zondIndex = zIndex + x;
 			MakeRectByPoint(&sys->m_gridZoneList[zondIndex].zoneRect, &leftTop, &rightBottom);
 		}
 	}
+	ENDPROFILE(sys);
 }
 
-bool InitGridSystem(MeshNavigateSystem* sys, int maxXSize, int maxZSize, int terriaonVertexSpacing, const float* heightData, const int heightDataCount)
+bool InitMeshNavigateGenarator(MeshNavigateGenerator* sys, int maxXSize, int maxZSize, int terriaonVertexSpacing, const float* heightData, const int heightDataCount)
 {
+	BEGINPROFILE;
 	if(NULL == sys)
 	{
 		return false;
@@ -206,68 +249,64 @@ bool InitGridSystem(MeshNavigateSystem* sys, int maxXSize, int maxZSize, int ter
 	{
 		return false;
 	}
-	sys->m_maxPointCount = sys->m_terrianVertexsCount << 1; //初始化是列表的大小是场景地形顶点个数的double
-	sys->m_pointList = (Point*)malloc(sizeof(Point) * sys->m_maxPointCount);
-	if(NULL == sys->m_pointList)
-	{
-		return false;
-	}
-	memset(sys->m_pointList, 0, sizeof(Point) * sys->m_maxPointCount);
+
+	sys->m_currentPointCount = 0;
+	sys->m_maxPointCount = 0;
+	sys->m_pointList = NULL;
 
 	sys->m_itemMeshQueue = CreateQueue(128);
-	
+	sys->m_logFile = fopen("meshnavigate.log", "wb");
 	MakeZoneData(sys);
 	MakeTerraionMesh(sys, heightData, heightDataCount);
-	
+	ENDPROFILE(sys);
 	return 0;
 }
 
-#define GetDistence(ax, az, bx, bz) ((ax - bx) * (ax - bx) + (az - bz) * (az - bz))
-int AddPointToSystem(MeshNavigateSystem* sys, float x, float z, bool checkRange)
+static void FreeTerraionMesh(MeshNavigateGenerator* sys)
+{
+	for (int i = 0; i < sys->m_zoneCount; ++i)
+	{
+		while(MeshPolygon* polygon = (MeshPolygon*)(PopDataFromQueue(sys->m_gridZoneList[i].polygonList)))
+		{
+			ReleasePolygon(polygon);
+		}
+	}
+}
+
+static void FreeZone(MeshNavigateGenerator* sys)
+{
+	for (int i = 0; i < sys->m_zoneCount; ++i)
+	{
+		ReleaseQueue(sys->m_gridZoneList[i].polygonList);
+		free(sys->m_gridZoneList[i].pointListForZone);
+	}
+	free(sys->m_gridZoneList);
+}
+
+void ReleaseMeshNavigateGenarator(MeshNavigateGenerator* sys)
 {
 	if(NULL == sys)
 	{
-		return -1;
+		return;
 	}
+	//释放物体mesh
+	while(MeshPolygon* polygon = (MeshPolygon*)PopDataFromQueue(sys->m_itemMeshQueue))
+	{
+		ReleasePolygon(polygon);
+	}
+	ReleaseQueue(sys->m_itemMeshQueue);
 	
-	//如果已经装满,重新分配内存
-	if(sys->m_currentPointCount + 1 == sys->m_maxPointCount)
-	{
-		sys->m_maxPointCount = sys->m_maxPointCount << 1;
-		sys->m_pointList = (Point*)realloc(sys->m_pointList, sizeof(Point) * sys->m_maxPointCount);
-		if(NULL == sys->m_pointList)
-		{
-			return -1;
-		}
-	}
-
-	int result = -1;
-	if(true == checkRange)
-	{
-		for(int i = 0; i < sys->m_currentPointCount; ++i)
-		{
-			const static float minRange = 0.01f * 0.01f;
-			if(GetDistence(x, z, sys->m_pointList[i].x, sys->m_pointList[i].z) < minRange)
-			{
-				result = i;
-				break;
-			}
-		}
-
-	}
-	
-	if(-1 == result)
-	{
-		result = sys->m_currentPointCount++;
-		Point* p = &sys->m_pointList[result];
-		p->x = x;
-		p->z = z;
-	}
-		
-	return result;
+	//释放地形mesh
+	FreeTerraionMesh(sys);
+	//释放zone
+	FreeZone(sys);
+	//释放顶点
+	free(sys->m_pointList);
+	//释放log文件
+	fclose(sys->m_logFile);
 }
 
-bool AddItemToGridSystem( MeshNavigateSystem* sys, ItemNavigateMesh* item )
+bool AddItemToGridSystem(MeshNavigateGenerator* sys, ItemNavigateMesh* item)
 {
 	if (NULL == item)
 	{
@@ -289,7 +328,8 @@ bool AddItemToGridSystem( MeshNavigateSystem* sys, ItemNavigateMesh* item )
 	return true;
 }
 
-static bool UpdateItemPolygon(MeshNavigateSystem* sys)
+//处理物体之间的叠加
+static bool UpdateItemPolygon(MeshNavigateGenerator* sys)
 {
 	Queue* resultQueue = CreateQueue(GetDataCountFromQueue(sys->m_itemMeshQueue));
 	Queue* clippQueue = CreateQueue(GetDataCountFromQueue(sys->m_itemMeshQueue));
@@ -368,6 +408,7 @@ static bool UpdateItemPolygon(MeshNavigateSystem* sys)
 	return true;
 }
 
+//物体包围网格的凸包来裁剪地形网格
 static void ProceeZoneMeshWithItemMesh(Zone* zone, const MeshPolygon* itemMesh)
 {
 	Queue* resultQueue = CreateQueue(GetDataCountFromQueue(zone->polygonList));
@@ -432,7 +473,225 @@ static void ProceeZoneMeshWithItemMesh(Zone* zone, const MeshPolygon* itemMesh)
 	ReleaseQueue(decomposeQueue);
 }
 
-bool MakeMeshNavigateData( MeshNavigateSystem* sys )
+static int FindPointInZone(const Zone* zone, const Point* point)
+{
+	if (NULL == zone)
+	{
+		return -1;
+	}
+
+	int result = -1;	
+	for (int i = 0; i < zone->currentPointCount; ++i)
+	{
+		if (IsSamePoint(&zone->pointListForZone[i], point))
+		{
+			result = i;
+		}
+	}
+	return result;
+}
+
+//为一个zone内的顶点分配Index
+static void ProcessVertexInZone(Zone* zone, const Zone* upZone, const Zone* leftZone)
+{
+	int meshCount = GetDataCountFromQueue(zone->polygonList);
+	for (int mesh = 0; mesh < meshCount; ++mesh)
+	{
+		MeshPolygon* meshPolygon = (MeshPolygon*)GetDataFromQueueByIndex(zone->polygonList, mesh);
+		int pointCount = GetPolygonPointCount(meshPolygon);
+		Point* pointList = (Point*)GetPolygonPointList(meshPolygon);
+		for (int p = 0; p < pointCount; ++p)
+		{
+			Point* point = &pointList[p];
+			int pointID = -1;
+			do 
+			{
+				//首先尝试在UpZone内查找
+				pointID = FindPointInZone(zone, point);
+				if (-1 != pointID)
+				{
+					pointID += zone->beginIndex;
+					break;
+				}
+				//再尝试在UpZone内查找
+				pointID = FindPointInZone(upZone, point);
+				if (-1 != pointID)
+				{
+					pointID += upZone->beginIndex;
+					break;
+				}
+
+				//然后尝试在leftZone内查找
+				pointID = FindPointInZone(leftZone, point);
+				if (-1 != pointID)
+				{
+					pointID += leftZone->beginIndex;
+					break;
+				}
+				
+				//最后添加到自己的zone内
+				if(zone->currentPointCount + 1 == zone->maxPointCount)
+				{
+					zone->maxPointCount = zone->maxPointCount << 1;
+					zone->pointListForZone = (Point*)realloc(zone->pointListForZone, sizeof(Point) * zone->maxPointCount);
+				}
+				if (0 == zone->currentPointCount)
+				{
+					zone->beginIndex = Zone::vertexCount;
+				}
+				zone->pointListForZone[zone->currentPointCount++] = *point;
+				zone->pointListForZone[zone->currentPointCount - 1].userData.floatUserData += 2.0f;
+				pointID = Zone::vertexCount++;
+			} while (false);
+			point->userData.intUserData = pointID;	
+		}
+	}
+
+}
+
+static void ProcessVertex(MeshNavigateGenerator* sys)
+{
+	BEGINPROFILE;
+	Zone::vertexCount = 0;
+	for (int z = 0; z < sys->m_zZoneCount; ++z)
+	{
+		int zStep = z * sys->m_xZoneCount;
+		for (int x = 0; x < sys->m_xZoneCount; ++x)
+		{
+			int zoneID = x + zStep;
+			const Zone* upZone = z > 0 ? &sys->m_gridZoneList[zoneID - sys->m_zZoneCount] : NULL;
+			const Zone* leftZone = x > 0 ? &sys->m_gridZoneList[zoneID - 1] : NULL;
+			ProcessVertexInZone(&sys->m_gridZoneList[zoneID], upZone, leftZone);
+		}
+	}
+	sys->m_currentPointCount = 0;
+	sys->m_maxPointCount = Zone::vertexCount;
+	sys->m_pointList = (Point*)malloc(sizeof(Point) * sys->m_maxPointCount);
+	for (int i = 0; i < sys->m_zoneCount; ++i)
+	{
+		memcpy(&sys->m_pointList[sys->m_currentPointCount], sys->m_gridZoneList[i].pointListForZone, sizeof(Point) * sys->m_gridZoneList[i].currentPointCount);
+		sys->m_currentPointCount += sys->m_gridZoneList[i].currentPointCount;
+	}
+	ENDPROFILE(sys);
+}
+
+//处理多边形的相邻关系
+static void ProcessAdjacent(MeshNavigateGenerator* sys, MeshPolygon* polygon)
+{
+	int pointCount = GetPolygonPointCount(polygon);
+	Point* pointList = (Point*)GetPolygonPointList(polygon);
+	for (int p = 0; p < pointCount; ++p)
+	{
+		Point* current = &pointList[p];
+		Point* nextPoint = p + 1 != pointCount ? current + 1 : pointList;
+		int smallIndex = -1;
+		int bigIndex = -1;
+		//所有的邻边在处理时都按点的index从小到大处理
+		//这里不需要在意clockwise或者countwiseclock
+
+		if (current->userData.intUserData <= nextPoint->userData.intUserData)
+		{
+			smallIndex = current->userData.intUserData;
+			bigIndex = nextPoint->userData.intUserData;
+		}
+		else
+		{
+			smallIndex = nextPoint->userData.intUserData;
+			bigIndex = current->userData.intUserData;
+		}
+		//如果需要,分配内纯
+		if (smallIndex >= sys->m_adjacentDataCount)
+		{
+			int currentCount = sys->m_adjacentDataCount;
+			sys->m_adjacentDataCount = currentCount << 1;
+			sys->m_adjacentData = (AdjacentData*)realloc(sys->m_adjacentData, sizeof(AdjacentData) * sys->m_adjacentDataCount);
+			memset(&sys->m_adjacentData[currentCount], 0, sizeof(sys->m_adjacentData[0]) * currentCount);
+		}
+		
+		AdjacentData* pPointAdjcentData = &sys->m_adjacentData[smallIndex];
+		if (0 == pPointAdjcentData->maxDataCount)
+		{
+			//如果初次访问,分配内存
+			pPointAdjcentData->maxDataCount = 4;
+			pPointAdjcentData->data = (AdjacentData::_AdjacentData*)(malloc(sizeof(AdjacentData::_AdjacentData) * pPointAdjcentData->maxDataCount));
+			memset(pPointAdjcentData->data, 0, sizeof(pPointAdjcentData->data[0]) * pPointAdjcentData->maxDataCount);
+			pPointAdjcentData->dataCount = 0;
+		}
+
+		bool processed = false;
+		for (int dataIndex = 0; dataIndex < pPointAdjcentData->dataCount; ++dataIndex)
+		{
+			//在该index对应的数据内查找是否有邻边
+			//如果已经有了,则通知两个polygon添加邻边数据
+			//并且将该内存标记为为使用
+			if (bigIndex == pPointAdjcentData->data[dataIndex].pointIndex)
+			{
+				AddAdjacentData(polygon, smallIndex, bigIndex, pPointAdjcentData->data[dataIndex].polygon);
+				AddAdjacentData(pPointAdjcentData->data[dataIndex].polygon, smallIndex, bigIndex, polygon);
+				pPointAdjcentData->data[dataIndex] = pPointAdjcentData->data[--pPointAdjcentData->dataCount];
+				processed = true;
+				break;
+			}
+		}
+
+		if (processed)
+		{
+			continue;
+		}
+		
+		//检查是否需要分配内存
+		if (pPointAdjcentData->dataCount == pPointAdjcentData->maxDataCount)
+		{
+			pPointAdjcentData->maxDataCount = pPointAdjcentData->maxDataCount << 1;
+			pPointAdjcentData->data = (AdjacentData::_AdjacentData*)realloc(pPointAdjcentData->data, sizeof(pPointAdjcentData->data[0]) * pPointAdjcentData->maxDataCount);
+			memset(&pPointAdjcentData->data[pPointAdjcentData->dataCount], 0, sizeof(pPointAdjcentData->data[0]) * pPointAdjcentData->dataCount);
+		}
+		//如果该邻边是初次添加则直接添加
+		pPointAdjcentData->data[pPointAdjcentData->dataCount].pointIndex = bigIndex;
+		pPointAdjcentData->data[pPointAdjcentData->dataCount].polygon = polygon;
+		++pPointAdjcentData->dataCount;
+	}
+}
+
+static bool BuildEdgeInfo(MeshNavigateGenerator* sys)
+{
+	BEGINPROFILE;
+	if (NULL != sys->m_adjacentData)
+	{
+		return false;
+	}
+
+	sys->m_adjacentDataCount = sys->m_maxPointCount >> 2;
+	sys->m_adjacentData = (AdjacentData*)malloc(sizeof(AdjacentData) * sys->m_adjacentDataCount);
+	memset(sys->m_adjacentData, 0, sizeof(sys->m_adjacentData[0]) * sys->m_adjacentDataCount);
+
+	for (int z = 0; z < sys->m_zZoneCount; ++z)
+	{
+		int zStep = z * sys->m_xZoneCount;
+		for (int x = 0; x < sys->m_xZoneCount; ++x)
+		{
+			int zoneID = x + zStep;
+			Zone* zone = &sys->m_gridZoneList[zoneID];
+			int meshCount = GetDataCountFromQueue(zone->polygonList);
+			for (int mesh = 0; mesh < meshCount; ++mesh)
+			{
+				MeshPolygon* meshPolygon = (MeshPolygon*)GetDataFromQueueByIndex(zone->polygonList, mesh);
+				ProcessAdjacent(sys, meshPolygon);
+			}
+		}
+	}
+
+	for (int i = 0; i < sys->m_adjacentDataCount; ++i)
+	{
+		free(sys->m_adjacentData[i].data);
+	}
+	free(sys->m_adjacentData);
+	ENDPROFILE(sys);
+	return true;
+}
+
+
+bool MakeMeshNavigateData(MeshNavigateGenerator* sys)
 {
 	//裁剪, 分解物品凸包
 	if(true != UpdateItemPolygon(sys))
@@ -442,6 +701,8 @@ bool MakeMeshNavigateData( MeshNavigateSystem* sys )
 	
 	//检查每一个物品mesh
 	//如果mesh内有一点在某一区域内,就用该物品mesh裁剪区域内所有的地形mesh
+	//这里假设了zone足够大,不会出现一个zone完全在一个item 的凸包内的情况
+	//如果出现这种情况,会导致该zone内的所有的terrian不会和所在的item 凸包进行裁剪
 	Queue* pItemQueue = CreateQueue(GetDataCountFromQueue(sys->m_itemMeshQueue));
 	while(MeshPolygon* itemMesh = (MeshPolygon*)PopDataFromQueue(sys->m_itemMeshQueue))
 	{
@@ -461,13 +722,201 @@ bool MakeMeshNavigateData( MeshNavigateSystem* sys )
 		}
 		PushDataToQueue(pItemQueue, (void*)itemMesh);
 	}
+
 	ShiftQueueData(sys->m_itemMeshQueue, pItemQueue);
+
 	ReleaseQueue(pItemQueue);
+	//将所有的点的坐标导入定点列表,并换成index
+	ProcessVertex(sys);
+
+	//生成多边形的相邻关系
+	BuildEdgeInfo(sys);
+
+	//所有的多边形生成ID
+	int polygonID = 0;
+	for (int z = 0; z < sys->m_zZoneCount; ++z)
+	{
+		int zStep = z * sys->m_xZoneCount;
+		for (int x = 0; x < sys->m_xZoneCount; ++x)
+		{
+			int zoneID = x + zStep;
+			Zone* zone = &sys->m_gridZoneList[zoneID];
+			int meshCount = GetDataCountFromQueue(zone->polygonList);
+			for (int mesh = 0; mesh < meshCount; ++mesh)
+			{
+				MeshPolygon* meshPolygon = (MeshPolygon*)GetDataFromQueueByIndex(zone->polygonList, mesh);
+				SetPolygonUserData(meshPolygon, (void*)polygonID++);
+			}
+		}
+	}
+	sys->m_polygonCount = polygonID;
 
 	return true;
 }
 
-Queue* GetItemQueue(MeshNavigateSystem* sys)
+Queue* GetItemQueue(MeshNavigateGenerator* sys)
 {
-	return sys->m_itemMeshQueue;
+	return NULL != sys ? sys->m_itemMeshQueue : NULL;
+}
+
+int GetZoneCount(MeshNavigateGenerator* sys)
+{
+	return NULL != sys ? sys->m_zoneCount : NULL;
+}
+
+extern int GetMeshCountInZone(MeshNavigateGenerator* sys, int index)
+{
+	if (NULL == sys || index >= sys->m_zoneCount)
+	{
+		return 0;
+	}
+
+	return GetDataCountFromQueue(sys->m_gridZoneList[index].polygonList);
+}
+
+MeshPolygon* GetMeshPolygonInZone(MeshNavigateGenerator* sys, int zoneIndex, int meshIndex)
+{
+	if (NULL == sys || zoneIndex >= sys->m_zoneCount)
+	{
+		return NULL;
+	}
+
+	int meshCountInZone = GetDataCountFromQueue(sys->m_gridZoneList[zoneIndex].polygonList);
+	if (meshIndex >= meshCountInZone)
+	{
+		return NULL;
+	}
+
+	return (MeshPolygon*)GetDataFromQueueByIndex(sys->m_gridZoneList[zoneIndex].polygonList, meshIndex);
+}
+
+int GetVertexCount(MeshNavigateGenerator* sys)
+{
+	if (NULL == sys)
+	{
+		return 0;
+	}
+	return sys->m_currentPointCount;
+}
+
+const Point* GetVertexList(MeshNavigateGenerator* sys)
+{
+	if (NULL == sys)
+	{
+		return NULL;
+	}
+	return sys->m_pointList;
+}
+
+bool WriteDataToFile( MeshNavigateGenerator* sys, const char* fileName )
+{
+	BEGINPROFILE;
+	if (NULL == sys || NULL == fileName)
+	{
+		return false;
+	}
+
+	FILE* file = fopen(fileName, "wb");
+	if(NULL == file)
+	{
+		return false;
+	}
+
+	//版本号
+	int version = 0;
+	fwrite(&version, sizeof(version), 1, file);
+
+	//场景数据
+	fwrite(&sys->m_sceneMaxX, sizeof(sys->m_sceneMaxX), 1, file);
+	fwrite(&sys->m_sceneMaxZ, sizeof(sys->m_sceneMaxZ), 1, file);
+	fwrite(&sys->m_zoneSize, sizeof(sys->m_zoneSize), 1, file);
+	
+	//zone 数据
+	for (int z = 0; z < sys->m_zZoneCount; ++z)
+	{
+		int zStep = z * sys->m_xZoneCount;
+		for (int x = 0; x < sys->m_xZoneCount; ++x)
+		{
+			int zoneID = x + zStep;
+			Zone* zone = &sys->m_gridZoneList[zoneID];
+			int polygonCountInZone = GetDataCountFromQueue(zone->polygonList);
+			fwrite(&polygonCountInZone, sizeof(polygonCountInZone), 1, file);
+		}
+	}
+
+	//坐标点数据
+	fwrite(&sys->m_currentPointCount, sizeof(sys->m_currentPointCount), 1, file);
+	for (int i = 0; i < sys->m_currentPointCount; ++i)
+	{
+		fwrite(&sys->m_pointList[i].x, sizeof(sys->m_pointList[i].x), 1, file);
+		fwrite(&sys->m_pointList[i].z, sizeof(sys->m_pointList[i].z), 1, file);
+	}
+
+	//polygon数据
+	fwrite(&sys->m_polygonCount, sizeof(sys->m_polygonCount), 1, file);
+	int id = -1;
+	for (int z = 0; z < sys->m_zZoneCount; ++z)
+	{
+		int zStep = z * sys->m_xZoneCount;
+		for (int x = 0; x < sys->m_xZoneCount; ++x)
+		{
+			int zoneID = x + zStep;
+			Zone* zone = &sys->m_gridZoneList[zoneID];
+			int meshCount = GetDataCountFromQueue(zone->polygonList);
+			for (int mesh = 0; mesh < meshCount; ++mesh)
+			{
+				MeshPolygon* meshPolygon = (MeshPolygon*)GetDataFromQueueByIndex(zone->polygonList, mesh);
+				assert(++id == (int)GetPolygonUserData(meshPolygon));
+				int pointCount = GetPolygonPointCount(meshPolygon);
+				Point* pointList = (Point*)GetPolygonPointList(meshPolygon);
+				fwrite(&pointCount, sizeof(pointCount), 1, file);
+				for (int p = 0; p < pointCount; ++p)
+				{
+					fwrite(&pointList[p].userData.intUserData, sizeof(pointList[p].userData.intUserData), 1, file);
+				}
+
+				const Vector* pVector = GetPolygonNormal(meshPolygon);
+				for (int p = 0; p < pointCount; ++p)
+				{
+					fwrite(&pVector[p].x, sizeof(pVector[p].x), 1, file);
+					fwrite(&pVector[p].z, sizeof(pVector[p].z), 1, file);
+				}
+
+				int specialLogic = 0;
+				fwrite(&specialLogic, sizeof(specialLogic), 1, file);
+				int zoneCount = 1;
+				fwrite(&zoneCount, sizeof(zoneCount), 1, file);
+				fwrite(&zoneID, sizeof(zoneID), 1, file);
+			}
+		}
+	}
+
+
+	//相邻数据
+	id = -1;
+	for (int z = 0; z < sys->m_zZoneCount; ++z)
+	{
+		int zStep = z * sys->m_xZoneCount;
+		for (int x = 0; x < sys->m_xZoneCount; ++x)
+		{
+			int zoneID = x + zStep;
+			Zone* zone = &sys->m_gridZoneList[zoneID];
+			int meshCount = GetDataCountFromQueue(zone->polygonList);
+			for (int mesh = 0; mesh < meshCount; ++mesh)
+			{
+				MeshPolygon* meshPolygon = (MeshPolygon*)GetDataFromQueueByIndex(zone->polygonList, mesh);
+				assert(++id == (int)GetPolygonUserData(meshPolygon));
+				int pointCount = GetPolygonPointCount(meshPolygon);
+				for (int p = 0; p < pointCount; ++p)
+				{
+					MeshPolygon* adjacentPolygon = GetAdjacentData(meshPolygon, p);
+					int adjacentPolygonID = NULL != adjacentPolygon ? (int)GetPolygonUserData(adjacentPolygon) : -1;
+					fwrite(&adjacentPolygonID, sizeof(adjacentPolygonID), 1, file);
+				}
+			}
+		}
+	}
+	fclose(file);
+	ENDPROFILE(sys);
+	return true;
 }

@@ -9,22 +9,34 @@
 
 #pragma once
 
-struct MeshNavigateSystem;
+struct MeshNavigateGenerator;
 struct ItemNavigateMesh;
+struct MeshPolygon;
+struct Point;
 
-extern MeshNavigateSystem* CreateGridSystem();
+extern MeshNavigateGenerator* CreateMeshNavigateGenarator();
 
 
-extern bool InitGridSystem(MeshNavigateSystem* sys, int maxXSize, int maxZSize, int terriaonVertexSpacing, const float* heightData, const int heightDataCount);
+extern bool InitMeshNavigateGenarator(MeshNavigateGenerator* sys, int maxXSize, int maxZSize, int terriaonVertexSpacing, const float* heightData, const int heightDataCount);
 
-extern int AddPointToSystem(MeshNavigateSystem* sys, float x, float z, bool checkRange);
+extern int AddPointToSystem(MeshNavigateGenerator* sys, float x, float z, bool checkRange);
 
-extern void ReleaseMeshNavigatedSystem(MeshNavigateSystem* sys);
+extern void ReleaseMeshNavigateGenarator(MeshNavigateGenerator* sys);
 
 //item 不需要调用函数得到其凸包
 //item在成功添加后不需要再释放其内存, 有sys管理其生命周期
-extern bool AddItemToGridSystem(MeshNavigateSystem* sys, ItemNavigateMesh* item);
+extern bool AddItemToGridSystem(MeshNavigateGenerator* sys, ItemNavigateMesh* item);
 
-extern bool MakeMeshNavigateData(MeshNavigateSystem* sys);
+extern bool MakeMeshNavigateData(MeshNavigateGenerator* sys);
 
-extern Queue* GetItemQueue(MeshNavigateSystem* sys);
+extern int GetZoneCount(MeshNavigateGenerator* sys);
+
+extern int GetMeshCountInZone(MeshNavigateGenerator* sys, int index);
+
+extern MeshPolygon* GetMeshPolygonInZone(MeshNavigateGenerator* sys, int zoneIndex, int meshIndex);
+
+extern int GetVertexCount(MeshNavigateGenerator* sys);
+
+extern const Point* GetVertexList(MeshNavigateGenerator* sys);
+
+extern bool WriteDataToFile(MeshNavigateGenerator* sys, const char* fileName);

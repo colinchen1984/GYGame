@@ -6,6 +6,7 @@
 **创建时间：2012-02-21
 **修    改：
 */
+#include "stdafx.h"
 #include "ConcavePolygondecompose.h"
 #include "BaseStruct.h"
 #include "Polygon.h"
@@ -34,7 +35,7 @@ int ConcavePolygonDecompose(const MeshPolygon* polygon,
 	for (int i = 0; i < pointCount; ++i)
 	{
 		Point temp = pointList[i];
-		temp.userData = (void*)i;
+		temp.userData.intUserData = i;
 		AddPointToPolygonByPoint(fistQuest, &temp);
 	}
 
@@ -226,7 +227,7 @@ int ConcavePolygonDecompose(const MeshPolygon* polygon,
 		int newPointCount = GetPolygonPointCount(newPolgon);
 		for (int t = 0; t < newPointCount; ++t)
 		{
-			newpointList[t] = pointList[(int)newpointList[t].userData];
+			newpointList[t] = pointList[newpointList[t].userData.intUserData];
 		}
 		PushDataToQueue(questQueue, (void*)newPolgon);
 	}
