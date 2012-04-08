@@ -345,12 +345,20 @@ static int XXXXXXXX(UBI_MeshNavigateSystem* sys, const UBI_MNPoint* pathPoint, c
 	{
 		return MN_INVALID_VALUE;
 	}
-	else if (leftPointInPolygonTest < 0 && rightPointInPolygonTest >= 0)
+	else if(leftPointInPolygonTest == 0 && rightPointInPolygonTest < 0)
+	{
+		return MN_INVALID_VALUE;
+	}
+	else if(leftPointInPolygonTest < 0 && rightPointInPolygonTest == 0)
+	{
+		return MN_INVALID_VALUE;
+	}
+	else if (leftPointInPolygonTest < 0 && rightPointInPolygonTest > 0)
 	{
 		return rightPoint;
 	}
 
-	else if (leftPointInPolygonTest >= 0 && rightPointInPolygonTest < 0)
+	else if (leftPointInPolygonTest > 0 && rightPointInPolygonTest < 0)
 	{
 		return leftPoint;
 	}
@@ -391,10 +399,11 @@ int findPath(UBI_MeshNavigateSystem* sys, float* pathBuffer, const int bufferSiz
 
 	if (beginTriangle == targetTriangle)
 	{
-
-		return true;
+		pathBuffer[0] = targetX;
+		pathBuffer[1] = targetZ;
+		return 1;
 	}
-
+	const float* const bufferWatcher = pathBuffer;
 	InitPathFindData(sys);
 	beginTriangle->m_pathFindData.m_parent = NULL;
 	beginTriangle->m_pathFindData.m_pos = begin;
@@ -533,7 +542,7 @@ int findPath(UBI_MeshNavigateSystem* sys, float* pathBuffer, const int bufferSiz
 	}
 
 	lastBestTriangle = pBegin;
-	meshCount = 1;
+	meshCount = 0;
 	currentPathPoint = lastBestTriangle->m_pathFindData.m_pos;
 	outAdjacentIndex = lastBestTriangle->m_pathFindData.m_pathFindList->m_pathFindData.m_parentToSelfAdjacentIndex;
 	leftPointIndex = lastBestTriangle->m_pointIndex[outAdjacentIndex];
@@ -541,13 +550,15 @@ int findPath(UBI_MeshNavigateSystem* sys, float* pathBuffer, const int bufferSiz
 	while(lastBestTriangle)
 	{
 		//通过下一个路径多边形得到出口边
-		if (NULL == lastBestTriangle->m_pathFindData.m_pathFindList)
-		{
-			//添加最后一个路点
-			pathBuffer[0] = lastBestTriangle->m_pathFindData.m_pos.m_x;
-			pathBuffer[1] = lastBestTriangle->m_pathFindData.m_pos.m_z;
-			break;
-		}
+
+		/*pathBuffer[0] = lastBestTriangle->m_pathFindData.m_pos.m_x;
+		pathBuffer[1] = lastBestTriangle->m_pathFindData.m_pos.m_z;
+		pathBuffer += 2;
+		++meshCount;
+		lastBestTriangle = lastBestTriangle->m_pathFindData.m_pathFindList;
+		continue;*/
+
+
 
 		outAdjacentIndex = lastBestTriangle->m_pathFindData.m_pathFindList->m_pathFindData.m_parentToSelfAdjacentIndex;
 		int newLeftPointIndex = lastBestTriangle->m_pointIndex[outAdjacentIndex];
@@ -566,6 +577,13 @@ int findPath(UBI_MeshNavigateSystem* sys, float* pathBuffer, const int bufferSiz
 		leftPointIndex = newLeftPointIndex;
 		rightPointIndex = newRightPointIndex;
 		lastBestTriangle = lastBestTriangle->m_pathFindData.m_pathFindList;
+		if (NULL == lastBestTriangle->m_pathFindData.m_pathFindList)
+		{
+			//添加最后一个路点
+			pathBuffer[0] = targetX;
+			pathBuffer[1] = targetZ;
+			break;
+		}
 	}
 
 	return meshCount << 1;

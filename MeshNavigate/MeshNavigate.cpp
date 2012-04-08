@@ -20,8 +20,6 @@
 #include "ObjectMesh.h"
 #include "VectorMath.h"
 #include <Windows.h>
-#include <vector>
-using std::vector;
 
 struct MeshPolygon;
 struct Zone
@@ -575,9 +573,9 @@ static void ProcessAdjacent(MeshNavigateGenerator* sys, MeshPolygon* polygon)
 		if (smallIndex >= sys->m_adjacentDataCount)
 		{
 			int currentCount = sys->m_adjacentDataCount;
-			sys->m_adjacentDataCount = currentCount << 1;
+			sys->m_adjacentDataCount = smallIndex << 1;
 			sys->m_adjacentData = (AdjacentData*)realloc(sys->m_adjacentData, sizeof(AdjacentData) * sys->m_adjacentDataCount);
-			memset(&sys->m_adjacentData[currentCount], 0, sizeof(sys->m_adjacentData[0]) * currentCount);
+			memset(&sys->m_adjacentData[currentCount], 0, sizeof(sys->m_adjacentData[0]) * (sys->m_adjacentDataCount - currentCount));
 		}
 		
 		AdjacentData* pPointAdjcentData = &sys->m_adjacentData[smallIndex];
@@ -637,20 +635,11 @@ static bool BuildEdgeInfo(MeshNavigateGenerator* sys)
 	sys->m_adjacentData = (AdjacentData*)malloc(sizeof(AdjacentData) * sys->m_adjacentDataCount);
 	memset(sys->m_adjacentData, 0, sizeof(sys->m_adjacentData[0]) * sys->m_adjacentDataCount);
 
-	for (int z = 0; z < sys->m_zZoneCount; ++z)
+	int meshCount = GetDataCountFromQueue(sys->m_walkblePolygon);
+	for (int mesh = 0; mesh < meshCount; ++mesh)
 	{
-		int zStep = z * sys->m_xZoneCount;
-		for (int x = 0; x < sys->m_xZoneCount; ++x)
-		{
-			int zoneID = x + zStep;
-			Zone* zone = &sys->m_gridZoneList[zoneID];
-			int meshCount = GetDataCountFromQueue(zone->walkblePolygon);
-			for (int mesh = 0; mesh < meshCount; ++mesh)
-			{
-				MeshPolygon* meshPolygon = (MeshPolygon*)GetDataFromQueueByIndex(zone->walkblePolygon, mesh);
-				ProcessAdjacent(sys, meshPolygon);
-			}
-		}
+		MeshPolygon* meshPolygon = (MeshPolygon*)GetDataFromQueueByIndex(sys->m_walkblePolygon, mesh);
+		ProcessAdjacent(sys, meshPolygon);
 	}
 
 	for (int i = 0; i < sys->m_adjacentDataCount; ++i)

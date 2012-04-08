@@ -101,12 +101,12 @@ int PointInPolygon(const MeshPolygon* polygon, float x, float z)
 {
 	if(NULL == polygon)
 	{
-		return false;
+		return -1;
 	}
 	
 	if(polygon->vertexCount < 3)
 	{
-		return false;
+		return -1;
 	} 
 
 	const Point point = {x, z};
