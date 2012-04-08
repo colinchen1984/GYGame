@@ -7,7 +7,7 @@
 **ÐÞ    ¸Ä£º
 */
 
-#include "stdafx.h"
+
 #include "PolygonClipping.h"
 #include "Polygon.h"
 #include "BaseStruct.h"

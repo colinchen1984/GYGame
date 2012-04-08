@@ -7,7 +7,7 @@
 **修    改：
 */
 
-#include "stdafx.h"
+
 #include <stdio.h>
 #include <malloc.h>
 #include <memory.h>
@@ -19,19 +19,25 @@
 #include "Polygon.h"
 #include "ObjectMesh.h"
 #include "VectorMath.h"
+#include <Windows.h>
+#include <vector>
+using std::vector;
 
 struct MeshPolygon;
 struct Zone
 {
-	Queue*				polygonList;
+	Queue*				walkblePolygon;
+
 	Rect				zoneRect;
 
 	Point*				pointListForZone;
 	int					maxPointCount;
 	int					currentPointCount;
 	int					beginIndex;
+	int					zoneID;
 	static int			vertexCount;
 };
+
 int Zone::vertexCount = 0;
 
 
@@ -70,11 +76,16 @@ struct MeshNavigateGenerator
 
 	Queue*			m_itemMeshQueue;			// 物体通过计算后得到的多边形
 	
+	Queue*			m_unwalkblePolygon;
+	Queue*			m_walkblePolygon;
+
 	AdjacentData*	m_adjacentData;
 	int				m_adjacentDataCount;			//
-	int				m_polygonCount;
 
-	FILE*			m_logFile;						
+	FILE*			m_logFile;			
+
+
+	Queue*			 m_test;
 };
 
 #define BEGINPROFILE unsigned int time = GetTickCount();
@@ -91,8 +102,10 @@ static int GetZoneIDByPosition(MeshNavigateGenerator* sys, const float x, const 
 {
 	int xIndex = (int)x;
 	int zIndex = (int)z;
-	xIndex /= sys->m_zoneSize;
-	zIndex /= sys->m_zoneSize;
+	xIndex = (xIndex) / sys->m_zoneSize;
+	zIndex = (zIndex) / sys->m_zoneSize;
+	xIndex == sys->m_xZoneCount ? --xIndex : 0;
+	zIndex == sys->m_zZoneCount ? --zIndex : 0;
 	int zoneID = xIndex + zIndex * sys->m_zZoneCount;
 	return zoneID;
 }
@@ -150,7 +163,7 @@ static void MakeTerraionMesh(MeshNavigateGenerator* sys, const float* heightData
 			Point pD = {pointD.x, pointD.z};
 			pD.userData.floatUserData = pointD.y;
 
-  			if (planeABCWork && planeACDWork)
+  			if (!planeABCWork && !planeACDWork)
   			{
   				polygon = CreatePolygon(4);
   				AddPointToPolygonByPoint(polygon, &pA);
@@ -158,14 +171,14 @@ static void MakeTerraionMesh(MeshNavigateGenerator* sys, const float* heightData
   				AddPointToPolygonByPoint(polygon, &pC);
   				AddPointToPolygonByPoint(polygon, &pD);
   			}
-			else if(planeACDWork)
+			else if(!planeACDWork)
 			{
 				polygon = CreatePolygon(3);
 				AddPointToPolygonByPoint(polygon, &pA);
 				AddPointToPolygonByPoint(polygon, &pC);
 				AddPointToPolygonByPoint(polygon, &pD);
 			}
-			else if(planeABCWork)
+			else if(!planeABCWork)
 			{
 				polygon = CreatePolygon(3);
 				AddPointToPolygonByPoint(polygon, &pA);
@@ -175,10 +188,10 @@ static void MakeTerraionMesh(MeshNavigateGenerator* sys, const float* heightData
 
   			if (NULL != polygon)
   			{
-  				// 向所在的区域注册
+  				// 向所在的区域注册不能行走的多边形区域
   				int zoneId = GetZoneIDByPosition(sys, pointA.x, pointA.z);
   				assert(zoneId >= 0);
-  				PushDataToQueue(sys->m_gridZoneList[zoneId].polygonList, (void*)polygon);
+				PushDataToQueue(sys->m_unwalkblePolygon, (void*)polygon);
   			}
 		}
 	}
@@ -189,7 +202,7 @@ static void MakeZoneData(MeshNavigateGenerator* sys)
 {
 	BEGINPROFILE;
 	//初始化区域管理相关数据
-	sys->m_zoneSize = 32;
+	sys->m_zoneSize = 16;
 	sys->m_xZoneCount = sys->m_sceneMaxX / sys->m_zoneSize;
 	sys->m_zZoneCount = sys->m_sceneMaxZ / sys->m_zoneSize;
 	sys->m_zoneCount = sys->m_xZoneCount * sys->m_zZoneCount; 
@@ -199,10 +212,11 @@ static void MakeZoneData(MeshNavigateGenerator* sys)
 		int zIndex = z * sys->m_zZoneCount;
 		for (int x = 0; x < sys->m_xZoneCount; ++x)
 		{
-			sys->m_gridZoneList[zIndex + x].polygonList = CreateQueue(32);
+			sys->m_gridZoneList[zIndex + x].walkblePolygon = CreateQueue(32);
 			sys->m_gridZoneList[zIndex + x].currentPointCount = 0;
 			sys->m_gridZoneList[zIndex + x].beginIndex = 0;
 			sys->m_gridZoneList[zIndex + x].maxPointCount = 32;
+			sys->m_gridZoneList[zIndex + x].zoneID = zIndex + x;
 			sys->m_gridZoneList[zIndex + x].pointListForZone = (Point*)malloc(sizeof(Point) * sys->m_gridZoneList[zIndex + x].maxPointCount);
 			Point leftTop = {(float)(x * sys->m_zoneSize), (float)(z * sys->m_zoneSize)};
 			Point rightBottom = {(float)((x + 1) * sys->m_zoneSize), (float)((z + 1) * sys->m_zoneSize)};
@@ -249,7 +263,8 @@ bool InitMeshNavigateGenarator(MeshNavigateGenerator* sys, int maxXSize, int max
 	{
 		return false;
 	}
-
+	sys->m_unwalkblePolygon = CreateQueue(128);
+	sys->m_walkblePolygon = CreateQueue(128);
 	sys->m_currentPointCount = 0;
 	sys->m_maxPointCount = 0;
 	sys->m_pointList = NULL;
@@ -258,26 +273,16 @@ bool InitMeshNavigateGenarator(MeshNavigateGenerator* sys, int maxXSize, int max
 	sys->m_logFile = fopen("meshnavigate.log", "wb");
 	MakeZoneData(sys);
 	MakeTerraionMesh(sys, heightData, heightDataCount);
+	sys->m_test = CreateQueue(128);
 	ENDPROFILE(sys);
 	return 0;
-}
-
-static void FreeTerraionMesh(MeshNavigateGenerator* sys)
-{
-	for (int i = 0; i < sys->m_zoneCount; ++i)
-	{
-		while(MeshPolygon* polygon = (MeshPolygon*)(PopDataFromQueue(sys->m_gridZoneList[i].polygonList)))
-		{
-			ReleasePolygon(polygon);
-		}
-	}
 }
 
 static void FreeZone(MeshNavigateGenerator* sys)
 {
 	for (int i = 0; i < sys->m_zoneCount; ++i)
 	{
-		ReleaseQueue(sys->m_gridZoneList[i].polygonList);
+		ReleaseQueue(sys->m_gridZoneList[i].walkblePolygon);
 		free(sys->m_gridZoneList[i].pointListForZone);
 	}
 	free(sys->m_gridZoneList);
@@ -289,21 +294,43 @@ void ReleaseMeshNavigateGenarator(MeshNavigateGenerator* sys)
 	{
 		return;
 	}
+
+
+	
+	//释放zone
+	FreeZone(sys);
+	//释放顶点
+	free(sys->m_pointList);
+
 	//释放物体mesh
 	while(MeshPolygon* polygon = (MeshPolygon*)PopDataFromQueue(sys->m_itemMeshQueue))
 	{
 		ReleasePolygon(polygon);
 	}
 	ReleaseQueue(sys->m_itemMeshQueue);
-	
-	//释放地形mesh
-	FreeTerraionMesh(sys);
-	//释放zone
-	FreeZone(sys);
-	//释放顶点
-	free(sys->m_pointList);
+
+	while(MeshPolygon* polygon = (MeshPolygon*)PopDataFromQueue(sys->m_unwalkblePolygon))
+	{
+		ReleasePolygon(polygon);
+	}
+	ReleaseQueue(sys->m_unwalkblePolygon);
+
+	while(MeshPolygon* polygon = (MeshPolygon*)PopDataFromQueue(sys->m_walkblePolygon))
+	{
+		ReleasePolygon(polygon);
+	}
+	ReleaseQueue(sys->m_walkblePolygon);
+
 	//释放log文件
 	fclose(sys->m_logFile);
+
+	while(Point* p = (Point*)PopDataFromQueue(sys->m_test))
+	{
+		free(p);
+	}
+	ReleaseQueue(sys->m_test);
+
+	free(sys);
 }
 
 bool AddItemToGridSystem(MeshNavigateGenerator* sys, ItemNavigateMesh* item)
@@ -326,6 +353,11 @@ bool AddItemToGridSystem(MeshNavigateGenerator* sys, ItemNavigateMesh* item)
 	ReleaseItemNavigateMesh(item);
 	PushDataToQueue(sys->m_itemMeshQueue, (void*)itemConvexHullPolygon);
 	return true;
+}
+
+
+static void ClipUnwokableAreaWithItem(MeshNavigateGenerator* sys)
+{
 }
 
 //处理物体之间的叠加
@@ -408,71 +440,6 @@ static bool UpdateItemPolygon(MeshNavigateGenerator* sys)
 	return true;
 }
 
-//物体包围网格的凸包来裁剪地形网格
-static void ProceeZoneMeshWithItemMesh(Zone* zone, const MeshPolygon* itemMesh)
-{
-	Queue* resultQueue = CreateQueue(GetDataCountFromQueue(zone->polygonList));
-	Queue* clippQueue = CreateQueue(GetDataCountFromQueue(zone->polygonList));
-	Queue* decomposeQueue = CreateQueue(GetDataCountFromQueue(zone->polygonList));
-	while (MeshPolygon* polygon = (MeshPolygon*)PopDataFromQueue(zone->polygonList))
-	{
-		const MeshPolygon* clppingWindow = itemMesh;
-		CleanQueue(clippQueue);
-		int clippResult = ConvexPolygonClipping(polygon, clppingWindow, clippQueue);
-
-		if (NOT_NEED_CLIPPING == clippResult)
-		{
-			//不予任何多边形相交
-			//直接放入结果队列
-			PushDataToQueue(resultQueue, polygon);
-			continue;
-		}
-		else if(ALL_POINT_IN_CLIPPING_WINDOW == clippResult)
-		{
-			//被裁剪多边形位于裁剪多边形内部，所以裁剪后完全消失
-			ReleasePolygon(polygon);
-			continue;
-		}
-		else if(CLIPPING_WINDOW_ALL_IN_CLIPPED_POLYGON == clippResult)
-		{
-			//裁剪多边形位于被裁减多边形内部
-			PushDataToQueue(resultQueue, polygon);
-			continue;
-		}
-		else if(WRONG_PARAM == clippResult)
-		{
-			//传入的的参数有误
-		}
-
-		assert(0 == clippResult);
-		//裁剪成功
-		//对裁剪出来的每一个多边形做凹多边形分解
-		while (MeshPolygon* convexPolygon = (MeshPolygon*)PopDataFromQueue(clippQueue))
-		{
-			CleanQueue(decomposeQueue);
-			int decomposeResult = ConcavePolygonDecompose(convexPolygon, decomposeQueue);
-			if (NO_NEED_DECOMPOSE == decomposeResult)
-			{
-				PushDataToQueue(resultQueue, (void*)convexPolygon);
-			}
-			else if (0 == decomposeResult)
-			{
-				ReleasePolygon(convexPolygon);
-				ShiftQueueData(resultQueue, decomposeQueue);
-			}
-			else
-			{
-				assert(0);
-			}
-		}
-	}
-
-	ShiftQueueData(zone->polygonList, resultQueue);
-	ReleaseQueue(resultQueue);
-	ReleaseQueue(clippQueue);
-	ReleaseQueue(decomposeQueue);
-}
-
 static int FindPointInZone(const Zone* zone, const Point* point)
 {
 	if (NULL == zone)
@@ -494,15 +461,20 @@ static int FindPointInZone(const Zone* zone, const Point* point)
 //为一个zone内的顶点分配Index
 static void ProcessVertexInZone(Zone* zone, const Zone* upZone, const Zone* leftZone)
 {
-	int meshCount = GetDataCountFromQueue(zone->polygonList);
+	int meshCount = GetDataCountFromQueue(zone->walkblePolygon);
 	for (int mesh = 0; mesh < meshCount; ++mesh)
 	{
-		MeshPolygon* meshPolygon = (MeshPolygon*)GetDataFromQueueByIndex(zone->polygonList, mesh);
+		MeshPolygon* meshPolygon = (MeshPolygon*)GetDataFromQueueByIndex(zone->walkblePolygon, mesh);
 		int pointCount = GetPolygonPointCount(meshPolygon);
 		Point* pointList = (Point*)GetPolygonPointList(meshPolygon);
 		for (int p = 0; p < pointCount; ++p)
 		{
 			Point* point = &pointList[p];
+			if(!InRect(&zone->zoneRect, point))
+			{
+				continue;
+			}
+
 			int pointID = -1;
 			do 
 			{
@@ -540,7 +512,7 @@ static void ProcessVertexInZone(Zone* zone, const Zone* upZone, const Zone* left
 					zone->beginIndex = Zone::vertexCount;
 				}
 				zone->pointListForZone[zone->currentPointCount++] = *point;
-				zone->pointListForZone[zone->currentPointCount - 1].userData.floatUserData += 2.0f;
+				zone->pointListForZone[zone->currentPointCount - 1].userData.floatUserData = 20.0f;
 				pointID = Zone::vertexCount++;
 			} while (false);
 			point->userData.intUserData = pointID;	
@@ -672,10 +644,10 @@ static bool BuildEdgeInfo(MeshNavigateGenerator* sys)
 		{
 			int zoneID = x + zStep;
 			Zone* zone = &sys->m_gridZoneList[zoneID];
-			int meshCount = GetDataCountFromQueue(zone->polygonList);
+			int meshCount = GetDataCountFromQueue(zone->walkblePolygon);
 			for (int mesh = 0; mesh < meshCount; ++mesh)
 			{
-				MeshPolygon* meshPolygon = (MeshPolygon*)GetDataFromQueueByIndex(zone->polygonList, mesh);
+				MeshPolygon* meshPolygon = (MeshPolygon*)GetDataFromQueueByIndex(zone->walkblePolygon, mesh);
 				ProcessAdjacent(sys, meshPolygon);
 			}
 		}
@@ -686,10 +658,282 @@ static bool BuildEdgeInfo(MeshNavigateGenerator* sys)
 		free(sys->m_adjacentData[i].data);
 	}
 	free(sys->m_adjacentData);
+	sys->m_adjacentData = NULL;
 	ENDPROFILE(sys);
 	return true;
 }
 
+
+//求三角形的外接圆
+//抄自计算几何 有兴趣自己去看书吧
+static void BuildPolygonCircle(Circle* c, MeshPolygon* polygon)
+{
+	const Point* pointList = GetPolygonPointList(polygon);
+	float A = pointList[1].x - pointList[0].x;
+	float B = pointList[1].z - pointList[0].z;
+	float C = pointList[2].x - pointList[0].x;
+	float D = pointList[2].z - pointList[0].z;
+
+	float E = A * (pointList[0].x + pointList[1].x) + B * (pointList[0].z + pointList[1].z);
+	float F = C * (pointList[0].x + pointList[2].x) + D * (pointList[0].z + pointList[2].z);
+
+	float G = 2.0f * (A * (pointList[2].z - pointList[1].z) - B * (pointList[2].x - pointList[1].x));
+
+	c->center.x = (D * E - B * F) / G;
+	c->center.z = (A * F - C * E) / G;
+	c->radiusSquare = (pointList[0].x - c->center.x) * (pointList[0].x - c->center.x) + (pointList[0].z - c->center.z) * (pointList[0].z - c->center.z);
+}
+
+static Queue* UniqueEdga(Queue* queue)
+{
+	Queue* result = CreateQueue(GetDataCountFromQueue(queue));
+	int edgaCount = GetDataCountFromQueue(queue);
+	for (int i = 0; i < edgaCount; ++i)
+	{
+		Edga* e = (Edga*)GetDataFromQueueByIndex(queue, i);
+		bool unique = true;
+		for (int t = 0; t < edgaCount; ++t)
+		{
+			if (i == t)
+			{
+				continue;
+			}
+
+			if(IsSameEdga(e, (Edga*)GetDataFromQueueByIndex(queue, t)))
+			{
+				unique = false;
+				break;
+			}
+		}
+		if (!unique)
+		{
+			continue;
+		}
+
+		Edga* newEdga = (Edga*)malloc(sizeof(Edga));
+		memcpy(newEdga, GetDataFromQueueByIndex(queue, i), sizeof(*newEdga));
+		PushDataToQueue(result, (void*)newEdga);
+	}
+
+	while (void* p = PopDataFromQueue(queue))
+	{
+		free(p);
+	}
+	ShiftQueueData(queue, result);
+	ReleaseQueue(result);
+	return queue;
+}
+
+static MeshPolygon* MakeTriangle(MeshPolygon* polygon, const Point* a, const Point* b, const Point* c)
+{
+	if (IsSamePoint(a, b) || IsSamePoint(a, c) || IsSamePoint(c, b))
+	{
+		return NULL;
+	}
+	if (NULL != polygon)
+	{
+		CleanPolygon(polygon);
+	}
+	else
+	{
+		polygon = CreatePolygon(3);
+		Circle* c = (Circle*)malloc(sizeof(Circle));
+		c->center.x = 0.0f;
+		c->center.z = 0.0f;
+		c->radiusSquare = 0.0f;
+		SetPolygonUserData(polygon, (void*)c);
+	}
+	Vector a2b = {b->x - a->x, 0.0f, b->z - a->z};
+	Vector normalLine;
+	VectorCrossProduct(&normalLine, &a2b, &StandardVector);
+	Vector a2c =  {c->x - a->x, 0.0f, c->z - a->z};
+	float cos = VectorDotProduct(&a2c, &normalLine);
+	if (cos >= 0.0f)
+	{
+		AddPointToPolygonByPoint(polygon, a);
+		AddPointToPolygonByPoint(polygon, b);
+		AddPointToPolygonByPoint(polygon, c);
+	}
+	else
+	{
+		AddPointToPolygonByPoint(polygon, b);
+		AddPointToPolygonByPoint(polygon, a);
+		AddPointToPolygonByPoint(polygon, c);
+	}
+	BuildPolygonCircle((Circle*)GetPolygonUserData(polygon), polygon);
+	return polygon;
+}
+
+static void AddPointToTriangleList(Queue* polygonList, const Point* point, const MeshPolygon* polygon, bool workable)
+{
+	Queue* needProcessPolygon = CreateQueue(GetDataCountFromQueue(polygonList));
+	Queue* noneedProcessPolygon = CreateQueue(GetDataCountFromQueue(polygonList));
+	while(MeshPolygon* p = (MeshPolygon*)PopDataFromQueue(polygonList))
+	{
+		Circle* c = (Circle*)GetPolygonUserData(p);
+		if (!InCircle(c, point))
+		{
+			PushDataToQueue(noneedProcessPolygon, (void*)p);
+		}
+		else
+		{
+			PushDataToQueue(needProcessPolygon, (void*)p);
+		}
+	}
+
+	int needProcessCount = GetDataCountFromQueue(needProcessPolygon);
+	Queue* edgaQeue = CreateQueue(128);
+	for (int i = 0; i < needProcessCount; ++i)
+	{
+		MeshPolygon* polygon = (MeshPolygon*)GetDataFromQueueByIndex(needProcessPolygon, i);
+		const Point* pointList = GetPolygonPointList(polygon);
+		const int pointCount = GetPolygonPointCount(polygon);
+		for (int pI = 0; pI < pointCount; ++pI)
+		{
+			int nextIndex = pI + 1 != pointCount ? pI + 1 : 0;
+			Edga* e = (Edga*)malloc(sizeof(Edga));
+			e->begin = pointList[pI];
+			e->end = pointList[nextIndex];
+			PushDataToQueue(edgaQeue, (void*)e);
+		}
+	}
+
+	UniqueEdga(edgaQeue);
+
+	//构建新的三角形`
+	while (Edga* e = (Edga*)PopDataFromQueue(edgaQeue))
+	{
+		if (false == workable)
+		{
+			if (0 == PointInPolygon(polygon, e->begin.x, e->begin.z)
+				&& 0 == PointInPolygon(polygon, e->end.x, e->end.z)
+				&& 0 == PointInPolygon(polygon, point->x, point->z))
+			{
+				//如果构成的三角形的三个点都在同一个一个不可走的多边形上
+				//不添加该三角形
+				free(e);
+				continue;
+			}
+		}
+		MeshPolygon* old = (MeshPolygon*)PopDataFromQueue(needProcessPolygon);
+		void* newP = (void*)MakeTriangle(old, &e->begin, &e->end, point);
+		if (NULL == newP)
+		{
+			if (NULL != old)
+			{
+				PushDataToQueue(needProcessPolygon, old);
+			}
+		}
+		else
+			PushDataToQueue(noneedProcessPolygon, newP);
+		free(e);
+	}
+	ReleaseQueue(edgaQeue);
+	while (MeshPolygon* p = (MeshPolygon*)PopDataFromQueue(needProcessPolygon))
+	{
+		free(GetPolygonUserData(p));
+		ReleasePolygon(p);
+	}
+
+	
+	ShiftQueueData(polygonList, noneedProcessPolygon);
+	ReleaseQueue(noneedProcessPolygon);
+	ReleaseQueue(needProcessPolygon);
+}
+
+static void MakeWorkArea(MeshNavigateGenerator* sys)
+{
+	BEGINPROFILE;
+	//需要处理的点来自两部分
+	//地形引起的不可行走区域
+	//阻挡物引起的不可行走区域
+	//首先构建全局的三角形
+	MeshPolygon* sceneLeft = CreatePolygon(3);
+	AddPointToPolygon(sceneLeft, 0.0f, 0.0f);
+	AddPointToPolygon(sceneLeft, (float)sys->m_sceneMaxX, (float)sys->m_sceneMaxZ);
+	AddPointToPolygon(sceneLeft, 0.0f, (float)sys->m_sceneMaxZ);
+
+	MeshPolygon* sceneRight = CreatePolygon(3);
+	AddPointToPolygon(sceneRight, 0.0f, 0.0f);
+	AddPointToPolygon(sceneRight, (float)sys->m_sceneMaxX, 0.0f);
+	AddPointToPolygon(sceneRight, (float)sys->m_sceneMaxX, (float)sys->m_sceneMaxZ);
+
+	Circle* leftCircle = (Circle*)malloc(sizeof(Circle));
+	BuildPolygonCircle(leftCircle, sceneLeft);
+	SetPolygonUserData(sceneLeft, (void*)leftCircle);
+
+	Circle* rightCircle = (Circle*)malloc(sizeof(Circle));
+	BuildPolygonCircle(rightCircle, sceneRight);
+	SetPolygonUserData(sceneRight, (void*)rightCircle);
+	
+	Queue* walkablePolygQueue = sys->m_walkblePolygon;
+	PushDataToQueue(walkablePolygQueue, sceneLeft);
+	PushDataToQueue(walkablePolygQueue, sceneRight);
+	
+	Queue* backQueue = CreateQueue(GetDataCountFromQueue(sys->m_unwalkblePolygon));
+	while(MeshPolygon* p = (MeshPolygon*)PopDataFromQueue(sys->m_unwalkblePolygon))
+	{
+		const Point* poinstList = GetPolygonPointList(p);
+		const int pointCount = GetPolygonPointCount(p);
+		for (int i = 0;i < pointCount; ++i)
+		{
+			AddPointToTriangleList(walkablePolygQueue, &poinstList[i], p, false);
+		}
+		PushDataToQueue(backQueue, (void*)p);
+	}
+	ShiftQueueData(sys->m_unwalkblePolygon, backQueue);
+
+	while(MeshPolygon* p = (MeshPolygon*)PopDataFromQueue(sys->m_itemMeshQueue))
+	{
+		const Point* poinstList = GetPolygonPointList(p);
+		const int pointCount = GetPolygonPointCount(p);
+		for (int i = 0;i < pointCount; ++i)
+		{
+			AddPointToTriangleList(walkablePolygQueue, &poinstList[i], p, false);
+		}
+		PushDataToQueue(backQueue, (void*)p);
+	}
+	ShiftQueueData(sys->m_itemMeshQueue, backQueue);
+	
+	int waklablePolygonCount = GetDataCountFromQueue(walkablePolygQueue);
+	for (int i = 0; i < waklablePolygonCount; ++i)
+	{
+		MeshPolygon* p = (MeshPolygon*)GetDataFromQueueByIndex(walkablePolygQueue, i);
+		//释放Circle内存
+		free(GetPolygonUserData(p));
+		//设置多边形ID
+		SetPolygonUserData(p, (void*)i);
+		//向区域注册
+		const Point* pointList = GetPolygonPointList(p);
+		float minx = min(min(pointList[0].x, pointList[1].x), pointList[2].x);
+		float minz = min(min(pointList[0].z, pointList[1].z), pointList[2].z);
+		float maxx = max(max(pointList[0].x, pointList[1].x), pointList[2].x);
+		float maxz = max(max(pointList[0].z, pointList[1].z), pointList[2].z);
+
+		int xIndexBegin = (int)(minx) / sys->m_zoneSize;
+		xIndexBegin == sys->m_xZoneCount ? --xIndexBegin : 0;
+
+		int zIndexBegin = (int)(minz) / sys->m_zoneSize;
+		zIndexBegin == sys->m_xZoneCount ? --zIndexBegin : 0;
+
+		int xIndexEnd = (int)(maxx) / sys->m_zoneSize;
+		xIndexEnd == sys->m_xZoneCount ? xIndexEnd : ++xIndexEnd;
+
+		int zIndexEnd = (int)(maxz) / sys->m_zoneSize;
+		zIndexEnd == sys->m_xZoneCount ? zIndexEnd : ++zIndexEnd;
+		
+		for (int z = zIndexBegin; z < zIndexEnd; ++z)
+		{
+			for (int x = xIndexBegin; x < xIndexEnd; ++x)
+			{
+				int zoneId = x + sys->m_zZoneCount * z;
+				PushDataToQueue(sys->m_gridZoneList[zoneId].walkblePolygon, (void*)p);
+			}
+		}
+	}
+
+	ENDPROFILE(sys);
+}
 
 bool MakeMeshNavigateData(MeshNavigateGenerator* sys)
 {
@@ -699,57 +943,16 @@ bool MakeMeshNavigateData(MeshNavigateGenerator* sys)
 		return false;
 	}
 	
-	//检查每一个物品mesh
-	//如果mesh内有一点在某一区域内,就用该物品mesh裁剪区域内所有的地形mesh
-	//这里假设了zone足够大,不会出现一个zone完全在一个item 的凸包内的情况
-	//如果出现这种情况,会导致该zone内的所有的terrian不会和所在的item 凸包进行裁剪
-	Queue* pItemQueue = CreateQueue(GetDataCountFromQueue(sys->m_itemMeshQueue));
-	while(MeshPolygon* itemMesh = (MeshPolygon*)PopDataFromQueue(sys->m_itemMeshQueue))
-	{
-		const Point* itemPointList = GetPolygonPointList(itemMesh);
-		const int itemPointCount = GetPolygonPointCount(itemMesh);
-		for (int zoneID = 0; zoneID < sys->m_zoneCount; ++zoneID)
-		{
-			for (int i = 0; i < itemPointCount; ++i)
-			{
-				if(InRect(&sys->m_gridZoneList[zoneID].zoneRect, &itemPointList[i]))
-				{
-					//利用该物品 mesh 处理该zone内所有的多边形
-					ProceeZoneMeshWithItemMesh(&sys->m_gridZoneList[zoneID], itemMesh);
-					break;
-				}
-			}
-		}
-		PushDataToQueue(pItemQueue, (void*)itemMesh);
-	}
+	//用阻挡物裁剪地形上不可走的区域
+	ClipUnwokableAreaWithItem(sys);
 
-	ShiftQueueData(sys->m_itemMeshQueue, pItemQueue);
+	MakeWorkArea(sys);
 
-	ReleaseQueue(pItemQueue);
 	//将所有的点的坐标导入定点列表,并换成index
 	ProcessVertex(sys);
 
 	//生成多边形的相邻关系
 	BuildEdgeInfo(sys);
-
-	//所有的多边形生成ID
-	int polygonID = 0;
-	for (int z = 0; z < sys->m_zZoneCount; ++z)
-	{
-		int zStep = z * sys->m_xZoneCount;
-		for (int x = 0; x < sys->m_xZoneCount; ++x)
-		{
-			int zoneID = x + zStep;
-			Zone* zone = &sys->m_gridZoneList[zoneID];
-			int meshCount = GetDataCountFromQueue(zone->polygonList);
-			for (int mesh = 0; mesh < meshCount; ++mesh)
-			{
-				MeshPolygon* meshPolygon = (MeshPolygon*)GetDataFromQueueByIndex(zone->polygonList, mesh);
-				SetPolygonUserData(meshPolygon, (void*)polygonID++);
-			}
-		}
-	}
-	sys->m_polygonCount = polygonID;
 
 	return true;
 }
@@ -764,30 +967,30 @@ int GetZoneCount(MeshNavigateGenerator* sys)
 	return NULL != sys ? sys->m_zoneCount : NULL;
 }
 
-extern int GetMeshCountInZone(MeshNavigateGenerator* sys, int index)
+int GetMeshCount(MeshNavigateGenerator* sys)
 {
-	if (NULL == sys || index >= sys->m_zoneCount)
+	if (NULL == sys)
 	{
 		return 0;
 	}
 
-	return GetDataCountFromQueue(sys->m_gridZoneList[index].polygonList);
+	return GetDataCountFromQueue(sys->m_walkblePolygon);
 }
 
-MeshPolygon* GetMeshPolygonInZone(MeshNavigateGenerator* sys, int zoneIndex, int meshIndex)
+MeshPolygon* GetMeshPolygon(MeshNavigateGenerator* sys, int meshIndex)
 {
-	if (NULL == sys || zoneIndex >= sys->m_zoneCount)
+	if (NULL == sys)
 	{
 		return NULL;
 	}
 
-	int meshCountInZone = GetDataCountFromQueue(sys->m_gridZoneList[zoneIndex].polygonList);
-	if (meshIndex >= meshCountInZone)
+	int meshCount = GetDataCountFromQueue(sys->m_walkblePolygon);
+	if (meshIndex >= meshCount)
 	{
 		return NULL;
 	}
 
-	return (MeshPolygon*)GetDataFromQueueByIndex(sys->m_gridZoneList[zoneIndex].polygonList, meshIndex);
+	return (MeshPolygon*)GetDataFromQueueByIndex(sys->m_walkblePolygon, meshIndex);
 }
 
 int GetVertexCount(MeshNavigateGenerator* sys)
@@ -831,19 +1034,6 @@ bool WriteDataToFile( MeshNavigateGenerator* sys, const char* fileName )
 	fwrite(&sys->m_sceneMaxZ, sizeof(sys->m_sceneMaxZ), 1, file);
 	fwrite(&sys->m_zoneSize, sizeof(sys->m_zoneSize), 1, file);
 	
-	//zone 数据
-	for (int z = 0; z < sys->m_zZoneCount; ++z)
-	{
-		int zStep = z * sys->m_xZoneCount;
-		for (int x = 0; x < sys->m_xZoneCount; ++x)
-		{
-			int zoneID = x + zStep;
-			Zone* zone = &sys->m_gridZoneList[zoneID];
-			int polygonCountInZone = GetDataCountFromQueue(zone->polygonList);
-			fwrite(&polygonCountInZone, sizeof(polygonCountInZone), 1, file);
-		}
-	}
-
 	//坐标点数据
 	fwrite(&sys->m_currentPointCount, sizeof(sys->m_currentPointCount), 1, file);
 	for (int i = 0; i < sys->m_currentPointCount; ++i)
@@ -853,8 +1043,31 @@ bool WriteDataToFile( MeshNavigateGenerator* sys, const char* fileName )
 	}
 
 	//polygon数据
-	fwrite(&sys->m_polygonCount, sizeof(sys->m_polygonCount), 1, file);
-	int id = -1;
+ 	int meshCount = GetDataCountFromQueue(sys->m_walkblePolygon);
+	fwrite(&meshCount, sizeof(meshCount), 1, file);
+	for (int mesh = 0; mesh < meshCount; ++mesh)
+	{
+		MeshPolygon* meshPolygon = (MeshPolygon*)GetDataFromQueueByIndex(sys->m_walkblePolygon, mesh);
+		int pointCount = GetPolygonPointCount(meshPolygon);
+		Point* pointList = (Point*)GetPolygonPointList(meshPolygon);
+		fwrite(&pointCount, sizeof(pointCount), 1, file);
+		for (int p = 0; p < pointCount; ++p)
+		{
+			fwrite(&pointList[p].userData.intUserData, sizeof(pointList[p].userData.intUserData), 1, file);
+		}
+
+		const Vector* pVector = GetPolygonNormal(meshPolygon);
+		for (int p = 0; p < pointCount; ++p)
+		{
+			fwrite(&pVector[p].x, sizeof(pVector[p].x), 1, file);
+			fwrite(&pVector[p].z, sizeof(pVector[p].z), 1, file);
+		}
+
+		int specialLogic = 0;
+		fwrite(&specialLogic, sizeof(specialLogic), 1, file);
+	}
+
+	//zone 数据
 	for (int z = 0; z < sys->m_zZoneCount; ++z)
 	{
 		int zStep = z * sys->m_xZoneCount;
@@ -862,61 +1075,86 @@ bool WriteDataToFile( MeshNavigateGenerator* sys, const char* fileName )
 		{
 			int zoneID = x + zStep;
 			Zone* zone = &sys->m_gridZoneList[zoneID];
-			int meshCount = GetDataCountFromQueue(zone->polygonList);
-			for (int mesh = 0; mesh < meshCount; ++mesh)
+			int polygonCountInZone = GetDataCountFromQueue(zone->walkblePolygon);
+			fwrite(&polygonCountInZone, sizeof(polygonCountInZone), 1, file);
+			for (int mesh = 0; mesh < polygonCountInZone; ++mesh)
 			{
-				MeshPolygon* meshPolygon = (MeshPolygon*)GetDataFromQueueByIndex(zone->polygonList, mesh);
-				assert(++id == (int)GetPolygonUserData(meshPolygon));
-				int pointCount = GetPolygonPointCount(meshPolygon);
-				Point* pointList = (Point*)GetPolygonPointList(meshPolygon);
-				fwrite(&pointCount, sizeof(pointCount), 1, file);
-				for (int p = 0; p < pointCount; ++p)
-				{
-					fwrite(&pointList[p].userData.intUserData, sizeof(pointList[p].userData.intUserData), 1, file);
-				}
-
-				const Vector* pVector = GetPolygonNormal(meshPolygon);
-				for (int p = 0; p < pointCount; ++p)
-				{
-					fwrite(&pVector[p].x, sizeof(pVector[p].x), 1, file);
-					fwrite(&pVector[p].z, sizeof(pVector[p].z), 1, file);
-				}
-
-				int specialLogic = 0;
-				fwrite(&specialLogic, sizeof(specialLogic), 1, file);
-				int zoneCount = 1;
-				fwrite(&zoneCount, sizeof(zoneCount), 1, file);
-				fwrite(&zoneID, sizeof(zoneID), 1, file);
+				MeshPolygon* meshPolygon = (MeshPolygon*)GetDataFromQueueByIndex(zone->walkblePolygon, mesh);
+				int polygonID = (int)GetPolygonUserData(meshPolygon);
+				fwrite(&polygonID, sizeof(polygonID), 1, file);
 			}
 		}
 	}
 
-
 	//相邻数据
-	id = -1;
-	for (int z = 0; z < sys->m_zZoneCount; ++z)
+	for (int mesh = 0; mesh < meshCount; ++mesh)
 	{
-		int zStep = z * sys->m_xZoneCount;
-		for (int x = 0; x < sys->m_xZoneCount; ++x)
+		MeshPolygon* meshPolygon = (MeshPolygon*)GetDataFromQueueByIndex(sys->m_walkblePolygon, mesh);
+		int pointCount = GetPolygonPointCount(meshPolygon);
+		for (int p = 0; p < pointCount; ++p)
 		{
-			int zoneID = x + zStep;
-			Zone* zone = &sys->m_gridZoneList[zoneID];
-			int meshCount = GetDataCountFromQueue(zone->polygonList);
-			for (int mesh = 0; mesh < meshCount; ++mesh)
-			{
-				MeshPolygon* meshPolygon = (MeshPolygon*)GetDataFromQueueByIndex(zone->polygonList, mesh);
-				assert(++id == (int)GetPolygonUserData(meshPolygon));
-				int pointCount = GetPolygonPointCount(meshPolygon);
-				for (int p = 0; p < pointCount; ++p)
-				{
-					MeshPolygon* adjacentPolygon = GetAdjacentData(meshPolygon, p);
-					int adjacentPolygonID = NULL != adjacentPolygon ? (int)GetPolygonUserData(adjacentPolygon) : -1;
-					fwrite(&adjacentPolygonID, sizeof(adjacentPolygonID), 1, file);
-				}
-			}
+			MeshPolygon* adjacentPolygon = GetAdjacentData(meshPolygon, p);
+			int adjacentPolygonID = NULL != adjacentPolygon ? (int)GetPolygonUserData(adjacentPolygon) : -1;
+			fwrite(&adjacentPolygonID, sizeof(adjacentPolygonID), 1, file);
 		}
 	}
 	fclose(file);
 	ENDPROFILE(sys);
 	return true;
+}
+
+extern void AddPointForTest( MeshNavigateGenerator* sys, float x, float z )
+{
+	Point* p = (Point*)malloc(sizeof(Point));
+	p->x = x;
+	p->z = z;
+	PushDataToQueue(sys->m_test, p);
+}
+
+extern void BeginTest( MeshNavigateGenerator* sys )
+{
+	while(Point* p = (Point*)PopDataFromQueue(sys->m_test))
+	{
+		free(p);
+	}
+}
+
+extern Queue* Endtest(MeshNavigateGenerator* sys, float maxx, float maxz)
+{
+	MeshPolygon* sceneLeft = CreatePolygon(3);
+	AddPointToPolygon(sceneLeft, 0.0f, 0.0f);
+	AddPointToPolygon(sceneLeft, maxx, (float)maxz);
+	AddPointToPolygon(sceneLeft, 0.0f, (float)maxz);
+
+	MeshPolygon* sceneRight = CreatePolygon(3);
+	AddPointToPolygon(sceneRight, 0.0f, 0.0f);
+	AddPointToPolygon(sceneRight, (float)maxx, 0.0f);
+	AddPointToPolygon(sceneRight, (float)maxx, maxz);
+
+	Circle* leftCircle = (Circle*)malloc(sizeof(Circle));
+	BuildPolygonCircle(leftCircle, sceneLeft);
+	SetPolygonUserData(sceneLeft, (void*)leftCircle);
+
+	Circle* rightCircle = (Circle*)malloc(sizeof(Circle));
+	BuildPolygonCircle(rightCircle, sceneRight);
+	SetPolygonUserData(sceneRight, (void*)rightCircle);
+
+	Queue* walkablePolygQueue = CreateQueue(128);
+	PushDataToQueue(walkablePolygQueue, sceneLeft);
+	PushDataToQueue(walkablePolygQueue, sceneRight);
+
+	int pointCount = GetDataCountFromQueue(sys->m_test);
+	for (int i = 0; i < pointCount; ++i)
+	{
+		Point* p = (Point*)GetDataFromQueueByIndex(sys->m_test, i);
+		AddPointToTriangleList(walkablePolygQueue, p, NULL, true);
+	}
+
+	int resultcount = GetDataCountFromQueue(walkablePolygQueue);
+	for (int i = 0; i < resultcount; ++i)
+	{
+		MeshPolygon* p = (MeshPolygon*)GetDataFromQueueByIndex(walkablePolygQueue, i);
+		free(GetPolygonUserData(p));
+	}
+	return walkablePolygQueue;
 }

@@ -26,6 +26,7 @@ struct UBI_PathFindData
 {
 	int							m_flag;
 	UBI_MNPolygon*				m_parent;
+	int							m_parentToSelfAdjacentIndex;	//自己和父mesh相邻边在父mesh内的index
 	float						m_totalCost;
 	UBI_MNPoint					m_pos;
 	UBI_MNPolygon*				m_pathFindList;
@@ -62,7 +63,7 @@ extern void ReleasePathFinder(UBI_MeshNavigateSystem* sys);
 
 //返回值等于0时寻路成功
 //返回值小于0时查找错误码
-//返回值大于0时寻路成功, 其值为路点使用的的float的个数
-extern int findPath(UBI_MeshNavigateSystem* sys, float* pathBuffer, const int max, const float beginPosX, const float beginPosZ, const float targetX, const float targetZ);
+//返回值大于0时失败, 其值为路点使用的的float的个数
+extern int findPath(UBI_MeshNavigateSystem* sys, float* pathBuffer, const int bufferSize, const float beginPosX, const float beginPosZ, const float targetX, const float targetZ);
 
 #endif

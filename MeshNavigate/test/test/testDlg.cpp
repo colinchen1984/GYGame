@@ -29,7 +29,11 @@ CtestDlg::CtestDlg(CWnd* pParent /*=NULL*/)
 	, m_stringVertexCount(_T(""))
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	m_test = CreateMeshNavigateGenarator();
+	float test[65* 65];
+	InitMeshNavigateGenarator(m_test, 64, 64, 1, test, 65 * 65);
 }
+
 
 void CtestDlg::DoDataExchange(CDataExchange* pDX)
 {
@@ -37,7 +41,7 @@ void CtestDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Slider(pDX, IDC_SLIDER2, m_maxVertexCount);
 	DDV_MinMaxInt(pDX, m_maxVertexCount, 3, 1000);
 	DDX_Text(pDX, IDC_STATIC1111, m_stringVertexCount);
-
+	
 }
 
 BEGIN_MESSAGE_MAP(CtestDlg, CDialog)
@@ -66,6 +70,8 @@ BOOL CtestDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
 	// TODO: 在此添加额外的初始化代码
+
+
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -99,8 +105,7 @@ void CtestDlg::OnPaint()
 		GetClientRect(&rect);
 		CDialog::OnPaint();
 	}
-#define CLIPPING
-#ifdef CONVEXHULL
+
 	vector<Point>::iterator it = m_pointList.begin();
 	vector<Point>::iterator beginIt = m_pointList.begin();
 	vector<Point>::iterator endIt = m_pointList.end();
@@ -111,99 +116,25 @@ void CtestDlg::OnPaint()
 	oldBrush = dc.SelectObject(&brush);
 	for (; it != endIt; ++it)
 	{
-		const int radiu = 2;
+		const int radiu = 1;
 		dc.Ellipse(it->x - radiu, it->z - radiu , it->x + radiu, it->z + radiu);
-		//CString s;
+		CString s;
 		//s.Format(L"%d %d %d", it - beginIt, (int)it->x, (int)it->z);
 		//dc.TextOut(it->x + 5, it->z + 5, s);
 	}
 	dc.SelectObject(oldBrush);
-	if (!m_polygonPointList.empty())
+	if (!m_result.empty())
 	{
-		it = m_polygonPointList.begin();
-		endIt = m_polygonPointList.end();
-		dc.MoveTo(it->x, it->z);
-		++it;
-		for (; it != endIt; ++it)
+		vector<pair<Point, Point>>::iterator iti = m_result.begin();
+		vector<pair<Point, Point>>::iterator endIti = m_result.end();
+		for (; iti != endIti; ++iti)
 		{
-			dc.LineTo(it->x, it->z);
+			dc.MoveTo(iti->first.x, iti->first.z);
+			dc.LineTo(iti->second.x, iti->second.z);
 		}
-		dc.LineTo(m_polygonPointList[0].x, m_polygonPointList[0].z);
+		//dc.LineTo(m_polygonPointList[0].x, m_polygonPointList[0].z);
 	}
-#endif 
-#ifdef CLIPPING
-	CClientDC dc(this);
-	CBrush brush;
-	CBrush* oldBrush;
-	brush.CreateSolidBrush(RGB(0, 0, 0));
-	oldBrush = dc.SelectObject(&brush);
-	vector<Point>::iterator it = m_clippedPoint.begin();
-	vector<Point>::iterator beginIt = m_clippedPoint.begin();
-	if (m_clippingPoint.empty())
-	{
-		for (; it != m_clippedPoint.end(); ++it)
-		{
-			const int radiu = 2;
-			dc.Ellipse(it->x - radiu, it->z - radiu , it->x + radiu, it->z + radiu);
-			CString s;
-			s.Format(L"%d %d %d", it - beginIt, (int)it->x, (int)it->z);
-			dc.TextOut(it->x + 5, it->z + 5, s);
-		}
 
-		if (m_clippedPoint.size() >= 3)
-		{
-			it = m_clippedPoint.begin();
-			dc.MoveTo(it->x, it->z);
-			++it;
-			for (; it != m_clippedPoint.end(); ++it)
-			{
-				dc.LineTo(it->x, it->z);
-			}
-			dc.LineTo(m_clippedPoint[0].x, m_clippedPoint[0].z);
-		}
-		it = m_clipingWindow.begin();
-		beginIt = m_clipingWindow.begin();
-		for (; it != m_clipingWindow.end(); ++it)
-		{
-			const int radiu = 2;
-			dc.Ellipse(it->x - radiu, it->z - radiu , it->x + radiu, it->z + radiu);
-			CString s;
-			s.Format(L"%d %d %d", it - beginIt, (int)it->x, (int)it->z);
-			dc.TextOut(it->x + 5, it->z + 5, s);
-		}
-
-		if (m_clipingWindow.size() >= 3)
-		{
-			it = m_clipingWindow.begin();
-			dc.MoveTo(it->x, it->z);
-			++it;
-			for (; it != m_clipingWindow.end(); ++it)
-			{
-				dc.LineTo(it->x, it->z);
-			}
-			dc.LineTo(m_clipingWindow[0].x, m_clipingWindow[0].z);
-		}
-	}
-	dc.SelectObject(oldBrush);
-
-	for (int i  = 0; i < m_clippingPoint.size(); ++i)
-	{
-		vector<Point>::iterator it = m_clippingPoint[i].begin();
-		vector<Point>::iterator endIt = m_clippingPoint[i].end();
-		dc.MoveTo(it->x, it->z);
-		CString s;
-		s.Format(L"%d %d", (int)it->x, (int)it->z);
-		//dc.TextOut(it->x + 5, it->z + 5, s);
-		++it;
-		for (; it != endIt; ++it)
-		{
-			dc.LineTo(it->x, it->z);
-			s.Format(L"%d %d", (int)it->x, (int)it->z);
-			//dc.TextOut(it->x + 5, it->z + 5, s);
-		}
-		dc.LineTo(m_clippingPoint[i][0].x, m_clippingPoint[i][0].z);
-	}
-#endif
 }
 
 //当用户拖动最小化窗口时系统调用此函数取得光标
@@ -215,118 +146,53 @@ HCURSOR CtestDlg::OnQueryDragIcon()
 
 void CtestDlg::DrawPolygon()
 {
-/*	CRect rect;
-	GetClientRect(&rect);
-	int xMax = 400, yMax = 320;
-	//srand(time(NULL));
-	int vertexCount = m_maxVertexCount * 10; (rand() + 3) % 100;
-	m_pointList.clear();
-	m_polygonPointList.clear();
-	ItemNavigateMesh* item = CreateItemNavigateMesh(vertexCount);
-	for (int i = 0; i < vertexCount; ++i)
+	RECT rect;
+	this->GetClientRect(&rect);
+	Queue* result = Endtest(m_test, rect.right, rect.bottom);
+	int resultCount = GetDataCountFromQueue(result);
+	m_result.clear();
+	for (int i = 0; i < resultCount; ++i)
 	{
-		float x = (rand() + 3) % xMax;
-		float y = (rand() + 3) % yMax;
-		Point temp = {x, y};
-		if(AddVertexToItemNavigateMesh(item, x, y))
+		MeshPolygon* p = (MeshPolygon*)GetDataFromQueueByIndex(result, i);
+		const Point* pointList = GetPolygonPointList(p);
+		for (int t = 0; t < 3; ++t)
 		{
-			m_pointList.push_back(temp);
+			int n = t + 1 == 3 ? 0 : t + 1;
+			Point a = {pointList[t].x, pointList[t].z};
+			Point b = {pointList[n].x, pointList[n].z};
+			m_result.push_back(std::make_pair(a, b));
 		}
+		ReleasePolygon(p);
 	}
-	(MakeConvexHullFromItem(item));
-	const Point* polygonPoint = GetConvexHullPointList(item);
-	const int polygonPointCount = GeConvexHullPointCount(item);
-	m_polygonPointList.assign(polygonPoint, polygonPoint + polygonPointCount);
-	ReleaseItemNavigateMesh(item);*/
-
-	MeshPolygon* clipped = CreatePolygon(m_clippedPoint.size());
-	for (int i = 0; i < m_clippedPoint.size(); ++i)
-	{
-		AddPointToPolygon(clipped, m_clippedPoint[i].x, m_clippedPoint[i].z);
-	}
-	MeshPolygon* testT = CreatePolygon(4);
-	AddPointToPolygon(testT, 1.0f, 1.0f);
-	AddPointToPolygon(testT, 1.0f, 0.0f);
-	AddPointToPolygon(testT, 2.0f, 0.0f);
-	AddPointToPolygon(testT, 2.0f, 1.0f);
-	MeshPolygon* testU = CreatePolygon(4);
-	AddPointToPolygon(testU, 1.0f, 0.0f);
-	AddPointToPolygon(testU, 2.0f, 0.0f);
-	AddPointToPolygon(testU, 2.0f, 1.0f);
-	//AddPointToPolygon(testU, 350.0f, 800.0f);
-	Queue* resultQueue = CreateQueue(16);
-	ConvexPolygonClipping(testT, testU, resultQueue);
-	ConcavePolygonDecompose(testT, resultQueue);
-	Point p = {0.5f, 0.5f};
-	Matrix3x3 testM;
-	IdentityMatrix(&testM);
-	MakeRotateMatrix(&testM, 3.1415926 / 2, true);
-	MritrixPlusPoint( &testM, &p);
-	IdentityMatrix(&testM);
-	MakeRotateMatrix(&testM, 3.1415926 / 2, false);
-	MritrixPlusPoint( &testM, &p);
-	IsConvexPolygon(testT);
-	MeshPolygon* clippingWindow = CreatePolygon(m_clipingWindow.size());
-	for (int i = 0; i < m_clipingWindow.size();++i)
-	{
-		AddPointToPolygon(clippingWindow, m_clipingWindow[i].x, m_clipingWindow[i].z);
-	}
-	CleanQueue(resultQueue);
-	ConvexPolygonClipping(clipped, clippingWindow, resultQueue);
-	ReleasePolygon(clipped);
-	ReleasePolygon(clippingWindow);
-	m_clippingPoint.clear();
-	while(MeshPolygon* polygon = (MeshPolygon*)PopDataFromQueue(resultQueue))
-	{
-		const Point* polygonPoint = GetPolygonPointList(polygon);
-		const int polygonPointCount = GetPolygonPointCount(polygon);
-		vector<Point> temp;
-		temp.assign(polygonPoint, polygonPoint+ polygonPointCount);
-		m_clippingPoint.push_back(temp);
-		ReleasePolygon(polygon);
-		
-	}
-	m_clippedPoint.clear();
-	m_clipingWindow.clear();
-
-
-	/*MeshPolygon* clippingWindow = CreatePolygon(m_clipingWindow.size());
-	for (int i = 0; i < m_clipingWindow.size();++i)
-	{
-		AddPointToPolygon(clippingWindow, m_clipingWindow[i].x, m_clipingWindow[i].z);
-	}
-	Queue* resultQueue = CreateQueue(16);
-	int result = ConcavePolygonDecompose(clippingWindow, resultQueue);
-	m_clipingWindow.clear();
-	while(MeshPolygon* polygon = (MeshPolygon*)PopDataFromQueue(resultQueue))
-	{
-		const Point* polygonPoint = GetPolygonPointList(polygon);
-		const int polygonPointCount = GetPolygonPointCount(polygon);
-		vector<Point> temp;
-		temp.assign(polygonPoint, polygonPoint+ polygonPointCount);
-		m_clippingPoint.push_back(temp);
-		ReleasePolygon(polygon);
-	}
-	ReleaseQueue(resultQueue);
-	ReleasePolygon(clippingWindow);*/
-
+	ReleaseQueue(result);
 	RedrawWindow();
 	return;
 }
 
 void CtestDlg::ReDrawPolygonWithCurrentData()
 {
-	m_polygonPointList.clear();
-	ItemNavigateMesh* item = CreateItemNavigateMesh(m_pointList.size());
-	for (int i = 0; i < m_pointList.size(); ++i)
+	m_pointList.clear();
+	m_result.clear();
+	BeginTest(m_test);
+	FILE* f = fopen("test", "rb");
+	int count = 0;
+	fread(&count, sizeof(count), 1, f);
+	count = count >> 2;
+	int breakCount = count;
+	for (int i  =0; i < count; ++i)
 	{
-		assert(AddVertexToItemNavigateMesh(item, m_pointList[i].x, m_pointList[i].z));		
+		if (breakCount <= i)
+		{
+			break;
+		}
+		float x;
+		float z;
+		fread(&x, sizeof(x), 1, f);
+		fread(&z, sizeof(z), 1, f);
+		Point p = {(float)x, (float)z};
+		m_pointList.push_back(p);
+		AddPointForTest(m_test, p.x, p.z);
 	}
-	(MakeConvexHullFromItem(item));
-	const Point* polygonPoint = GetConvexHullPointList(item);
-	const int polygonPointCount = GetConvexHullPointCount(item);
-	m_polygonPointList.assign(polygonPoint, polygonPoint + polygonPointCount);
-	ReleaseItemNavigateMesh(item);
 	RedrawWindow();
 	return;
 }
@@ -338,78 +204,7 @@ void CtestDlg::OnChangeMaxVertexCount(NMHDR *pNMHDR, LRESULT *pResult)
 	// _WIN32_WINNT 符号必须 >= 0x0600。
 	NMTRBTHUMBPOSCHANGING *pNMTPC = reinterpret_cast<NMTRBTHUMBPOSCHANGING *>(pNMHDR);
 	UpdateData(TRUE);
-	m_maxVertexCount = m_maxVertexCount < 3 ? 3 : m_maxVertexCount;
-	m_stringVertexCount.Format(L"%d", m_maxVertexCount);
-	UpdateData(FALSE);
-	*pResult = 0;
-	//return ;
-
-
-
-	int xMax = 400, yMax = 320;
-	//srand(time(NULL));
-	int vertexCount = m_maxVertexCount * 10; (rand() + 3) % 100;
-	ItemNavigateMesh* itemA = CreateItemNavigateMesh(vertexCount);
-	ItemNavigateMesh* itemB = CreateItemNavigateMesh(vertexCount);
-	ItemNavigateMesh* itemC = CreateItemNavigateMesh(vertexCount);
-	/*for (int i = 0; i < vertexCount; ++i)
-	{
-		{
-			float x = (rand() + 3) % xMax;
-			float y = (rand() + 3) % yMax;
-			Point temp = {x, y};
-			(AddVertexToItemNavigateMesh(itemA, x, y));
-		}
-
-		{
-			float x = (rand() + 3) % xMax;
-			float y = (rand() + 3) % yMax;
-			Point temp = {x, y};
-			(AddVertexToItemNavigateMesh(itemB, x, y));
-		}
-
-	}*/
-	float rans = 200.0f;
-	(AddVertexToItemNavigateMesh(itemA, -100.0f + rans, -100.0f+ rans));
-	(AddVertexToItemNavigateMesh(itemA, -100.0f+ rans, 100.0f+ rans));
-	(AddVertexToItemNavigateMesh(itemA, 100.0f+ rans, 100.0f+ rans));
-	(AddVertexToItemNavigateMesh(itemA, 100.0f+ rans, -100.0f+ rans));
-
-
-	(AddVertexToItemNavigateMesh(itemB, 50.0f+ rans, 50.0f+ rans));
-	(AddVertexToItemNavigateMesh(itemB, 50.0f+ rans, 150.0f+ rans));
-	(AddVertexToItemNavigateMesh(itemB, 150.0f+ rans, 150.0f+ rans));
-	(AddVertexToItemNavigateMesh(itemB, 150.0f+ rans, 50.0f+ rans));
-
-	(AddVertexToItemNavigateMesh(itemC, 70.0f + rans, 70.0f + rans));
-	(AddVertexToItemNavigateMesh(itemC, 70.0f+ rans, -70.0f+ rans));
-	(AddVertexToItemNavigateMesh(itemC, 200.0f+ rans, -70.0f+ rans));
-	(AddVertexToItemNavigateMesh(itemC, 200.0f + rans, 70.0f+ rans));
-
-
-	bool result = (MakeConvexHullFromItem(itemA));
-	result = (MakeConvexHullFromItem(itemB));
-	result = (MakeConvexHullFromItem(itemC));
-
-
-	MeshNavigateSystem* sys = CreateGridSystem();
-	float* height = (float*)(malloc(sizeof(float) * ((513 * 513))));
-	InitGridSystem(sys, 512, 512, 1, height, 513 * 513);
-	AddItemToGridSystem(sys, itemA);
-	AddItemToGridSystem(sys, itemB);
-	AddItemToGridSystem(sys, itemC);
-	MakeMeshNavigateData(sys);
-	Queue* resultQueue = GetItemQueue(sys);
-	m_clippingPoint.clear();
-	while(MeshPolygon* polygon = (MeshPolygon*)PopDataFromQueue(resultQueue))
-	{
-		const Point* polygonPoint = GetPolygonPointList(polygon);
-		const int polygonPointCount = GetPolygonPointCount(polygon);
-		vector<Point> temp;
-		temp.assign(polygonPoint, polygonPoint+ polygonPointCount);
-		m_clippingPoint.push_back(temp);
-		ReleasePolygon(polygon);
-	}
+	
 }
 
 
@@ -417,10 +212,9 @@ void CtestDlg::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	Point p = {point.x, point.y};
-	m_clippedPoint.push_back(p);
-	m_clippingPoint.clear();
-
-	RedrawWindow();
+	m_pointList.push_back(p);
+	AddPointForTest(m_test, p.x, p.z);
+	DrawPolygon();
 	CDialog::OnLButtonDown(nFlags, point);
 }
 
@@ -428,8 +222,15 @@ void CtestDlg::OnRButtonDown(UINT nFlags, CPoint point)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	Point p = {point.x, point.y};
-	m_clipingWindow.push_back(p);
-	m_clippingPoint.clear();
+	m_pointList.clear();
+	m_result.clear();
+	BeginTest(m_test);
 	RedrawWindow();
 	CDialog::OnRButtonDown(nFlags, point);
+}
+
+CtestDlg::~CtestDlg()
+{
+	ReleaseMeshNavigateGenarator(m_test);
+	CDialog::~CDialog();
 }

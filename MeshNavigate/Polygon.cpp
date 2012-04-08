@@ -6,7 +6,7 @@
 **创建时间：2012-02-21
 **修    改：
 */
-#include "stdafx.h"
+
 #include "BaseStruct.h"
 #include "VectorMath.h"
 #include "Polygon.h"
@@ -55,6 +55,7 @@ void ReleasePolygon(MeshPolygon* polygon)
 	}
 	free(polygon->pointList);
 	free(polygon->normalVectorList);
+	free(polygon->adjectPolygonList);
 	free(polygon);
 }
 
@@ -107,8 +108,16 @@ int PointInPolygon(const MeshPolygon* polygon, float x, float z)
 	{
 		return false;
 	} 
-	
+
 	const Point point = {x, z};
+	for (int i  = 0; i < polygon->vertexCount; ++i)
+	{
+		if (IsSamePoint(&polygon->pointList[i], &point))
+		{
+			return 0;
+		}
+	}
+
 	Vector v;
 	v. y = 0;
 	int result = 1;
@@ -128,7 +137,7 @@ int PointInPolygon(const MeshPolygon* polygon, float x, float z)
 			result = InRect(&rect, & point) ? 0 : -1;
 			break;
 		}
-		else if(dot < 0)// || FloatEqualZero(dot))
+		else if(dot < 0)// || floatEqualZero(dot))
 		{
 			result = -1;
 			break;

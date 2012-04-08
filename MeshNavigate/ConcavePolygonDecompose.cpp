@@ -6,7 +6,7 @@
 **创建时间：2012-02-21
 **修    改：
 */
-#include "stdafx.h"
+
 #include "ConcavePolygondecompose.h"
 #include "BaseStruct.h"
 #include "Polygon.h"

@@ -10,6 +10,9 @@
 #include "stdafx.h"
 #include "PathFinder.h"
 #include "Heap.h"
+#include "BaseStruct.h"
+#include "Polygon.h"
+#include "VectorMath.h"
 #include <stdio.h>
 #include <malloc.h>
 #include <memory.h>
@@ -20,7 +23,8 @@ struct UBI_MNHeap;
 struct UBI_MNZone
 {
 	UBI_MNPolygon**	  	m_gridList;
-	int maxGridListCount;
+	int					m_maxGridListCount;
+	int					m_zoneID;
 };
 
 static const int MN_INVALID_VALUE = -1;
@@ -34,7 +38,7 @@ struct UBI_MeshNavigateSystem
 	int				m_xZoneCount;
 	int				m_zZoneCount;
 	int				m_zoneSize;
-	UBI_MNZone*	m_gridZoneList;
+	UBI_MNZone*		m_gridZoneList;
 	int				m_zoneCount;
 	int				m_gridZoneCount;	
 	UBI_MNPolygon*	m_polygonLIst;
@@ -106,7 +110,7 @@ static UBI_MNPolygon* GetTriangleByPosition(const UBI_MeshNavigateSystem* sys, U
 	}
 
 	UBI_MNPolygon* result = NULL;
-	for(int i = 0; i < zone->maxGridListCount; ++i)
+	for(int i = 0; i < zone->m_maxGridListCount; ++i)
 	{
 		if (IsInTriangle(sys, zone->m_gridList[i], point))
 		{
@@ -122,6 +126,7 @@ inline static void InitPathFindData(UBI_MeshNavigateSystem* sys)
 	for(int i = 0; i < sys->m_triangleCount; ++i)
 	{	
 		memset(&sys->m_polygonLIst[i].m_pathFindData, 0, sizeof(UBI_PathFindData));
+		sys->m_polygonLIst[i].m_pathFindData.m_parentToSelfAdjacentIndex = MN_INVALID_VALUE;
 	}
 }
 
@@ -196,20 +201,6 @@ bool InitPathFinder(UBI_MeshNavigateSystem* sys, const char* configFile)
 	sys->m_gridZoneList = (UBI_MNZone*)malloc(sizeof(UBI_MNZone)* sys->m_zoneCount);
 	memset(sys->m_gridZoneList, 0, sizeof(UBI_MNZone) * sys->m_zoneCount);
 
-	//按照统计数据分配空间存储需要在该zone注册的triangle
-	for (int i = 0; i < sys->m_zoneCount; ++i)
-	{
-		fread(&sys->m_gridZoneList[i].maxGridListCount, sizeof(sys->m_gridZoneList[i].maxGridListCount), 1, f);
-		if(0 != sys->m_gridZoneList[i].maxGridListCount)
-		{
-			sys->m_gridZoneList[i].m_gridList = (UBI_MNPolygon**)malloc(sizeof(UBI_MNPolygon**) * sys->m_gridZoneList[i].maxGridListCount);
-			memset(sys->m_gridZoneList[i].m_gridList, 0, sizeof(UBI_MNPolygon**) * sys->m_gridZoneList[i].maxGridListCount);
-		}
-		else
-		{
-			sys->m_gridZoneList[i].m_gridList = NULL;
-		}
-	}
 
 	int pointCount = 0;
 	fread(&pointCount, sizeof(pointCount), 1, f);
@@ -254,40 +245,30 @@ bool InitPathFinder(UBI_MeshNavigateSystem* sys, const char* configFile)
 		fread(&SpecalLogic, sizeof(SpecalLogic), 1, f);
 		sys->m_polygonLIst[i].m_id = i;
 		InitTriangle(sys, &sys->m_polygonLIst[i], trianglePointIndex, normalLineData, pointPolygonPointCount, SpecalLogic);
+	}
 
-		//读取polygon的zone数据,向指定的zone注册
-		fread(&registedZoneCount, sizeof(registedZoneCount), 1, f);
-		for(int t = 0; t < registedZoneCount; ++t)
+	//按照统计数据分配空间存储需要在该zone注册的triangle
+	for (int i = 0; i < sys->m_zoneCount; ++i)
+	{
+		fread(&sys->m_gridZoneList[i].m_maxGridListCount, sizeof(sys->m_gridZoneList[i].m_maxGridListCount), 1, f);
+		if(0 != sys->m_gridZoneList[i].m_maxGridListCount)
 		{
-			fread(&ZoneID, sizeof(ZoneID), 1, f);
-			if(ZoneID < 0 || ZoneID >= sys->m_zoneCount)
+			sys->m_gridZoneList[i].m_gridList = (UBI_MNPolygon**)malloc(sizeof(UBI_MNPolygon**) * sys->m_gridZoneList[i].m_maxGridListCount);
+			memset(sys->m_gridZoneList[i].m_gridList, 0, sizeof(UBI_MNPolygon**) * sys->m_gridZoneList[i].m_maxGridListCount);
+			int polygonID = -1;
+			for (int t = 0; t < sys->m_gridZoneList[i].m_maxGridListCount; ++t)
 			{
-				fclose(f);
-				ReleaseZoneList(sys);
-				free(sys->m_pointList);
-				free(sys->m_polygonLIst);
-				return false;
-			}
-			int registIndex = 0;
-			for (; registIndex < sys->m_gridZoneList[ZoneID].maxGridListCount; ++registIndex)
-			{
-				if (NULL == sys->m_gridZoneList[ZoneID].m_gridList[registIndex])
-				{
-					sys->m_gridZoneList[ZoneID].m_gridList[registIndex] = &sys->m_polygonLIst[i];
-					break;
-				}
-			}
-			//数据有错误,中止初始化过程
-			if (registIndex == sys->m_gridZoneList[ZoneID].maxGridListCount)
-			{
-				fclose(f);
-				ReleaseZoneList(sys);
-				free(sys->m_pointList);
-				free(sys->m_polygonLIst);
-				return false;
+				fread(&polygonID, sizeof(polygonID), 1, f);
+				sys->m_gridZoneList[i].m_gridList[t] = &sys->m_polygonLIst[polygonID];
 			}
 		}
+		else
+		{
+			sys->m_gridZoneList[i].m_gridList = NULL;
+		}
+		sys->m_gridZoneList[i].m_zoneID = i;
 	}
+
 
 	//读取polygon的相邻数据
 	int	adjacentpolygonIndex[32];
@@ -336,7 +317,59 @@ void ReleasePathFinder( UBI_MeshNavigateSystem* sys )
 const int IN_OPEN_LIST = 1;
 const int IN_CLOSE_LIST = 2;
 
-int findPath(UBI_MeshNavigateSystem* sys, float* pathBuffer, const int max, const float beginPosX, const float beginPosZ, const float targetX, const float targetZ)
+static int XXXXXXXX(UBI_MeshNavigateSystem* sys, const UBI_MNPoint* pathPoint, const int leftPoint, const int rightPoint, const int newLeftPoint, const int newRightPoint)
+{
+	static MeshPolygon* testPolygon = CreatePolygon(3);
+	CleanPolygon(testPolygon);
+	Vector pathPointToLeftPoint = {sys->m_pointList[newLeftPoint].m_x - pathPoint->m_x, 0.0f, sys->m_pointList[newLeftPoint].m_z- pathPoint->m_z};
+	Vector leftToRight = {sys->m_pointList[newRightPoint].m_x - sys->m_pointList[newLeftPoint].m_x, 0.0f, sys->m_pointList[newRightPoint].m_z - sys->m_pointList[newLeftPoint].m_z};
+	Vector rormalLineForLeftToRight;
+	VectorCrossProduct(&rormalLineForLeftToRight, &leftToRight, &StandardVector);
+	if (VectorDotProduct(&rormalLineForLeftToRight, &pathPointToLeftPoint) > 0)
+	{
+		AddPointToPolygon(testPolygon, sys->m_pointList[newLeftPoint].m_x, sys->m_pointList[newLeftPoint].m_z);
+		AddPointToPolygon(testPolygon, sys->m_pointList[newRightPoint].m_x, sys->m_pointList[newRightPoint].m_z);
+		AddPointToPolygon(testPolygon, pathPoint->m_x, pathPoint->m_z);
+	}
+	else
+	{
+		AddPointToPolygon(testPolygon, sys->m_pointList[newLeftPoint].m_x, sys->m_pointList[newLeftPoint].m_z);
+		AddPointToPolygon(testPolygon, pathPoint->m_x, pathPoint->m_z);
+		AddPointToPolygon(testPolygon, sys->m_pointList[newRightPoint].m_x, sys->m_pointList[newRightPoint].m_z);
+	}
+
+
+	int leftPointInPolygonTest = PointInPolygon(testPolygon, sys->m_pointList[leftPoint].m_x, sys->m_pointList[leftPoint].m_z);
+	int rightPointInPolygonTest = PointInPolygon(testPolygon, sys->m_pointList[rightPoint].m_x, sys->m_pointList[rightPoint].m_z);
+	if (leftPointInPolygonTest >= 0 && rightPointInPolygonTest >=0)
+	{
+		return MN_INVALID_VALUE;
+	}
+	else if (leftPointInPolygonTest < 0 && rightPointInPolygonTest >= 0)
+	{
+		return rightPoint;
+	}
+
+	else if (leftPointInPolygonTest >= 0 && rightPointInPolygonTest < 0)
+	{
+		return leftPoint;
+	}
+
+	//同时都在polygon外
+	float distenceLeftToNewLift = Distence(sys->m_pointList[leftPoint], sys->m_pointList[newLeftPoint]);
+	float distenceLeftToNewright = Distence(sys->m_pointList[rightPoint], sys->m_pointList[newLeftPoint]);
+	if (leftPoint < rightPoint)
+	{
+		return leftPoint;
+	}
+	else
+	{
+		return rightPoint;
+	}
+	return MN_INVALID_VALUE;
+}
+
+int findPath(UBI_MeshNavigateSystem* sys, float* pathBuffer, const int bufferSize, const float beginPosX, const float beginPosZ, const float targetX, const float targetZ)
 {
 	UBI_MNPoint begin;
 	begin.m_x = beginPosX;
@@ -430,6 +463,7 @@ int findPath(UBI_MeshNavigateSystem* sys, float* pathBuffer, const int max, cons
 
 			neighbour->m_pathFindData.m_totalCost = total;
 			neighbour->m_pathFindData.m_parent = bestPolygon;
+			neighbour->m_pathFindData.m_parentToSelfAdjacentIndex = i;
 			if(neighbour->m_pathFindData.m_flag & IN_OPEN_LIST)
 			{
 				MNHeapModify(sys->m_heap, neighbour, true);
@@ -455,33 +489,84 @@ int findPath(UBI_MeshNavigateSystem* sys, float* pathBuffer, const int max, cons
 
 	//处理寻路结果的链表
 	lastBestTriangle->m_pathFindData.m_pathFindList = NULL;
-	int meshCount = 0;
 	while (lastBestTriangle->m_pathFindData.m_parent)
 	{
 		lastBestTriangle->m_pathFindData.m_parent->m_pathFindData.m_pathFindList = lastBestTriangle;
 		lastBestTriangle = lastBestTriangle->m_pathFindData.m_parent;
-		++meshCount;
 	}
-
+	UBI_MNPolygon* const pBegin = lastBestTriangle;
 	//路点平滑计算
 	//目前没有做平滑计算
-
-	//检查是否有足够的空间存放路点信息
-	int needFloatCount = (meshCount + 2) << 1;
-	if(max < needFloatCount )
-	{
-		return PathFindErrorNotEnoughBufferForPathFind;
-	}
-
-	//拷贝路点数据
+	int meshCount = 1;
+	UBI_MNPoint currentPathPoint = lastBestTriangle->m_pathFindData.m_pos;
+	int outAdjacentIndex = lastBestTriangle->m_pathFindData.m_pathFindList->m_pathFindData.m_parentToSelfAdjacentIndex;
+	int leftPointIndex = lastBestTriangle->m_pointIndex[outAdjacentIndex];
+	int rightPointIndex = lastBestTriangle->m_pointIndex[outAdjacentIndex + 1 != lastBestTriangle->m_pointCount ? outAdjacentIndex + 1 : 0];
 	while(lastBestTriangle)
 	{
-		pathBuffer[0] = lastBestTriangle->m_pathFindData.m_pos.m_x;
-		pathBuffer[1] = lastBestTriangle->m_pathFindData.m_pos.m_z;
-		pathBuffer += 2;
+		//通过下一个路径多边形得到出口边
+		if (NULL == lastBestTriangle->m_pathFindData.m_pathFindList)
+		{
+			//添加最后一个路点
+			break;
+		}
+
+		outAdjacentIndex = lastBestTriangle->m_pathFindData.m_pathFindList->m_pathFindData.m_parentToSelfAdjacentIndex;
+		int newLeftPointIndex = lastBestTriangle->m_pointIndex[outAdjacentIndex];
+		int newRightPointIndex = lastBestTriangle->m_pointIndex[outAdjacentIndex + 1 != lastBestTriangle->m_pointCount ? outAdjacentIndex + 1 : 0];
+
+		int result = XXXXXXXX(sys, &currentPathPoint, leftPointIndex, rightPointIndex, newLeftPointIndex, newRightPointIndex);
+		if (MN_INVALID_VALUE != result)
+		{
+			//添加当前路点
+			++meshCount;
+		}
+		leftPointIndex = newLeftPointIndex;
+		rightPointIndex = newRightPointIndex;
 		lastBestTriangle = lastBestTriangle->m_pathFindData.m_pathFindList;
 	}
-	pathBuffer[0] = targetX;
-	pathBuffer[1] = targetZ;
-	return needFloatCount;
+	//检查是否有足够的空间存放路点
+	if(bufferSize < meshCount << 1)
+	{
+		//没有足够的空间存放路点
+		return meshCount << 1;
+	}
+
+	lastBestTriangle = pBegin;
+	meshCount = 1;
+	currentPathPoint = lastBestTriangle->m_pathFindData.m_pos;
+	outAdjacentIndex = lastBestTriangle->m_pathFindData.m_pathFindList->m_pathFindData.m_parentToSelfAdjacentIndex;
+	leftPointIndex = lastBestTriangle->m_pointIndex[outAdjacentIndex];
+	rightPointIndex = lastBestTriangle->m_pointIndex[outAdjacentIndex + 1 != lastBestTriangle->m_pointCount ? outAdjacentIndex + 1 : 0];
+	while(lastBestTriangle)
+	{
+		//通过下一个路径多边形得到出口边
+		if (NULL == lastBestTriangle->m_pathFindData.m_pathFindList)
+		{
+			//添加最后一个路点
+			pathBuffer[0] = lastBestTriangle->m_pathFindData.m_pos.m_x;
+			pathBuffer[1] = lastBestTriangle->m_pathFindData.m_pos.m_z;
+			break;
+		}
+
+		outAdjacentIndex = lastBestTriangle->m_pathFindData.m_pathFindList->m_pathFindData.m_parentToSelfAdjacentIndex;
+		int newLeftPointIndex = lastBestTriangle->m_pointIndex[outAdjacentIndex];
+		int newRightPointIndex = lastBestTriangle->m_pointIndex[outAdjacentIndex + 1 != lastBestTriangle->m_pointCount ? outAdjacentIndex + 1 : 0];
+
+		int result = XXXXXXXX(sys, &currentPathPoint, leftPointIndex, rightPointIndex, newLeftPointIndex, newRightPointIndex);
+		if (MN_INVALID_VALUE != result)
+		{
+			//添加当前路点
+			pathBuffer[0] = currentPathPoint.m_x;
+			pathBuffer[1] = currentPathPoint.m_z;
+			pathBuffer += 2;
+			currentPathPoint = sys->m_pointList[result];
+			++meshCount;
+		}
+		leftPointIndex = newLeftPointIndex;
+		rightPointIndex = newRightPointIndex;
+		lastBestTriangle = lastBestTriangle->m_pathFindData.m_pathFindList;
+	}
+
+	return meshCount << 1;
 }

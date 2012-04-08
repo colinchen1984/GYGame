@@ -7,7 +7,7 @@
 **ÐÞ    ¸Ä£º
 */
 
-#include "stdafx.h"
+
 #include "BaseStruct.h"
 #include <math.h>
 
@@ -40,7 +40,7 @@ extern bool IntersectionPointBettwenTwoSegments( const Point* beginSegmentA, con
 	float cosof2BeginPointB = VectorDotProduct(&aBegin2BBegin, &normalLineofSegementA);					
 	float cosof2EndPointB = VectorDotProduct(&aBegin2BEnd, &normalLineofSegementA);	
 
-	double tValue =cosof2BeginPointB;
+	float tValue =cosof2BeginPointB;
 	tValue /= (cosof2BeginPointB - cosof2EndPointB);
 	if (tValue < 0.0 || tValue > 1.0)
 	{

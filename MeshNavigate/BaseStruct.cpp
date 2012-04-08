@@ -6,7 +6,7 @@
 **创建时间：2012-02-21
 **修    改：
 */
-#include "stdafx.h"
+
 #include "BaseStruct.h"
 #include <math.h>
 #include <malloc.h>
@@ -170,4 +170,25 @@ void ShiftQueueData( Queue* dest, Queue* src )
 	{
 		PushDataToQueue(dest, data);
 	}
+}
+
+bool InCircle( const Circle* c, const Point* p )
+{
+	float dX = c->center.x - p->x;
+	float dZ = c->center.z - p->z;
+	float d = dX * dX + dZ * dZ;
+	return d < c->radiusSquare ;
+}
+
+bool IsSameEdga( const Edga* a, const Edga* b )
+{
+	if (IsSamePoint(&a->begin, &b->begin) && IsSamePoint(&a->end, &b->end))
+	{
+		return true;
+	}
+	else if (IsSamePoint(&a->begin, &b->end) && IsSamePoint(&a->end, &b->begin))
+	{
+		return true;
+	}
+	return false;
 }

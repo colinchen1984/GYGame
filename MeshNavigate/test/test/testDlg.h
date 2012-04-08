@@ -5,15 +5,17 @@
 #pragma once
 #include "../../BaseStruct.h"
 #include <vector>
+#include <utility>
 using std::vector;
-
+using std::pair;
+struct MeshNavigateGenerator;
 // CtestDlg 对话框
 class CtestDlg : public CDialog
 {
 // 构造
 public:
 	CtestDlg(CWnd* pParent = NULL);	// 标准构造函数
-
+	~CtestDlg();
 // 对话框数据
 	enum { IDD = IDD_TEST_DIALOG };
 
@@ -21,11 +23,8 @@ public:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 支持
 
 	vector<Point> m_pointList;
-	vector<Point> m_polygonPointList;
-	
-	vector<vector<Point>> m_clippingPoint;
-	vector<Point> m_clippedPoint;
-	vector<Point> m_clipingWindow;
+	MeshNavigateGenerator* m_test;
+	vector<pair<Point, Point>> m_result;
 // 实现
 protected:
 	HICON m_hIcon;

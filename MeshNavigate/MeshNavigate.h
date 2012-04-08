@@ -31,12 +31,18 @@ extern bool MakeMeshNavigateData(MeshNavigateGenerator* sys);
 
 extern int GetZoneCount(MeshNavigateGenerator* sys);
 
-extern int GetMeshCountInZone(MeshNavigateGenerator* sys, int index);
+extern int GetMeshCount(MeshNavigateGenerator* sys);
 
-extern MeshPolygon* GetMeshPolygonInZone(MeshNavigateGenerator* sys, int zoneIndex, int meshIndex);
+extern MeshPolygon* GetMeshPolygon(MeshNavigateGenerator* sys, int meshIndex);
 
 extern int GetVertexCount(MeshNavigateGenerator* sys);
 
 extern const Point* GetVertexList(MeshNavigateGenerator* sys);
 
 extern bool WriteDataToFile(MeshNavigateGenerator* sys, const char* fileName);
+
+extern void BeginTest(MeshNavigateGenerator* sys);
+
+extern void AddPointForTest(MeshNavigateGenerator* sys, float x, float z);
+
+extern Queue* Endtest(MeshNavigateGenerator* sys, float maxx, float maxz);

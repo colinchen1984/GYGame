@@ -34,6 +34,18 @@ struct Rect
 	float height;
 };
 
+struct Circle
+{
+	Point center;
+	float radiusSquare;
+};
+
+struct Edga
+{
+	Point begin;
+	Point end;
+};
+
 struct Matrix3x3
 {
 	union
@@ -75,6 +87,10 @@ extern void* GetDataFromQueueByIndex(Queue* queue, int index);
 extern void ShiftQueueData(Queue* dest, Queue* src);
 
 extern void ReleaseQueue(Queue* queue);
+
+extern bool InCircle(const Circle* c, const Point* p);
+
+extern bool IsSameEdga(const Edga* a, const Edga* b);
 
 #define NULL 0
 
