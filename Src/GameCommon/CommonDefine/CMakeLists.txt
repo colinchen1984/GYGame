@@ -3,16 +3,14 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug")
 endif()
 
-SET(CMAKE_CXX_COMPILER "g++")
-
 #ADD_SUBDIRECTORY(./ ./Test)
 INCLUDE_DIRECTORIES(../CommonDefine)
 INCLUDE_DIRECTORIES(../CommonDefine/String)
 INCLUDE_DIRECTORIES(../CommonDefine/TimeController)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/Lib)
 SET(TIMECONTROLLER ./TimeController/GYTimeController.cpp)
-SET(STRING ./String/GYStringManger.cpp ./String/GYString.cpp)
-SET(SOURCE_DEFULT ./GYINIReader.cpp ./GYCommonDefine.cpp)
+SET(STRING ./String/GYString.cpp ./String/GYStringManger.cpp)
+SET(SOURCE_DEFULT ./GYCommonDefine.cpp ./GYINIReader.cpp)
 
 ADD_LIBRARY(GameCommon ${TIMECONTROLLER} ${STRING} ${SOURCE_DEFULT} )
 MESSAGE(STATUS ${CMAKE_SYSTEM})
@@ -20,6 +18,8 @@ ADD_DEFINITIONS(-D_DEBUG)
 IF(WIN32)
 ADD_DEFINITIONS(-DWIN32)
 ELSEIF(UNIX)
-ADD_DEFINITIONS(-DLINUX64 -Wall -std=c++0x)
+ADD_DEFINITIONS(-DLINUX64 -Wall -std=gnu++11)
 ENDIF(WIN32)
+
+
 

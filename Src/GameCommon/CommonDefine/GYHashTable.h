@@ -111,6 +111,19 @@ public:
 	GYINT32	Init(GYINT32 nTableSize, GYINT32 nBucketSize)
 	{
 		GYINT32 err = 0;
+		GYINT32 temp = 1;
+		while(temp < nTableSize)
+		{
+			temp <<= 1;
+		}
+		nTableSize = temp;
+		temp = 1;
+		while(temp < nBucketSize)
+		{
+			temp <<= 1;
+		}
+		nBucketSize = temp;
+
 		m_nTableSize = nTableSize;
 		m_nBucketSize = nBucketSize;
 		m_pHashTable = GYNew __Hash*[nTableSize];
@@ -188,11 +201,11 @@ public:
 	{
 		GYINT32 result = INVALID_VALUE;
 		GYUINT64 hash_value1 = _HashFunction1(key, keyLen);
-		GYINT32 pos1 = hash_value1 % m_nTableSize;
+		GYINT32 pos1 = hash_value1 & (m_nTableSize - 1);
 		if(m_pHashTable[pos1])
 		{
 			GYUINT64 hash_value2 = _HashFunction2(key, keyLen);
-			GYINT32 pos2 = hash_value2 % m_nBucketSize;
+			GYINT32 pos2 = hash_value2 & (m_nBucketSize - 1);
 			const GYUINT64 hash3Value = _HashFunction3(key, keyLen);
 			__Hash* pHash = _FindPosition(pos1, pos2, INVALID_VALUE);
 			if (GYNULL != pHash)
@@ -234,11 +247,11 @@ public:
 	{
 		GYINT32 result = INVALID_VALUE;
 		GYUINT64 hash_value1 = _HashFunction1(key, keyLen);
-		GYINT32 pos1 = hash_value1 % m_nTableSize;
+		GYINT32 pos1 = hash_value1 & (m_nTableSize - 1);
 		if(m_pHashTable[pos1])
 		{
 			GYUINT64 hash_value2 = _HashFunction2(key, keyLen);
-			GYINT32 pos2 = hash_value2 % m_nBucketSize;
+			GYINT32 pos2 = hash_value2 & (m_nBucketSize - 1);
 			const GYUINT64 hash3Value = _HashFunction3(key, keyLen);
 			__Hash* pHash = _FindPosition(pos1, pos2, hash3Value);
 			if (GYNULL != pHash)
@@ -276,11 +289,11 @@ public:
 	{
 		T* result = GYNULL;
 		GYUINT64 hash_value1 = _HashFunction1(key, keyLen);
-		GYINT32 pos1 = hash_value1 % m_nTableSize;
+		GYINT32 pos1 = hash_value1 & (m_nTableSize - 1);
 		if(GYNULL != m_pHashTable[pos1])
 		{
 			GYUINT64 hash_value2 = _HashFunction2(key, keyLen);
-			GYINT32 pos2 = hash_value2 % m_nBucketSize;
+			GYINT32 pos2 = hash_value2 & (m_nBucketSize - 1);
 			const GYUINT64 hash3Value = _HashFunction3(key, keyLen);
 			__Hash* pTarget = _FindPosition(pos1, pos2, hash3Value);
 			if (GYNULL != pTarget)

@@ -3,12 +3,10 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug")
 endif()
 
-SET(CMAKE_CXX_COMPILER "g++")
-
 #ADD_SUBDIRECTORY(./ ./Test)
 INCLUDE_DIRECTORIES(../CommonDefine ../CommonDefine/String ../CommonDefine/TimeController)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/Lib)
-SET(SOURCE_DEFULT ./GYThread.cpp ./GYFastMutex.cpp ./GYMutex.cpp ./GYThreadPool.cpp ./GYCondition.cpp ./GYThreadCommon.cpp)
+SET(SOURCE_DEFULT ./GYCondition.cpp ./GYFastMutex.cpp ./GYMutex.cpp ./GYThread.cpp ./GYThreadCommon.cpp ./GYThreadPool.cpp)
 
 ADD_LIBRARY(Thread ${SOURCE_DEFULT} )
 TARGET_LINK_LIBRARIES(Thread pthread)
@@ -17,6 +15,6 @@ MESSAGE(STATUS ${CMAKE_SYSTEM})
 IF(WIN32)
 ADD_DEFINITIONS(-DWIN32)
 ELSEIF(UNIX)
-ADD_DEFINITIONS(-DLINUX64 -Wall -std=c++0x)
+ADD_DEFINITIONS(-DLINUX64 -Wall  -std=gnu++11)
 ENDIF(WIN32)
 
